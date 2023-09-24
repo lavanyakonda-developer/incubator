@@ -17,11 +17,11 @@ const AppRoutes = () => {
         />
         <Route path='/incubator-login' element={<IncubatorLogin />} />
         <Route
-          path={`/incubator/${user?.incubator_id}/home/register-startup`}
+          path={`/incubator/:incubator_id/home/register-startup`}
           element={<RegisterStartup incubatorId={user?.incubator_id} />}
         />
         <Route
-          path={`/incubator/${user?.incubator_id}/home/register-startup/:startup_id`}
+          path={`/incubator/:incubator_id/home/register-startup/:startup_id`}
           element={<RegisterStartup incubatorId={user?.incubator_id} />}
         />
 

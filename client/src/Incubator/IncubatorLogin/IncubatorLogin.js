@@ -43,7 +43,7 @@ const IncubatorLogin = () => {
       <div className={classes.loginBox}>
         <h2>Incubator Login</h2>
         <p className={classes.message}>{message}</p>
-        <form>
+        <form className={classes.form}>
           <div className={classes.formGroup}>
             <input
               type='text'

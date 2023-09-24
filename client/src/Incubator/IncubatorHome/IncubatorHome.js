@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { makeRequest } from '../../axios';
 import { Button } from '../../CommonComponents';
 import { logout } from '../../auth/helper';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const tabs = [
   { label: 'Home Dashboard', key: 'homeDashboard' },
@@ -19,7 +19,7 @@ const buttonStyle = {
 };
 
 const IncubatorHome = (props) => {
-  const { incubatorId } = props;
+  const { incubator_id: incubatorId } = useParams();
   const [selectedTab, setSelectedTab] = useState('homeDashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [startups, setStartups] = useState([]);
@@ -52,8 +52,10 @@ const IncubatorHome = (props) => {
       }
     };
 
-    fetchData();
-  }, []);
+    if (incubatorId) {
+      fetchData();
+    }
+  }, [incubatorId]);
 
   const handleTabClick = (tabName) => {
     setSelectedTab(tabName);

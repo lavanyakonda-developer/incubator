@@ -43,3 +43,9 @@ input[type='password'] {
   color: #af273e;
   font-size: 16px;
 }
+
+.form {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
