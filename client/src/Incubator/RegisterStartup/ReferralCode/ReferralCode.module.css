@@ -1,0 +1,68 @@
+/* ReferralCode.module.css */
+
+.referralCode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 16px;
+  flex: 1 1;
+  max-width: 85%;
+}
+
+.referralCodeCard {
+  width: 100%;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.referralCode h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.referralCodeView {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.referralCodeView label {
+  font-weight: bold;
+}
+
+.referralCodeView p {
+  margin: 0;
+}
+
+.referralCodeView ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.referralCodeView li {
+  margin-left: 20px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.info {
+  display: flex;
+  gap: 6px;
+}
+
+.coFoundersList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

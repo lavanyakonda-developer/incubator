@@ -1,0 +1,67 @@
+/* DetailedQuestionnaire.module.css */
+
+.questionnaireContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 16px;
+  flex: 1;
+  max-width: 85%;
+}
+
+.detailedQuestionnaire {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  width: 100%;
+}
+
+.detailedQuestionnaire h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.question {
+  /* border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px; */
+}
+
+.questionHeader {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.questionContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.questionText {
+  /* font-weight: bold; */
+  margin-bottom: 8px;
+}
+
+.answerTextarea {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}

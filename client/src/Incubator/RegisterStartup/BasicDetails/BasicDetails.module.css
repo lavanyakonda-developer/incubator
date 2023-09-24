@@ -1,0 +1,71 @@
+/* BasicDetails.css */
+
+.basicDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 16px;
+  flex: 1;
+  max-width: 85%;
+}
+
+.basicInfoCard {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  padding: 16px;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+}
+
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+.inputContainer label {
+  font-weight: bold;
+  font-size: 16px;
+  padding-bottom: 8px;
+}
+
+.inputContainer input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.coFounderContainer {
+  display: flex;
+  flex-direction: column;
+  margin-top: 24px;
+}
+
+.addCoFounderContainer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.addCoFounderContainer button {
+  background-color: #6d48ff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+/* You can add more styles as needed to match your design */

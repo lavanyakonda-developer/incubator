@@ -1,0 +1,25 @@
+.button {
+  display: flex;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #ffffff;
+  background-color: #6d48ff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  justify-content: center;
+  align-items: center;
+}
+
+.text {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.button:hover {
+  background-color: #5a3dd8;
+}
+.disabled {
+  background-color: #dfdfdf !important;
+  cursor: not-allowed !important;
+}
