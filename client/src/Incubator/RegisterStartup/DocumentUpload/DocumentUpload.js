@@ -173,6 +173,8 @@ const DocumentUpload = ({
 
       // Specify the download attribute to suggest a filename (optional)
       downloadLink.setAttribute('download', documentData.name);
+      // Set the target attribute to "_blank" to open the link in a new tab/window
+      downloadLink.setAttribute('target', '_blank');
 
       // Simulate a click on the anchor element to initiate the download
       downloadLink.click();

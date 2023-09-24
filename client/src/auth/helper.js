@@ -1,3 +1,5 @@
+import { makeRequest } from '../axios';
+
 export const authenticate = (data, next) => {
   if (typeof window !== 'undefined') {
     localStorage.setItem('jwt', JSON.stringify(data));
@@ -22,18 +24,11 @@ export const isAuthenticated = () => {
   }
 };
 
-// const logout = async () => {
-//   try {
-//     const response = await makeRequest.post('api/auth/logout');
-//     signout();
-//     console.log('response', response);
-
-//     if (response.status == 200) {
-//       console.log('logged out');
-//     } else {
-//       console.log('unkno9w error');
-//     }
-//   } catch (error) {
-//     console.log('Errorrr', error);
-//   }
-// };
+export const logout = async () => {
+  try {
+    const response = await makeRequest.post('api/auth/logout');
+    signout();
+  } catch (error) {
+    console.log('Errorrr', error);
+  }
+};

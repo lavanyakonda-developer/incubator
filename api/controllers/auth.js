@@ -420,7 +420,7 @@ export const startupRegister = async (req, res) => {
             _.forEach(existingRequestedDocuments, async (existingDoc) => {
               const docExistsInUploads = _.some(
                 requestedDocuments,
-                (doc) => doc.name === existingDoc.document_name
+                (doc) => doc == existingDoc.document_name
               );
 
               if (!docExistsInUploads) {

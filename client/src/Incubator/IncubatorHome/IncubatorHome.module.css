@@ -157,3 +157,11 @@ ul {
   margin-bottom: 16px;
   font-weight: bold;
 }
+
+.logout {
+  display: flex;
+  justify-content: flex-end;
+  align-content: flex-end;
+  position: absolute;
+  bottom: 0;
+}

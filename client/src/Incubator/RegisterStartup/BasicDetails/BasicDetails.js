@@ -21,6 +21,16 @@ const BasicDetails = ({
         { name: '', designation: '', phone_number: '', email: '' },
       ])
     );
+
+    setStartupInfo({
+      ...startupInfo,
+      basicDetails: {
+        ...startupInfo.basicDetails,
+        coFounders: _.concat(coFounders, [
+          { name: '', designation: '', phone_number: '', email: '' },
+        ]),
+      },
+    });
   };
 
   // Function to handle input changes in the basic details section
@@ -55,6 +65,13 @@ const BasicDetails = ({
     };
 
     setCoFounders(updatedCoFounders);
+    setStartupInfo({
+      ...startupInfo,
+      basicDetails: {
+        ...startupInfo.basicDetails,
+        coFounders: updatedCoFounders,
+      },
+    });
   };
 
   const onClickNext = () => {
@@ -154,7 +171,7 @@ const BasicDetails = ({
             onChange={(e) =>
               handleBasicDetailsChange('founderMobile', e.target.value)
             }
-            placeholder="Enter founder's phone_number number"
+            placeholder="Enter founder's phone number"
           />
         </div>
         <div className={classes.coFounderContainer}>
@@ -168,7 +185,7 @@ const BasicDetails = ({
                   onChange={(e) =>
                     handleCoFounderChange(index, 'name', e.target.value)
                   }
-                  placeholder="Enter Co-Founder's phone_number number"
+                  placeholder="Enter Co-Founder's phone number"
                 />
               </div>
               <div className={classes.inputContainer}>
@@ -201,7 +218,7 @@ const BasicDetails = ({
                   onChange={(e) =>
                     handleCoFounderChange(index, 'phone_number', e.target.value)
                   }
-                  placeholder="Enter Co-Founder's phone_number number"
+                  placeholder="Enter Co-Founder's phone number"
                 />
               </div>
             </div>

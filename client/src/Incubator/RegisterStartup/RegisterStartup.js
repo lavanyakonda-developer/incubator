@@ -264,7 +264,16 @@ const RegisterStartup = (props) => {
     _.isEmpty(startupInfo.basicDetails.founderName) ||
     _.isEmpty(startupInfo.basicDetails.founderRole) ||
     _.isEmpty(startupInfo.basicDetails.founderEmail) ||
-    _.isEmpty(startupInfo.basicDetails.founderMobile);
+    _.isEmpty(startupInfo.basicDetails.founderMobile) ||
+    (!_.isEmpty(startupInfo.basicDetails.coFounders) &&
+      _.some(startupInfo.basicDetails.coFounders, (item) => {
+        return (
+          _.isEmpty(item.name) ||
+          _.isEmpty(item.designation) ||
+          _.isEmpty(item.phone_number) ||
+          _.isEmpty(item.email)
+        );
+      }));
 
   // Conditionally render the selected tab
   const renderTabContent = () => {

@@ -3,6 +3,8 @@ import classes from './IncubatorHome.module.css'; // Import your CSS file
 import _ from 'lodash';
 import { makeRequest } from '../../axios';
 import { Button } from '../../CommonComponents';
+import { logout } from '../../auth/helper';
+import { useNavigate } from 'react-router-dom';
 
 const tabs = [
   { label: 'Home Dashboard', key: 'homeDashboard' },
@@ -136,6 +138,12 @@ const IncubatorHome = (props) => {
     }
   };
 
+  const navigate = useNavigate();
+  const userLogout = () => {
+    logout();
+    navigate('/home-page');
+  };
+
   return (
     <div className={classes.incubatorHome}>
       <div className={classes.leftColumn}>
@@ -158,6 +166,19 @@ const IncubatorHome = (props) => {
               </div>
             );
           })}
+        </div>
+        <div className={classes.logout}>
+          <Button
+            name={'Logout'}
+            onClick={userLogout}
+            customStyles={{
+              width: 100,
+              fontSize: 16,
+              color: 'black',
+              justifyContent: 'left',
+              backgroundColor: '#f0f0f0',
+            }}
+          />
         </div>
       </div>
       {getRightComponent()}
