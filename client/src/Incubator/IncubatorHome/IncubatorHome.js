@@ -6,9 +6,9 @@ import { Button } from '../../CommonComponents';
 
 const tabs = [
   { label: 'Home Dashboard', key: 'homeDashboard' },
-  { label: 'Document Repository', key: 'documentRepository' },
-  { label: 'Onboarding Hub', key: 'onboardingHub' },
-  { label: 'Communication Tab', key: 'communicationTab' },
+  // { label: 'Document Repository', key: 'documentRepository' },
+  // { label: 'Onboarding Hub', key: 'onboardingHub' },
+  // { label: 'Communication Tab', key: 'communicationTab' },
 ];
 
 const buttonStyle = {

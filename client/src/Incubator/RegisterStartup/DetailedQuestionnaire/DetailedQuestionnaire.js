@@ -72,7 +72,11 @@ const DetailedQuestionnaire = ({
   const renderQuestions = (section) => {
     return _.map(section.questions, (question, index) => {
       return (
-        <div key={index} className={classes.question} style={section.style}>
+        <div
+          key={question.uid}
+          className={classes.question}
+          style={section.style}
+        >
           <div className={classes.questionText} style={question.style}>
             {question.number ? question.number : question.question}
           </div>
@@ -82,6 +86,7 @@ const DetailedQuestionnaire = ({
                 <div
                   className={classes.questionText}
                   style={{ paddingLeft: 16 }}
+                  key={item.uid}
                 >
                   {item.question}
                 </div>

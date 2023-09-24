@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import _ from 'lodash';
 import { questions } from './helper';
 import { makeRequest } from '../../axios';
+import { Button } from '../../CommonComponents';
 
 const tabs = [
   { label: 'Basic Info', key: 'basicDetails' },
@@ -135,7 +136,9 @@ const RegisterStartup = (props) => {
       }
     };
 
-    fetchData();
+    if (startup_id) {
+      fetchData();
+    }
   }, []);
 
   const [selectedTab, setSelectedTab] = useState('basicDetails'); // Set the initial selected tab
@@ -321,19 +324,35 @@ const RegisterStartup = (props) => {
 
   return (
     <div className={classes.startupRegistrationTabs}>
-      <div className={classes.tabMenu}>
-        {tabs.map((tab) => (
-          <div
-            key={tab.key}
-            className={`${classes.tab} ${
-              selectedTab === tab.key ? classes.activeTab : ''
-            }`}
-            onClick={() => handleTabClick(tab.key)}
-          >
-            {tab.label}
-          </div>
-        ))}
+      <div className={classes.tabContainer}>
+        <Button
+          name={'< Back'}
+          onClick={() => {
+            navigate('/');
+          }}
+          customStyles={{
+            width: 100,
+            fontSize: 16,
+            color: 'black',
+            justifyContent: 'left',
+            backgroundColor: '#f0f0f0',
+          }}
+        />
+        <div className={classes.tabMenu}>
+          {tabs.map((tab) => (
+            <div
+              key={tab.key}
+              className={`${classes.tab} ${
+                selectedTab === tab.key ? classes.activeTab : ''
+              }`}
+              onClick={() => handleTabClick(tab.key)}
+            >
+              {tab.label}
+            </div>
+          ))}
+        </div>
       </div>
+
       <div className={classes.rightContainer}>{renderTabContent()}</div>
     </div>
   );
