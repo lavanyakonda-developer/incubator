@@ -200,8 +200,6 @@ export const startupLogin = (req, res) => {
       process.env.SECRET
     );
 
-    console.log(data[0]);
-
     const { password, ...others } = data[0];
 
     res.cookie('accessToken', token, {

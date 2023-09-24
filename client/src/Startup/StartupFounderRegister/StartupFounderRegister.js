@@ -43,8 +43,6 @@ const StartupFounderRegister = () => {
         }
       );
 
-      console.log(response);
-
       if (response.status === 200) {
         setMessage('Logged in');
         authenticate(response.data);

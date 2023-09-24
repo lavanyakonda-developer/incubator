@@ -13,7 +13,6 @@ import { isAuthenticated } from './auth/helper';
 const AppRoutes = () => {
   const { user, token } = isAuthenticated();
 
-  console.log('user, token', user, token);
   return (
     <BrowserRouter>
       <Routes>
@@ -52,10 +51,10 @@ const AppRoutes = () => {
           element={<StartupFounderRegister />}
         />
         <Route
-          path='/startup/:startupId/startup-onboarding'
+          path='/startup/:startup_id/startup-onboarding'
           element={<StartupOnboarding />}
         />
-        <Route path='/startup/:startupId/home' element={<StartupHome />} />
+        <Route path='/startup/:startup_id/home' element={<StartupHome />} />
 
         {/* Home page */}
         <Route path='/home-page' element={<App />} />

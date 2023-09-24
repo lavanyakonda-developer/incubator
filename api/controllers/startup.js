@@ -62,6 +62,7 @@ export const startUpDetails = (req, res) => {
       question: question?.question,
       answer_type: question?.answer_type,
       metaData: question?.meta_data,
+      answer: question?.answer,
     }));
 
     const founderName = _.get(coFounders, '0.name', '');
