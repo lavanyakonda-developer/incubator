@@ -66,6 +66,8 @@ const AppRoutes = () => {
               to={
                 token && user?.incubator_id
                   ? `/incubator/${user?.incubator_id}/home`
+                  : token && user?.startup_id
+                  ? `/startup/${user?.startup_id}/home`
                   : '/home-page'
               }
             />

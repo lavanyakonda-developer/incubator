@@ -1,0 +1,128 @@
+/* DetailedQuestionnaire.module.css */
+
+.questionnaireContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  gap: 16px;
+  flex: 1;
+  max-width: 85%;
+}
+
+.detailedQuestionnaire {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  width: 100%;
+}
+
+.detailedQuestionnaire h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.questionHeader {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.questionContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.questionText {
+  margin-top: 12px;
+}
+
+.answerTextarea {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+}
+
+.buttonContainer {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.questionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.images {
+  display: flex;
+  gap: 8px;
+}
+
+.imagesList {
+  display: flex;
+  gap: 8px;
+}
+
+.chooseButtonContainer {
+  display: flex;
+  width: 50%;
+
+  align-items: center;
+}
+
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: fit-content;
+  border: 1px solid #6d48ff;
+  background-color: #6d48ff;
+  border-radius: 4px;
+  padding: 8px;
+  color: #ffffff;
+}
+
+.uploadLabel:hover {
+  background-color: #5a3dd8;
+}
+
+.chooseFileText {
+  font-weight: bold;
+}
+
+.icon {
+  color: gray;
+}
+
+.imageCard {
+  display: flex;
+  /* flex-direction: column; */
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+}
+
+.fileName {
+  text-decoration: none;
+  color: black;
+}

@@ -321,7 +321,7 @@ export const questions = [
     ],
   },
   {
-    section: 'Your Questions (If any)',
+    section: 'Other Questions',
     uid: 'customQuestions',
     style: {
       display: 'flex',

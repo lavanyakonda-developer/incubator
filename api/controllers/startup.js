@@ -74,6 +74,7 @@ export const startUpDetails = (req, res) => {
       basicDetails: {
         id: startup.id,
         name: startup.name || '',
+        logo: startup.logo || '',
         dpiitNumber: startup.dpiit_number || '',
         industrySegment: startup.industry || '',
         referralCode: startup.referral_code || '',
@@ -98,22 +99,24 @@ export const updateStartup = async (req, res) => {
   const {
     startup_id: startupId,
     name,
+    logo,
     dpiit_number,
     industry,
-    referral_code,
     requestedDocuments,
     questionnaire,
   } = req.body;
+
+  console.log('Here>>>>>>>>>>>>>>>>>>');
   try {
     // Update basic startup details
     const updateStartupQuery =
-      'UPDATE startups SET name = ?, dpiit_number = ?, industry = ?, referral_code = ? WHERE id = ?';
+      'UPDATE startups SET name = ?, dpiit_number = ?, industry = ? , logo = ? WHERE id = ?';
 
     await query(updateStartupQuery, [
       name,
       dpiit_number,
       industry,
-      referral_code,
+      logo,
       startupId,
     ]);
 
@@ -154,7 +157,9 @@ export const updateStartup = async (req, res) => {
     ]);
 
     // Send success response
-    return 'Startup and associated data have been updated.';
+    return res.json({
+      message: 'Startup and associated data have been updated.',
+    });
   } catch (error) {
     console.error('Error:', error);
     throw error; // You can handle the error as needed

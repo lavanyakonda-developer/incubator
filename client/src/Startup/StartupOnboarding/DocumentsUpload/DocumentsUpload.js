@@ -26,8 +26,6 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
   );
 
   const uploadDocument = (document) => {
-    console.log('document>>>>', document);
-
     const index = _.findIndex(
       updatedRequestedDocuments,
       (doc) => doc.name === document.name
@@ -38,8 +36,6 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
       updatedRequestedDocuments[index].format = document.format;
       updatedRequestedDocuments[index].size = document.size;
     }
-
-    console.log(updatedRequestedDocuments);
 
     setStartupInfo({
       ...startupInfo,
@@ -187,8 +183,6 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
       updatedRequestedDocuments[documentIndex].format = '';
       updatedRequestedDocuments[documentIndex].size = '';
     }
-
-    console.log(updatedRequestedDocuments);
 
     setStartupInfo({
       ...startupInfo,

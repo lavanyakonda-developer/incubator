@@ -18,6 +18,8 @@ const StartupOnboarding = () => {
   const [selectedTab, setSelectedTab] = useState('basicDetails');
   const [startupInfo, setStartupInfo] = useState('');
 
+  const navigate = useNavigate();
+
   const getUpdatedData = (data) => {
     const requestedDocuments = data?.documentUpload?.requestedDocuments;
     return {
@@ -65,26 +67,52 @@ const StartupOnboarding = () => {
     setSelectedTab(tabKey);
   };
 
+  const getModifiedData = () => {
+    const startupDetails = {
+      startup_id: startupInfo.basicDetails.id,
+      name: startupInfo.basicDetails.name || '',
+      logo: startupInfo.basicDetails.logo || '',
+      dpiit_number: startupInfo.basicDetails.dpiitNumber || '',
+      industry: startupInfo.basicDetails.industrySegment || '',
+      requestedDocuments: _.map(
+        startupInfo.documentUpload.updatedRequestedDocuments,
+        (item) => {
+          return {
+            document_name: item.name,
+            document_url: item.url,
+            document_size: item.size,
+            document_format: item.format,
+          };
+        }
+      ),
+      questionnaire: startupInfo.questionnaire,
+    };
+
+    return startupDetails;
+  };
+
   // Function to handle saving the data in the current tab
   const handleSave = async () => {
     console.log('Here clicked handleSave');
-    // const data = getModifiedData(false);
+    const data = getModifiedData(false);
 
-    // try {
-    //   const response = await makeRequest.post('api/auth/startup-register', {
-    //     ...data,
-    //   });
+    try {
+      console.log('##########data', data);
+      const response = await makeRequest.post('startup/update-startup', {
+        ...data,
+      });
 
-    //   if (response.status === 200) {
-    //     const data = response.data;
-    //   } else {
-    //     console.error('Error fetching data:', response.statusText);
-    //   }
-    // } catch (error) {
-    //   console.error('Error fetching data:', error);
-    // }
+      console.log('>>>>>>>>', response);
+      if (response.status === 200) {
+        const data = response.data;
+      } else {
+        console.error('Error fetching data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
 
-    // navigate('/');
+    //navigate('/');
   };
 
   // Function to handle "Next" button click
@@ -111,6 +139,7 @@ const StartupOnboarding = () => {
       _.isEmpty(item.url)
     );
 
+  console.log('startupInfo', startupInfo);
   const renderTabContent = () => {
     switch (selectedTab) {
       case 'basicDetails':
