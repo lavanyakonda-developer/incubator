@@ -4,6 +4,7 @@ import {
   incubatorRegister,
   logout,
   startupRegister,
+  startupFounderRegister,
   startupLogin,
 } from '../controllers/auth.js';
 
@@ -13,6 +14,7 @@ router.post('/incubator-login', incubatorLogin);
 router.post('/incubator-register', incubatorRegister);
 router.post('/logout', logout);
 router.post('/startup-register', startupRegister);
+router.post('/startup-founder-register', startupFounderRegister);
 router.post('/startup-login', startupLogin);
 
 export default router;

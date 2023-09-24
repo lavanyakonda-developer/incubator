@@ -92,3 +92,70 @@ export const startUpDetails = (req, res) => {
     return res.json(startupDetails);
   });
 };
+
+export const updateStartup = async (req, res) => {
+  const {
+    startup_id: startupId,
+    name,
+    dpiit_number,
+    industry,
+    referral_code,
+    requestedDocuments,
+    questionnaire,
+  } = req.body;
+  try {
+    // Update basic startup details
+    const updateStartupQuery =
+      'UPDATE startups SET name = ?, dpiit_number = ?, industry = ?, referral_code = ? WHERE id = ?';
+
+    await query(updateStartupQuery, [
+      name,
+      dpiit_number,
+      industry,
+      referral_code,
+      startupId,
+    ]);
+
+    // Update requested documents
+    const updateDocumentsPromises = _.map(
+      requestedDocuments,
+      async (document) => {
+        const { document_name, document_url, document_size, document_format } =
+          document;
+
+        const updateDocumentQuery =
+          'UPDATE startup_documents SET document_url = ?, document_size = ?, document_format = ? WHERE startup_id = ? AND document_name = ?';
+
+        await query(updateDocumentQuery, [
+          document_url,
+          document_size,
+          document_format,
+          startupId,
+          document_name,
+        ]);
+      }
+    );
+
+    // Update questionnaire responses
+    const updateQuestionnairePromises = questionnaire.map((question) => {
+      const { uid, answer } = question;
+
+      const updateQuestionQuery =
+        'UPDATE questionnaire SET answer = ? WHERE startup_id = ? AND question_uid = ?';
+
+      return query(updateQuestionQuery, [answer, startupId, uid]);
+    });
+
+    // Combine all promises and execute them
+    await Promise.all([
+      ...updateDocumentsPromises,
+      ...updateQuestionnairePromises.flat(),
+    ]);
+
+    // Send success response
+    return 'Startup and associated data have been updated.';
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // You can handle the error as needed
+  }
+};

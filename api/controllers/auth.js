@@ -171,6 +171,48 @@ export const incubatorLogin = (req, res) => {
   });
 };
 
+export const startupLogin = (req, res) => {
+  const q = 'SELECT * FROM startup_founders WHERE email = ?';
+
+  db.query(q, [req.body.email], (err, data) => {
+    if (err) return res.status(500).json(err);
+    if (data.length === 0)
+      return res
+        .status(404)
+        .json(
+          'No Incubator founder is found with the email you have provided. Please reach out to our team'
+        );
+
+    const checkPassword = bcrypt.compareSync(
+      req.body.password,
+      data[0].password
+    );
+
+    if (!checkPassword)
+      return res.status(400).json('Wrong password or username!');
+
+    const token = jwt.sign(
+      {
+        id: data[0].id,
+        role: data[0].role,
+        startup_id: data[0].startup_id,
+      },
+      process.env.SECRET
+    );
+
+    console.log(data[0]);
+
+    const { password, ...others } = data[0];
+
+    res.cookie('accessToken', token, {
+      httpOnly: true,
+      expire: new Date() + 9999,
+    });
+
+    return res.json({ token, user: { ...others } });
+  });
+};
+
 export const logout = (req, res) => {
   res.clearCookie('accessToken', {
     secure: true,
@@ -688,7 +730,7 @@ export const startupRegister = async (req, res) => {
   }
 };
 
-export const startupLogin = (req, res) => {
+export const startupFounderRegister = (req, res) => {
   const { name, email, password, referral_code } = req.body;
 
   // Check if a startup with the provided name and referral_code exists
