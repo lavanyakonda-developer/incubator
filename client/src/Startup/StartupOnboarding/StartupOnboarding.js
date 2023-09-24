@@ -18,6 +18,24 @@ const StartupOnboarding = () => {
   const [selectedTab, setSelectedTab] = useState('basicDetails');
   const [startupInfo, setStartupInfo] = useState('');
 
+  const getUpdatedData = (data) => {
+    const requestedDocuments = data?.documentUpload?.requestedDocuments;
+    return {
+      ...data,
+      documentUpload: {
+        ...data?.documentUpload,
+        updatedRequestedDocuments: _.map(requestedDocuments, (item) => {
+          return {
+            format: '',
+            name: item,
+            size: '',
+            url: '',
+          };
+        }),
+      },
+    };
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -28,7 +46,7 @@ const StartupOnboarding = () => {
         if (response.status === 200) {
           const data = response.data;
 
-          setStartupInfo(data);
+          setStartupInfo(getUpdatedData(data));
         } else {
           console.error('Error fetching data:', response.statusText);
         }
@@ -88,7 +106,10 @@ const StartupOnboarding = () => {
 
   const disableSave =
     _.isEmpty(startupInfo?.basicDetails?.name) ||
-    !startupInfo?.basicDetails?.dpiitNumber;
+    !startupInfo?.basicDetails?.dpiitNumber ||
+    _.some(startupInfo?.documentUpload?.updatedRequestedDocuments, (item) =>
+      _.isEmpty(item.url)
+    );
 
   const renderTabContent = () => {
     switch (selectedTab) {
