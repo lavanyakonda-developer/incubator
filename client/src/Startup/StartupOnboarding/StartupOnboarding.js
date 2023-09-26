@@ -74,6 +74,7 @@ const StartupOnboarding = () => {
       logo: startupInfo.basicDetails.logo || '',
       dpiit_number: startupInfo.basicDetails.dpiitNumber || '',
       industry: startupInfo.basicDetails.industrySegment || '',
+      status: 'SUBMITTED',
       requestedDocuments: _.map(
         startupInfo.documentUpload.updatedRequestedDocuments,
         (item) => {
@@ -97,12 +98,10 @@ const StartupOnboarding = () => {
     const data = getModifiedData(false);
 
     try {
-      console.log('##########data', data);
       const response = await makeRequest.post('startup/update-startup', {
         ...data,
       });
 
-      console.log('>>>>>>>>', response);
       if (response.status === 200) {
         const data = response.data;
       } else {
@@ -139,7 +138,6 @@ const StartupOnboarding = () => {
       _.isEmpty(item.url)
     );
 
-  console.log('startupInfo', startupInfo);
   const renderTabContent = () => {
     switch (selectedTab) {
       case 'basicDetails':

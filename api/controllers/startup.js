@@ -100,23 +100,24 @@ export const updateStartup = async (req, res) => {
     startup_id: startupId,
     name,
     logo,
+    status,
     dpiit_number,
     industry,
     requestedDocuments,
     questionnaire,
   } = req.body;
 
-  console.log('Here>>>>>>>>>>>>>>>>>>');
   try {
     // Update basic startup details
     const updateStartupQuery =
-      'UPDATE startups SET name = ?, dpiit_number = ?, industry = ? , logo = ? WHERE id = ?';
+      'UPDATE startups SET name = ?, dpiit_number = ?, industry = ? , logo = ? , status = ? WHERE id = ?';
 
     await query(updateStartupQuery, [
       name,
       dpiit_number,
       industry,
       logo,
+      status,
       startupId,
     ]);
 

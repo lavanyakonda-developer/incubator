@@ -244,6 +244,7 @@ export const startupRegister = async (req, res) => {
 
     if (!_.isEmpty(startupData)) {
       // If the startup already exists, update its details
+      //No need to change any status here
       const updateStartupQuery =
         'UPDATE startups SET dpiit_number = ?, industry = ?, referral_code = ?, name = ? WHERE id = ?';
 
@@ -558,13 +559,14 @@ export const startupRegister = async (req, res) => {
     } else {
       // If the startup doesn't exist, create it
       const createStartupQuery =
-        'INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`) VALUES (?, ?, ?, ?)';
+        'INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`, `status`) VALUES (?, ?, ?, ?)';
 
       const result = await query(createStartupQuery, [
         startup_name,
         dpiit_number,
         industry,
         referral_code,
+        'PENDING',
       ]);
 
       const startup_id = result.insertId;
