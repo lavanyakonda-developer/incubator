@@ -27,12 +27,19 @@ const StartupOnboarding = () => {
       documentUpload: {
         ...data?.documentUpload,
         updatedRequestedDocuments: _.map(requestedDocuments, (item) => {
-          return {
-            format: '',
-            name: item,
-            size: '',
-            url: '',
-          };
+          const existingDoc = _.find(
+            data?.documentUpload?.requestedDocumentsList,
+            { name: item }
+          );
+
+          return existingDoc
+            ? existingDoc
+            : {
+                format: '',
+                name: item,
+                size: '',
+                url: '',
+              };
         }),
       },
     };

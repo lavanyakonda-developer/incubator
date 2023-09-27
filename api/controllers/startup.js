@@ -23,7 +23,7 @@ export const startUpDetails = (req, res) => {
     const uploadedDocumentsQuery =
       'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = false AND is_deleted = false';
     const requestedDocumentsQuery =
-      'SELECT document_name FROM startup_documents WHERE startup_id = ? AND is_requested = true AND is_deleted = false';
+      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = true AND is_deleted = false';
     const questionnaireQuery =
       'SELECT * FROM questionnaire WHERE startup_id = ?';
 
@@ -57,6 +57,18 @@ export const startUpDetails = (req, res) => {
       requestedDocumentsData,
       (document) => document?.document_name || ''
     );
+
+    const requestedDocumentsList = _.map(
+      requestedDocumentsData,
+      (document) => ({
+        name: document?.document_name,
+        size: document?.document_size,
+        format: document?.document_format,
+        isSignatureRequired: document?.is_signature_required,
+        url: document?.document_url,
+      })
+    );
+
     const questionnaire = _.map(questionnaireData, (question) => ({
       uid: question?.question_uid,
       question: question?.question,
@@ -87,6 +99,7 @@ export const startUpDetails = (req, res) => {
       documentUpload: {
         uploadedDocuments: uploadedDocuments,
         requestedDocuments: requestedDocuments,
+        requestedDocumentsList,
       },
       questionnaire: questionnaire,
     };

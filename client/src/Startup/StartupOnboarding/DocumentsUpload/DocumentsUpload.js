@@ -135,9 +135,11 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
     setShowSizeExceededModal(false); // Close the size exceeded modal
   };
 
-  const handleDownload = (documentIndex) => {
+  const handleDownload = (documentIndex, isRequestedDoc = false) => {
     // Get the document's file data and name from the uploadedDocuments array
-    const documentData = uploadedDocuments[documentIndex];
+    const documentData = isRequestedDoc
+      ? updatedRequestedDocuments[documentIndex]
+      : uploadedDocuments[documentIndex];
 
     if (documentData && documentData.file) {
       // Extract the filename from the document data (modify this based on your data structure)
@@ -299,7 +301,7 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
                 <div className={classes.cardActions}>
                   <FaDownload
                     className={classes.icon}
-                    onClick={() => handleDownload(index)}
+                    onClick={() => handleDownload(index, false)}
                   />
                 </div>
                 <div className={classes.cardDetails}>
@@ -357,7 +359,7 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
                     <div className={classes.cardActions}>
                       <FaDownload
                         className={classes.icon}
-                        onClick={() => handleDownload(index)}
+                        onClick={() => handleDownload(index, true)}
                       />
                       <FaTrash
                         className={classes.icon}
