@@ -87,6 +87,8 @@ export const startUpDetails = (req, res) => {
         id: startup.id,
         name: startup.name || '',
         logo: startup.logo || '',
+        status: startup.status || 'PENDING',
+        reject_message: startup.reject_message || '',
         dpiitNumber: startup.dpiit_number || '',
         industrySegment: startup.industry || '',
         referralCode: startup.referral_code || '',
@@ -102,6 +104,32 @@ export const startUpDetails = (req, res) => {
         requestedDocumentsList,
       },
       questionnaire: questionnaire,
+    };
+
+    return res.json(startupDetails);
+  });
+};
+
+export const startUpStatus = (req, res) => {
+  const { startup_id } = req.query;
+
+  // Find the startup
+  const findStartupQuery = 'SELECT * FROM startups WHERE id = ?';
+  db.query(findStartupQuery, [startup_id], async (err, startupData) => {
+    if (err) return res.status(500).json(err);
+
+    if (startupData.length === 0) {
+      return res.status(404).json('Startup not found');
+    }
+
+    const startup = startupData[0];
+
+    const startupDetails = {
+      id: startup.id,
+      name: startup.name || '',
+      logo: startup.logo || '',
+      status: startup.status || 'PENDING',
+      reject_message: startup.reject_message || '',
     };
 
     return res.json(startupDetails);

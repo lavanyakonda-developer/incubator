@@ -55,6 +55,10 @@ const StartupOnboarding = () => {
         if (response.status === 200) {
           const data = response.data;
 
+          if (_.get(data, 'basicDetails.status', 'PENDING') != 'PENDING') {
+            navigate(`/startup/${startup_id}/home`);
+          }
+
           setStartupInfo(getUpdatedData(data));
         } else {
           console.error('Error fetching data:', response.statusText);
@@ -118,7 +122,7 @@ const StartupOnboarding = () => {
       console.error('Error fetching data:', error);
     }
 
-    //navigate('/');
+    navigate('/');
   };
 
   // Function to handle "Next" button click

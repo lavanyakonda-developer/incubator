@@ -1,0 +1,82 @@
+.container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+.leftContainer {
+  width: 20%;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0.75;
+}
+
+.rightContainer {
+  padding: 20px;
+  flex: 3;
+  flex-direction: column;
+  display: flex;
+}
+
+.logo {
+  width: 100px;
+  height: 100px;
+  background-color: #6d48ff;
+  border-radius: 50%;
+  margin-bottom: 10px;
+}
+
+.name {
+  font-weight: bold;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+
+.startupDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding-top: 48px;
+}
+
+.tabMenu {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tab {
+  padding: 12px;
+  cursor: pointer;
+  font-size: 20px;
+  align-items: center;
+  display: flex;
+}
+
+.activeTab {
+  background-color: #6d48ff;
+  color: white;
+  font-weight: bold;
+}
+
+.waitingContainer {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.rejectBox {
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  flex-direction: column;
+}

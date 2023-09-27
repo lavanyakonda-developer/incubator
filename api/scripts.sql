@@ -6,7 +6,8 @@ CREATE TABLE `startups` (
 	`dpiit_number` INT NOT NULL,
 	`industry` VARCHAR(255) NOT NULL,
 	`referral_code` VARCHAR(255) NOT NULL,
-    `status` VARCHAR(255) NOT NULL DEFAULT 'PENDING'
+    `status` VARCHAR(255) NOT NULL DEFAULT 'PENDING',
+	`reject_message` VARCHAR(255) NOT NULL DEFAULT ''
 );
 
 CREATE TABLE `incubators` (
