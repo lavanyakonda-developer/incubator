@@ -212,4 +212,19 @@ export const updateStartup = async (req, res) => {
   }
 };
 
-export const updateStartupStatus = async (req, res) => {};
+export const updateStartupStatus = async (req, res) => {
+  const { startup_id: startupId, status, reject_message } = req.body;
+  try {
+    // Update basic startup details
+    const updateStartupQuery =
+      'UPDATE startups SET status = ?, reject_message = ? WHERE id = ?';
+
+    await query(updateStartupQuery, [status, reject_message, startupId]);
+    return res.json({
+      message: 'Startup and associated data have been updated.',
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    throw error; // You can handle the error as needed
+  }
+};

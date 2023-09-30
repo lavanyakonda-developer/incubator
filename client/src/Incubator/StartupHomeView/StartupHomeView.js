@@ -24,6 +24,8 @@ const StartupHomeView = () => {
   const { startup_id } = useParams();
 
   const [selectedTab, setSelectedTab] = useState('');
+  const [rejectMessage, setRejectMessage] = useState('');
+  const [showRejectBox, setShowRejectBox] = useState(false);
   const [basicDetails, setBasicDetails] = useState('PENDING');
   const [startupInfo, setStartupInfo] = useState({});
   const navigate = useNavigate();
@@ -34,12 +36,30 @@ const StartupHomeView = () => {
     //navigate("/")
   };
 
-  const handleStatusChange = (status) => {};
+  const handleStatusChange = async ({ status, reject_message = '' }) => {
+    try {
+      const update = await makeRequest.post(`startup/update-startup-status`, {
+        startup_id,
+        status,
+        reject_message,
+      });
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+
+    navigate('/');
+    setRejectMessage('');
+  };
 
   const handleReject = () => {
-    //TODO : Show the modal, and confirm reject there, with text
-    // handleStatusChange('REJECTED')
+    setShowRejectBox(true);
   };
+
+  const handleCancel = () => {
+    setShowRejectBox(false);
+    setRejectMessage('');
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -269,7 +289,7 @@ const StartupHomeView = () => {
               customStyles={{ backgroundColor: '#ff6d6d' }}
             />
             <Button
-              onClick={() => handleStatusChange('APPROVED')}
+              onClick={() => handleStatusChange({ status: 'APPROVED' })}
               name={'Approve'}
             />
           </div>
@@ -344,7 +364,47 @@ const StartupHomeView = () => {
     }
   };
 
-  return <div className={classes.container}>{getContainer()}</div>;
+  return (
+    <div className={classes.container}>
+      <div className={classes.container}> {getContainer()} </div>
+
+      {showRejectBox && (
+        <div className={classes.modalBackground}>
+          <div className={classes.modal}>
+            <div className={classes.modalContent}>
+              <h3 style={{ padding: '8px 0px', margin: 0 }}>
+                {'Please add reason for rejection'}
+              </h3>
+              <div className={classes.signature}>
+                <textarea
+                  rows='5'
+                  id='rejectMessage'
+                  onChange={(e) => setRejectMessage(e.target.value)}
+                  style={{ height: 120, width: '100%' }}
+                />
+              </div>
+              <div className={classes.buttons}>
+                <Button
+                  name={'Cancel'}
+                  onClick={handleCancel}
+                  customStyles={{ backgroundColor: '#ff6d6d' }}
+                />
+                <Button
+                  name={'Reject'}
+                  onClick={() =>
+                    handleStatusChange({
+                      status: 'REJECTED',
+                      reject_message: rejectMessage,
+                    })
+                  }
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default StartupHomeView;

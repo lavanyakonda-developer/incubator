@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import classes from './IncubatorHome.module.css'; // Import your CSS file
 import _ from 'lodash';
-import { makeRequest } from '../../axios';
+import { makeRequest, API } from '../../axios';
 import { Button } from '../../CommonComponents';
 import { logout } from '../../auth/helper';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -138,37 +138,48 @@ const IncubatorHome = (props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {_.map(filteredStartups, (startup) => (
-                      <tr key={startup.id}>
-                        <td>
-                          <div className={classes.startupNameLogo}>
-                            <img
-                              className={classes.startupLogo}
-                              src={startup.logo}
-                            />
-                            <div
-                              className={classes.startupName}
-                              onClick={() =>
-                                handleStartupClick({
-                                  status: startup.status,
-                                  isDraft: startup.is_draft,
-                                  id: startup.id,
-                                })
-                              }
-                            >
-                              {startup.name}
+                    {_.map(filteredStartups, (startup) => {
+                      const startupLogoName = _.last(
+                        _.split(startup.logo, '/')
+                      );
+                      // Set the href attribute to the document's URL
+                      const startupLogo = !_.isEmpty(startupLogoName)
+                        ? `${API}/uploads/${startupLogoName}`
+                        : '';
+                      return (
+                        <tr key={startup.id}>
+                          <td>
+                            <div className={classes.startupNameLogo}>
+                              <div className={classes.imageContainer}>
+                                <img
+                                  className={classes.startupLogo}
+                                  src={startupLogo}
+                                />
+                              </div>
+                              <div
+                                className={classes.startupName}
+                                onClick={() =>
+                                  handleStartupClick({
+                                    status: startup.status,
+                                    isDraft: startup.is_draft,
+                                    id: startup.id,
+                                  })
+                                }
+                              >
+                                {startup.name}
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td>{startup.industry}</td>
-                        <td>
-                          {getStatus({
-                            status: startup.status,
-                            isDraft: startup.is_draft,
-                          })}
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>{startup.industry}</td>
+                          <td>
+                            {getStatus({
+                              status: startup.status,
+                              isDraft: startup.is_draft,
+                            })}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
