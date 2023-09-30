@@ -3,7 +3,7 @@ CREATE SCHEMA `incubator_saas` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE TABLE `startups` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`name` VARCHAR(255) NOT NULL,
-	`dpiit_number` INT NOT NULL,
+	`dpiit_number` VARCHAR(255) NOT NULL,
 	`industry` VARCHAR(255) NOT NULL,
 	`referral_code` VARCHAR(255) NOT NULL,
     `status` VARCHAR(255) NOT NULL DEFAULT 'PENDING',

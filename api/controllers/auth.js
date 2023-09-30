@@ -559,7 +559,7 @@ export const startupRegister = async (req, res) => {
     } else {
       // If the startup doesn't exist, create it
       const createStartupQuery =
-        'INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`, `status`) VALUES (?, ?, ?, ?)';
+        'INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`, `status`) VALUES (?, ?, ?, ?, ?)';
 
       const result = await query(createStartupQuery, [
         startup_name,

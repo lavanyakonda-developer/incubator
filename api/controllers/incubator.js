@@ -114,36 +114,32 @@ export const incubatorHomeDetails = (req, res) => {
         const draftedStartups = await Promise.all(draftedStartupDataPromises);
 
         // Get all the non-draft startups associated with the incubator
-        const findNonDraftedStartupsQuery = `
+        const allStartups = `
         SELECT s.*
         FROM startups s
         INNER JOIN incubator_startup isu ON s.id = isu.startup_id
-        WHERE isu.incubator_id = ? AND isu.is_draft = false
+        WHERE isu.incubator_id = ?
       `;
 
-        db.query(
-          findNonDraftedStartupsQuery,
-          [incubator_id],
-          (err, nonDraftedStartupData) => {
-            if (err) return res.status(500).json(err);
+        db.query(allStartups, [incubator_id], (err, nonDraftedStartupData) => {
+          if (err) return res.status(500).json(err);
 
-            // Format the response data for non-draft startups
-            const nonDraftedStartups = nonDraftedStartupData;
+          // Format the response data for non-draft startups
+          const nonDraftedStartups = nonDraftedStartupData;
 
-            // Combine drafted and non-draft startups in the response
-            const response = {
-              incubator: {
-                id: incubator.id,
-                name: incubator.name,
-                logo: incubator.logo,
-              },
-              draftedStartups,
-              startups: nonDraftedStartups,
-            };
+          // Combine drafted and non-draft startups in the response
+          const response = {
+            incubator: {
+              id: incubator.id,
+              name: incubator.name,
+              logo: incubator.logo,
+            },
+            draftedStartups,
+            startups: nonDraftedStartups,
+          };
 
-            return res.json(response);
-          }
-        );
+          return res.json(response);
+        });
       }
     );
   });
