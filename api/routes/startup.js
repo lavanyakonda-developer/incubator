@@ -3,6 +3,7 @@ import {
   startUpDetails,
   updateStartup,
   startUpStatus,
+  updateStartupStatus,
 } from '../controllers/startup.js';
 
 const router = express.Router();
@@ -10,5 +11,6 @@ const router = express.Router();
 router.get('/startup-status', startUpStatus);
 router.get('/startup-details', startUpDetails);
 router.post('/update-startup', updateStartup);
+router.post('/update-startup-status', updateStartupStatus);
 
 export default router;

@@ -87,7 +87,7 @@ export const questions = [
       {
         uid: 'mobileAppLink',
         question:
-          '13. If applicable, provide a link to your startup’s phone_number application',
+          '13. If applicable, provide a link to your startup’s mobile application',
         answer_type: 'text',
       },
       {

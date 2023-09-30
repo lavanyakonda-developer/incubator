@@ -211,3 +211,5 @@ export const updateStartup = async (req, res) => {
     throw error; // You can handle the error as needed
   }
 };
+
+export const updateStartupStatus = async (req, res) => {};

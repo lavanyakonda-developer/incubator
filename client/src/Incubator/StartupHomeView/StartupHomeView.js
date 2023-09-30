@@ -150,20 +150,23 @@ const StartupHomeView = () => {
                 onClick={() => handleDownload(document)}
               />
             </div>
-            {!skipDetails && (
-              <div className={classes.cardDetails}>
-                <div>
-                  <strong>Name:</strong> {document?.name}
-                </div>
+
+            <div className={classes.cardDetails}>
+              <div>
+                <strong>Name:</strong> {document?.name}
+              </div>
+              {!skipDetails && (
                 <div>
                   <strong>Size:</strong> {document?.size}
                 </div>
+              )}
+              {!skipDetails && (
                 <div>
                   <strong>Signature Required:</strong>{' '}
                   {document?.isSignatureRequired ? 'Yes' : 'No'}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         ))}
       </div>
@@ -209,7 +212,7 @@ const StartupHomeView = () => {
 
     return (
       <div className={classes.questionContainer}>
-        <div className={classes.questionText}>{`${question.question} :`}</div>
+        <div className={classes.question}>{`${question.question} :`}</div>
         <div>{renderAnswerBox(question, metaData)}</div>
       </div>
     );
@@ -220,7 +223,7 @@ const StartupHomeView = () => {
       return (
         <div
           key={question.uid}
-          className={classes.question}
+          className={classes.questionBox}
           style={section.style}
         >
           {renderQuestionBox(
@@ -272,29 +275,29 @@ const StartupHomeView = () => {
           </div>
         </div>
         <div className={classes.innerContainer}>
-          <h2>Details Submitted</h2>
-          <div className={classes.basicDetails}>
-            <div className={classes.detailsContainer}>
-              <div className={classes.info}>
-                <label>Startup Name:</label>
-                <span className={classes.answer}>
-                  {_.get(startupInfo, 'basicDetails.name', '')}
-                </span>
-              </div>
-              <div className={classes.info}>
-                <label>Dpiit Number:</label>
-                <span className={classes.answer}>
-                  {_.get(startupInfo, 'basicDetails.dpiitNumber', '')}
-                </span>
-              </div>
-              <div className={classes.info}>
-                <label>Industry Segment:</label>
-                <span className={classes.answer}>
-                  {_.get(startupInfo, 'basicDetails.industrySegment', '')}
-                </span>
-              </div>
+          <h2 className={classes.detailsHeader}>Details Submitted</h2>
+
+          <div className={classes.detailsContainer}>
+            <div className={classes.info}>
+              <label className={classes.question}>Startup Name:</label>
+              <span className={classes.answer}>
+                {_.get(startupInfo, 'basicDetails.name', '')}
+              </span>
+            </div>
+            <div className={classes.info}>
+              <label className={classes.question}>Dpiit Number:</label>
+              <span className={classes.answer}>
+                {_.get(startupInfo, 'basicDetails.dpiitNumber', '')}
+              </span>
+            </div>
+            <div className={classes.info}>
+              <label className={classes.question}>Industry Segment:</label>
+              <span className={classes.answer}>
+                {_.get(startupInfo, 'basicDetails.industrySegment', '')}
+              </span>
             </div>
           </div>
+
           <div className={classes.documentsContainer}>
             <div className={classes.heading}> Documents Uploaded</div>
 
@@ -314,7 +317,7 @@ const StartupHomeView = () => {
             <div className={classes.questionnaireSections}>
               {_.map(questions, (section, index) => (
                 <div key={index} className={classes.section}>
-                  <h3>{section.section}</h3>
+                  <h4>{section.section}</h4>
                   {renderQuestions(section)}
                 </div>
               ))}
