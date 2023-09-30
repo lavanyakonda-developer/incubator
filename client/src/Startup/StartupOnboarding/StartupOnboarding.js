@@ -55,7 +55,12 @@ const StartupOnboarding = () => {
         if (response.status === 200) {
           const data = response.data;
 
-          if (_.get(data, 'basicDetails.status', 'PENDING') != 'PENDING') {
+          if (
+            !_.includes(
+              ['PENDING', 'REJECTED'],
+              _.get(data, 'basicDetails.status', 'PENDING')
+            )
+          ) {
             navigate(`/startup/${startup_id}/home`);
           }
 

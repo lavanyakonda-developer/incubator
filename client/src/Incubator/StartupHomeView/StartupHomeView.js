@@ -6,6 +6,7 @@ import { Button } from '../../CommonComponents';
 import classes from './StartupHomeView.module.css';
 import { FaDownload } from 'react-icons/fa';
 import { questions } from '../RegisterStartup/helper.js';
+import StartupView from '../../Startup/StartupHome/StartupView';
 
 // TODO : Placeholder image URLs for doc and pdf
 const placeholderDocImage =
@@ -13,28 +14,14 @@ const placeholderDocImage =
 const placeholderPdfImage =
   'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
 
-const tabs = [
-  //{ label: 'Home Dashboard', key: 'homeDashboard' },
-  // { label: 'Document Repository', key: 'documentRepository' },
-  // { label: 'Onboarding Hub', key: 'onboardingHub' },
-  // { label: 'Communication Tab', key: 'communicationTab' },
-];
-
 const StartupHomeView = () => {
   const { startup_id } = useParams();
 
-  const [selectedTab, setSelectedTab] = useState('');
   const [rejectMessage, setRejectMessage] = useState('');
   const [showRejectBox, setShowRejectBox] = useState(false);
   const [basicDetails, setBasicDetails] = useState('PENDING');
   const [startupInfo, setStartupInfo] = useState({});
   const navigate = useNavigate();
-
-  const handleTabClick = (tabName) => {
-    setSelectedTab(tabName);
-
-    //navigate("/")
-  };
 
   const handleStatusChange = async ({ status, reject_message = '' }) => {
     try {
@@ -360,7 +347,7 @@ const StartupHomeView = () => {
       case 'SUBMITTED':
         return <ReviewStartup />;
       case 'APPROVED':
-        return <RightComponent />;
+        return <StartupView />;
     }
   };
 

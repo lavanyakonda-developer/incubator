@@ -3,27 +3,16 @@ import { useNavigate, useParams } from 'react-router-dom';
 import _ from 'lodash';
 import { Button } from '../../CommonComponents';
 import classes from './StartupHome.module.css';
-import { makeRequest } from '../../axios';
+import { makeRequest, API } from '../../axios';
 import { FaCheckCircle } from 'react-icons/fa';
 
-const tabs = [
-  //{ label: 'Home Dashboard', key: 'homeDashboard' },
-  // { label: 'Document Repository', key: 'documentRepository' },
-  // { label: 'Onboarding Hub', key: 'onboardingHub' },
-  // { label: 'Communication Tab', key: 'communicationTab' },
-];
+import StartupView from './StartupView';
 
 const StartupHome = () => {
   const { startup_id } = useParams();
 
-  const [selectedTab, setSelectedTab] = useState('');
   const [basicDetails, setBasicDetails] = useState('PENDING');
-  const [startupInfo, setStartupInfo] = useState({});
   const navigate = useNavigate();
-
-  const handleTabClick = (tabName) => {
-    setSelectedTab(tabName);
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,20 +27,6 @@ const StartupHome = () => {
 
         if (status == 'PENDING') {
           navigate(`/startup/${startup_id}/startup-onboarding`);
-        }
-
-        if (!_.includes(['SUBMITTED', 'PENDING', 'REJECTED'], status)) {
-          const response = await makeRequest.get(
-            `startup/startup-details?startup_id=${startup_id}`
-          );
-
-          if (response.status === 200) {
-            const data = response.data;
-
-            setStartupInfo(data);
-          } else {
-            console.error('Error fetching data:', response.statusText);
-          }
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -95,55 +70,18 @@ const StartupHome = () => {
     );
   };
 
-  const RightComponent = () => {};
-
-  const getRightContainer = () => {
+  const getContainer = () => {
     switch (basicDetails?.status) {
       case 'SUBMITTED':
         return <WaitingForApprovalComponent />;
       case 'REJECTED':
         return <RejectedBox />;
       default:
-        return <RightComponent />;
+        return <StartupView />;
     }
   };
 
-  const showTabs = !_.includes(['SUBMITTED', 'REJECTED'], basicDetails?.status);
-
-  return (
-    <div className={classes.container}>
-      {showTabs && (
-        <div className={classes.leftContainer}>
-          <div className={classes.startupDetails}>
-            <img
-              className={classes.logo}
-              src={_.get(basicDetails, 'logo', '')}
-            />
-            <div className={classes.name}>
-              {_.get(basicDetails, 'name', '')}
-            </div>
-          </div>
-
-          <div className={classes.tabMenu}>
-            {_.map(tabs, (tab) => {
-              return (
-                <div
-                  className={`${classes.tab} ${
-                    selectedTab === tab.key ? classes.activeTab : ''
-                  }`}
-                  onClick={() => handleTabClick(tab.key)}
-                  key={tab.key}
-                >
-                  {tab.label}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-      <div className={classes.rightContainer}>{getRightContainer()}</div>
-    </div>
-  );
+  return <div className={classes.container}>{getContainer()}</div>;
 };
 
 export default StartupHome;
