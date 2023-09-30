@@ -528,7 +528,7 @@ export const startupRegister = async (req, res) => {
               answer_type,
               question_uid,
               JSON.stringify(meta_data || null),
-              '', // You can set the answer as an empty string by default
+              JSON.stringify(null), // You can set the answer as an empty string by default
             ];
 
             await query(createQuestionQuery, values);
@@ -666,7 +666,7 @@ export const startupRegister = async (req, res) => {
             answer_type,
             question_uid,
             JSON.stringify(meta_data || null),
-            '', // You can set the answer as an empty string by default
+            JSON.stringify(null), // You can set the answer as an empty string by default
           ];
 
           const result = await query(createQuestionQuery, values);
@@ -690,7 +690,7 @@ export const startupRegister = async (req, res) => {
                   sub_answer_type,
                   sub_question_uid,
                   JSON.stringify(sub_meta_data || null),
-                  '', // You can set the answer as an empty string by default
+                  JSON.stringify(null), // You can set the answer as an empty string by default
                   result.insertId, // The ID of the parent question
                 ];
 

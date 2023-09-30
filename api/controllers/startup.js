@@ -74,7 +74,7 @@ export const startUpDetails = (req, res) => {
       question: question?.question,
       answer_type: question?.answer_type,
       metaData: question?.meta_data,
-      answer: question?.answer,
+      answer: JSON.parse(question?.answer),
     }));
 
     const founderName = _.get(coFounders, '0.name', '');
@@ -189,7 +189,11 @@ export const updateStartup = async (req, res) => {
       const updateQuestionQuery =
         'UPDATE questionnaire SET answer = ? WHERE startup_id = ? AND question_uid = ?';
 
-      return query(updateQuestionQuery, [answer, startupId, uid]);
+      return query(updateQuestionQuery, [
+        JSON.stringify(answer),
+        startupId,
+        uid,
+      ]);
     });
 
     // Combine all promises and execute them
