@@ -35,10 +35,7 @@ const BasicDetails = ({
 
   // Function to handle input changes in the basic details section
   const handleBasicDetailsChange = (field, value) => {
-    if (
-      (field === 'dpiitNumber' || field === 'founderMobile') &&
-      !/^\d+$/.test(value)
-    ) {
+    if (field === 'founderMobile' && !/^\d+$/.test(value)) {
       return;
     }
 

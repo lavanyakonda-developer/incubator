@@ -86,7 +86,23 @@ const IncubatorHome = (props) => {
     }
   };
 
-  console.log('filteredStartups>>>>>>>>>', filteredStartups);
+  const handleStartupClick = ({ status, isDraft, id }) => {
+    if (isDraft) {
+      navigate(`/incubator/${incubatorId}/home/register-startup/${id}`);
+      return;
+    } else {
+      switch (status) {
+        case 'PENDING':
+        case 'SUBMITTED':
+        case 'APPROVED':
+        case 'REJECTED':
+          navigate(`/incubator/${incubatorId}/home/startup-home/${id}`);
+
+        default:
+          return;
+      }
+    }
+  };
 
   const getRightComponent = () => {
     switch (selectedTab) {
@@ -130,7 +146,18 @@ const IncubatorHome = (props) => {
                               className={classes.startupLogo}
                               src={startup.logo}
                             />
-                            <div>{startup.name}</div>
+                            <div
+                              className={classes.startupName}
+                              onClick={() =>
+                                handleStartupClick({
+                                  status: startup.status,
+                                  isDraft: startup.is_draft,
+                                  id: startup.id,
+                                })
+                              }
+                            >
+                              {startup.name}
+                            </div>
                           </div>
                         </td>
                         <td>{startup.industry}</td>

@@ -8,10 +8,6 @@ const BasicDetails = ({ startupInfo, onNext, setStartupInfo }) => {
 
   // Function to handle input changes in the basic details section
   const handleBasicDetailsChange = (field, value) => {
-    if (field === 'dpiitNumber' && !/^\d+$/.test(value)) {
-      return;
-    }
-
     setStartupInfo({
       ...startupInfo,
       basicDetails: {

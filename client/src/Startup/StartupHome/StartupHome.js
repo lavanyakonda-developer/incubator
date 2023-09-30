@@ -34,7 +34,6 @@ const StartupHome = () => {
 
         const status = statusResponse?.data?.status;
 
-        console.log('status>>>>>>>>>>>>', statusResponse, status);
         setBasicDetails(statusResponse?.data);
 
         if (status == 'PENDING') {

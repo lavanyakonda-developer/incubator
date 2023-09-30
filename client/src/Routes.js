@@ -1,7 +1,12 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App';
-import { IncubatorLogin, IncubatorHome, RegisterStartup } from './Incubator';
+import {
+  IncubatorLogin,
+  IncubatorHome,
+  RegisterStartup,
+  StartupHomeView,
+} from './Incubator';
 import {
   StartupLogin,
   StartupFounderRegister,
@@ -34,6 +39,11 @@ const AppRoutes = () => {
         />
 
         <Route
+          path={`/incubator/:incubator_id/home/startup-home/:startup_id`}
+          element={<StartupHomeView incubatorId={user?.incubator_id} />}
+        />
+
+        <Route
           path='/incubator-login'
           element={
             <Navigate
@@ -46,6 +56,7 @@ const AppRoutes = () => {
             />
           }
         />
+
         {/* Startup Routes */}
         <Route path='/startup-login' element={<StartupLogin />} />
         <Route

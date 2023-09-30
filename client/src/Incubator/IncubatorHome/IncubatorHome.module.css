@@ -165,3 +165,11 @@ ul {
   position: absolute;
   bottom: 0;
 }
+
+.startupName {
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
