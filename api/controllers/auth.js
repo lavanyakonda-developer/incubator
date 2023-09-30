@@ -382,7 +382,7 @@ export const startupRegister = async (req, res) => {
             } = document;
 
             const createDocumentQuery =
-              'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+              'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
             const values = [
               startup_id,
               document_name,
@@ -393,6 +393,7 @@ export const startupRegister = async (req, res) => {
               false,
               false, // Set is_deleted to false by default
               false, // Set is_approved to false by default
+              true,
             ];
 
             await query(createDocumentQuery, values);
@@ -444,7 +445,7 @@ export const startupRegister = async (req, res) => {
             if (!existingRequestedDocument) {
               // Requested document does not exist, create a new requested document
               const createRequestedDocumentQuery =
-                'INSERT INTO startup_documents (`startup_id`, `document_name`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`) VALUES (?, ?, ?, ?, ?, ?)';
+                'INSERT INTO startup_documents (`startup_id`, `document_name`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?)';
               const values = [
                 startup_id,
                 documentName,
@@ -452,6 +453,7 @@ export const startupRegister = async (req, res) => {
                 true,
                 false,
                 false,
+                true,
               ];
 
               await query(createRequestedDocumentQuery, values);
@@ -607,7 +609,7 @@ export const startupRegister = async (req, res) => {
           } = document;
 
           const createDocumentQuery =
-            'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
           const values = [
             startup_id,
             document_name,
@@ -618,6 +620,7 @@ export const startupRegister = async (req, res) => {
             false,
             false, // Set is_deleted to false by default
             false, // Set is_approved to false by default'
+            true,
           ];
 
           await query(createDocumentQuery, values);
@@ -631,7 +634,7 @@ export const startupRegister = async (req, res) => {
           if (documentName) {
             // Only insert non-empty document names
             const createRequestedDocumentQuery =
-              'INSERT INTO startup_documents (`startup_id`, `document_name`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`) VALUES (?, ?, ?, ?, ?, ?)';
+              'INSERT INTO startup_documents (`startup_id`, `document_name`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?)';
             const values = [
               startup_id,
               documentName,
@@ -639,6 +642,7 @@ export const startupRegister = async (req, res) => {
               true,
               false,
               false,
+              true,
             ];
 
             await query(createRequestedDocumentQuery, values);
@@ -655,7 +659,7 @@ export const startupRegister = async (req, res) => {
             answer_type,
             uid: question_uid,
             meta_data,
-            sub_questions,
+            subQuestions,
           } = question;
 
           const createQuestionQuery =
@@ -671,9 +675,9 @@ export const startupRegister = async (req, res) => {
 
           const result = await query(createQuestionQuery, values);
 
-          if (sub_questions && sub_questions.length) {
+          if (subQuestions && subQuestions.length) {
             // If there are subquestions, recursively insert them
-            const subQuestionInsertPromises = sub_questions.map(
+            const subQuestionInsertPromises = subQuestions.map(
               async (subQuestion) => {
                 const {
                   question: sub_question_text,

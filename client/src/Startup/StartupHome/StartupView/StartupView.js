@@ -7,15 +7,31 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../../CommonComponents';
 
 const tabs = [
-  //{ label: 'Home Dashboard', key: 'homeDashboard' },
-  // { label: 'Document Repository', key: 'documentRepository' },
-  // { label: 'Onboarding Hub', key: 'onboardingHub' },
-  // { label: 'Communication Tab', key: 'communicationTab' },
+  //{ label: 'Home', key: 'homeDashboard' },
+  { label: 'Startup Profile', key: 'startupProfile' },
+  {
+    label: 'Documents',
+    key: 'documentRepository',
+    subTabs: [
+      { key: 'onboarding', label: 'Onboarding documents' },
+      { key: 'supplementary', label: 'Supplementary documents' },
+    ],
+  },
+  {
+    label: 'Reporting Tab',
+    key: 'reportingTab',
+    subTabs: [
+      { key: 'businessUpdates ', label: 'Business updates ' },
+      { key: 'kpi', label: 'Key performance indicators' },
+      { key: 'mie', label: 'Mandatory Information exchange' },
+    ],
+  },
+  //   { label: 'Communication Tab', key: 'communicationTab' },
 ];
 
 const StartupView = () => {
   const { startup_id } = useParams();
-  const [selectedTab, setSelectedTab] = useState('');
+  const [selectedTab, setSelectedTab] = useState('startupProfile');
   const [startupInfo, setStartupInfo] = useState({});
   const navigate = useNavigate();
 
@@ -58,6 +74,16 @@ const StartupView = () => {
   const userLogout = () => {
     logout();
     navigate('/home-page');
+  };
+
+  const getRightComponent = () => {
+    switch (selectedTab) {
+      case 'startupProfile':
+      case 'documentRepository':
+      case 'reportingTab':
+      default:
+        return null;
+    }
   };
 
   return (
