@@ -67,10 +67,11 @@ const StartupHome = () => {
     return (
       <div className={classes.waitingContainer}>
         <FaCheckCircle style={{ height: 50, width: 50, color: 'green' }} />
-
-        {
-          'Hello Team You have successfully submitted the details to the Incubator, We are waiting for their approval.'
-        }
+        <span className={classes.text}>
+          {
+            'Hello Team You have successfully submitted the details to the Incubator, We are waiting for their approval.'
+          }
+        </span>
       </div>
     );
   };
@@ -78,11 +79,13 @@ const StartupHome = () => {
   const RejectedBox = () => {
     return (
       <div className={classes.rejectBox}>
-        {`Hello Team Your details have been rejected by the Incubator with the following message: ${_.get(
-          basicDetails,
-          'reject_message',
-          ''
-        )}`}
+        <span className={classes.text}>
+          {`Hello Team Your details have been rejected by the Incubator with the following message: ${_.get(
+            basicDetails,
+            'reject_message',
+            ''
+          )}`}
+        </span>
         <Button
           shouldRedirect={true}
           redirectUrl={`/startup/${startup_id}/startup-onboarding`}

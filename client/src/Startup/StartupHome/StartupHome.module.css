@@ -80,3 +80,10 @@
   gap: 24px;
   flex-direction: column;
 }
+
+.text {
+  display: flex;
+  max-width: 50%;
+  justify-content: center;
+  align-items: center;
+}
