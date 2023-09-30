@@ -13,6 +13,8 @@ import { isAuthenticated } from './auth/helper';
 const AppRoutes = () => {
   const { user, token } = isAuthenticated();
 
+  console.log('token', user, token);
+
   return (
     <BrowserRouter>
       <Routes>

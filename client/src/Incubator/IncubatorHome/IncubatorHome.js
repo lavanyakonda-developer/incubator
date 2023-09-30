@@ -23,7 +23,6 @@ const IncubatorHome = (props) => {
   const [selectedTab, setSelectedTab] = useState('homeDashboard');
   const [searchTerm, setSearchTerm] = useState('');
   const [startups, setStartups] = useState([]);
-  const [draftedStartups, setDraftStartups] = useState(null);
 
   const [incubatorDetails, setIncubatorDetails] = useState({
     id: incubatorId,
@@ -43,7 +42,6 @@ const IncubatorHome = (props) => {
 
           setIncubatorDetails(data.incubator);
           setStartups(data.startups);
-          setDraftStartups(data.draftedStartups);
         } else {
           console.error('Error fetching data:', response.statusText);
         }
@@ -71,6 +69,25 @@ const IncubatorHome = (props) => {
       : true
   );
 
+  const getStatus = ({ status, isDraft }) => {
+    if (isDraft) {
+      return 'Drafted by you';
+    } else {
+      switch (status) {
+        case 'PENDING':
+          return 'Pending from startup';
+        case 'SUBMITTED':
+          return 'Waiting for Approval';
+        case 'APPROVED':
+          return 'Approved';
+        case 'REJECTED':
+          return 'Rejected by you';
+      }
+    }
+  };
+
+  console.log('filteredStartups>>>>>>>>>', filteredStartups);
+
   const getRightComponent = () => {
     switch (selectedTab) {
       case 'homeDashboard':
@@ -87,19 +104,8 @@ const IncubatorHome = (props) => {
                 />
                 <Button
                   shouldRedirect={true}
-                  redirectUrl={
-                    _.isEmpty(draftedStartups)
-                      ? `/incubator/${incubatorId}/home/register-startup`
-                      : `/incubator/${incubatorId}/home/register-startup/${_.get(
-                          draftedStartups,
-                          '0.basicDetails.id'
-                        )}`
-                  }
-                  name={
-                    _.isEmpty(draftedStartups)
-                      ? 'Add Startup'
-                      : 'Resume startup'
-                  }
+                  redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
+                  name={'Add Startup'}
                   customStyles={buttonStyle}
                 />
               </div>
@@ -112,6 +118,7 @@ const IncubatorHome = (props) => {
                     <tr key={'header'}>
                       <th>Startup Name</th>
                       <th>Sector</th>
+                      <th>Status</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -127,6 +134,12 @@ const IncubatorHome = (props) => {
                           </div>
                         </td>
                         <td>{startup.industry}</td>
+                        <td>
+                          {getStatus({
+                            status: startup.status,
+                            isDraft: startup.is_draft,
+                          })}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
