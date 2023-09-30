@@ -38,7 +38,13 @@ const StartupView = () => {
   const { basicDetails } = startupInfo || {};
 
   const handleTabClick = (tabName) => {
-    setSelectedTab(tabName);
+    const tab = _.find(tabs, { key: tabName });
+    if (!_.isEmpty(tab?.subTabs)) {
+      setSelectedTab(_.first(tab?.subTabs)?.key);
+    }
+    {
+      setSelectedTab(tabName);
+    }
   };
 
   useEffect(() => {
@@ -96,6 +102,38 @@ const StartupView = () => {
 
         <div className={classes.tabMenu}>
           {_.map(tabs, (tab) => {
+            if (
+              (!_.isEmpty(tab.subTabs) && selectedTab === tab.key) ||
+              _.some(tab.subTabs, { key: selectedTab })
+            ) {
+              return (
+                <>
+                  <div
+                    className={`${classes.tab} ${
+                      selectedTab === tab.key ? classes.activeTab : ''
+                    }`}
+                    onClick={() => handleTabClick(tab.key)}
+                    key={tab.key}
+                  >
+                    {tab.label}
+                  </div>
+                  {_.map(tab.subTabs, (task) => {
+                    return (
+                      <div
+                        className={`${classes.tab} ${
+                          selectedTab === task.key ? classes.activeTab : ''
+                        }`}
+                        style={{ paddingLeft: 24 }}
+                        onClick={() => handleTabClick(task.key)}
+                        key={task.key}
+                      >
+                        {task.label}
+                      </div>
+                    );
+                  })}
+                </>
+              );
+            }
             return (
               <div
                 className={`${classes.tab} ${
