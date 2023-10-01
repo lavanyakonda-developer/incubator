@@ -162,7 +162,6 @@ const StartupView = () => {
       }
       case 'documentRepository':
       case 'onboarding':
-        console.log(startupInfo);
         return (
           <>
             <h3>Onboarding Documents</h3>

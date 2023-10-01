@@ -244,6 +244,7 @@ export const getStartupSuppDocs = async (req, res) => {
   ]);
 
   const pendingDocuments = _.map(pendingDocumentsData, (document) => ({
+    id: document?.id,
     name: document?.document_name,
     size: document?.document_size,
     format: document?.document_format,
@@ -252,14 +253,13 @@ export const getStartupSuppDocs = async (req, res) => {
   }));
 
   const approvedDocuments = _.map(approvedDocumentsData, (document) => ({
+    id: document?.id,
     name: document?.document_name,
     size: document?.document_size,
     format: document?.document_format,
     isSignatureRequired: document?.is_signature_required,
     url: document?.document_url,
   }));
-
-  console.log(pendingDocuments, approvedDocuments);
 
   return res.json({
     pendingDocuments,
@@ -268,7 +268,7 @@ export const getStartupSuppDocs = async (req, res) => {
 };
 
 export const updateDocumentApproval = async (req, res) => {
-  const { documentId } = req.body;
+  const { documentId, startup_id } = req.body;
 
   try {
     const updateStartupQuery =
@@ -276,11 +276,41 @@ export const updateDocumentApproval = async (req, res) => {
 
     await query(updateStartupQuery, [documentId]);
 
+    const fetchPendingDocuments =
+      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND is_approved = false';
+
+    const fetchApprovedDocuments =
+      'SELECT * FROM startup_documents WHERE startup_id = ? AND  is_onboarding = false AND is_approved = true';
+
+    const [pendingDocumentsData, approvedDocumentsData] = await Promise.all([
+      query(fetchPendingDocuments, [startup_id]),
+      query(fetchApprovedDocuments, [startup_id]),
+    ]);
+
+    const pendingDocuments = _.map(pendingDocumentsData, (document) => ({
+      id: document?.id,
+      name: document?.document_name,
+      size: document?.document_size,
+      format: document?.document_format,
+      isSignatureRequired: document?.is_signature_required,
+      url: document?.document_url,
+    }));
+
+    const approvedDocuments = _.map(approvedDocumentsData, (document) => ({
+      id: document?.id,
+      name: document?.document_name,
+      size: document?.document_size,
+      format: document?.document_format,
+      isSignatureRequired: document?.is_signature_required,
+      url: document?.document_url,
+    }));
+
     return res.json({
-      message: 'Successfully updated',
+      pendingDocuments,
+      approvedDocuments,
     });
-  } catch {
-    return res.send({ message: 'Somme error' });
+  } catch (error) {
+    return res.send({ message: error });
   }
 };
 

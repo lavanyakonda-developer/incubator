@@ -2,6 +2,7 @@ import _ from 'lodash';
 import classes from './StartupHomeView.module.css';
 import { FaDownload } from 'react-icons/fa';
 import { API } from '../../axios';
+import { Button } from '../../CommonComponents';
 
 const placeholderDocImage =
   'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
@@ -30,7 +31,12 @@ export const handleDownload = (documentData) => {
   }
 };
 
-export const DocumentsContainer = ({ documents, skipDetails = false }) => {
+export const DocumentsContainer = ({
+  documents,
+  skipDetails = false,
+  showApproveButton = false,
+  onClickApprove,
+}) => {
   if (!documents || _.isEmpty(documents)) {
     return 'No documents uploaded';
   }
@@ -71,6 +77,12 @@ export const DocumentsContainer = ({ documents, skipDetails = false }) => {
                 <strong>Signature Required:</strong>{' '}
                 {document?.isSignatureRequired ? 'Yes' : 'No'}
               </div>
+            )}
+            {showApproveButton && (
+              <Button
+                name={'Approve'}
+                onClick={() => onClickApprove(document?.id)}
+              />
             )}
           </div>
         </div>

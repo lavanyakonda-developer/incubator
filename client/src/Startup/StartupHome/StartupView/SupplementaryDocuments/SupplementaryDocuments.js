@@ -136,6 +136,30 @@ const SupplementaryDocuments = () => {
     }
   };
 
+  const onClickApprove = async (id) => {
+    try {
+      const response = await makeRequest.post(
+        `startup/update-documents-approved`,
+        {
+          startup_id: startupId,
+          documentId: id,
+        }
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+
+        console.log('data>>>>>>>>>>>>>>', data);
+        setPendingDocuments(data.pendingDocuments);
+        setApprovedDocuments(data.approvedDocuments);
+      } else {
+        console.error('Error fetching data:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <div className={classes.container}>
       <div className={classes.documentsContainer}>
@@ -154,7 +178,11 @@ const SupplementaryDocuments = () => {
             </label>
           </div>
         </div>
-        <DocumentsContainer documents={pendingDocuments} />
+        <DocumentsContainer
+          documents={pendingDocuments}
+          showApproveButton={!_.isEmpty(incubatorId)}
+          onClickApprove={onClickApprove}
+        />
       </div>
       <div className={classes.documentsContainer}>
         <h3>Approved Documents</h3>
