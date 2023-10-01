@@ -40,9 +40,11 @@ const StartupView = () => {
   const handleTabClick = (tabName) => {
     const tab = _.find(tabs, { key: tabName });
     if (!_.isEmpty(tab?.subTabs)) {
+      if (_.some(tab?.subTabs, { key: selectedTab })) {
+        return;
+      }
       setSelectedTab(_.first(tab?.subTabs)?.key);
-    }
-    {
+    } else {
       setSelectedTab(tabName);
     }
   };
