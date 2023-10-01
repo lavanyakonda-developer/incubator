@@ -112,7 +112,6 @@ export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
       );
 
     case 'basicInfoField':
-      console.log(startupInfo);
       return _.get(
         startupInfo?.basicDetails,
         `${question.field_name}`,
@@ -120,26 +119,87 @@ export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
       );
 
     case 'founderDetails':
-      return;
+      return (
+        <>
+          <div className={classes.questionContainer}>
+            <div className={classes.question}>{`Founder Name:`}</div>
+            <span>{_.get(startupInfo, 'basicDetails.founderName')}</span>
+          </div>
+          <div className={classes.questionContainer}>
+            <div className={classes.question}>{`Founder Role:`}</div>
+            <span>{_.get(startupInfo, 'basicDetails.founderRole')}</span>
+          </div>
+          <div className={classes.questionContainer}>
+            <div className={classes.question}>{`Founder Email:`}</div>
+            <span>{_.get(startupInfo, 'basicDetails.founderEmail')}</span>
+          </div>
+          <div className={classes.questionContainer}>
+            <div className={classes.question}>{`Founder Mobile:`}</div>
+            <span>{_.get(startupInfo, 'basicDetails.founderMobile')}</span>
+          </div>
+          {_.map(
+            _.get(startupInfo, 'basicDetails.coFounders'),
+            (founder, index) => {
+              return (
+                <>
+                  <div className={classes.questionContainer}>
+                    <div className={classes.question}>{`Co-Founder(${
+                      index + 1
+                    }) Name:`}</div>
+                    <span>{_.get(founder, 'name')}</span>
+                  </div>
+                  <div className={classes.questionContainer}>
+                    <div className={classes.question}>{`Co-Founder(${
+                      index + 1
+                    }) Role:`}</div>
+                    <span>{_.get(founder, 'designation')}</span>
+                  </div>
+                  <div className={classes.questionContainer}>
+                    <div className={classes.question}>{`Co-Founder(${
+                      index + 1
+                    }) Email:`}</div>
+                    <span>{_.get(founder, 'email')}</span>
+                  </div>
+                  <div className={classes.questionContainer}>
+                    <div className={classes.question}>{`Co-Founder(${
+                      index + 1
+                    }) Mobile:`}</div>
+                    <span>{_.get(founder, 'phone_number')}</span>
+                  </div>
+                </>
+              );
+            }
+          )}
+        </>
+      );
   }
 };
 
 export const renderQuestionBox = ({ startupInfo, question }) => {
-  if (_.isEmpty(question) || _.isEmpty(question?.question)) return;
+  const updatedQuestion = {
+    ..._.find(startupInfo?.questionnaire, {
+      uid: question?.uid,
+    }),
+    ...question,
+    question: _.isEmpty(question?.question)
+      ? _.find(startupInfo?.questionnaire, {
+          uid: question?.uid,
+        })?.question
+      : question?.question,
+  };
+
+  if (_.isEmpty(updatedQuestion) || _.isEmpty(updatedQuestion?.question)) {
+    return;
+  }
 
   return (
     <div className={classes.questionContainer}>
-      <div className={classes.question}>{`${question?.question} :`}</div>
+      <div className={classes.question}>{`${updatedQuestion?.question} :`}</div>
       <div>
         {renderAnswerBox({
           startupInfo,
-          question: {
-            ..._.find(startupInfo?.questionnaire, {
-              uid: question?.uid,
-            }),
-            ...question,
-          },
-          metaData: question?.meta_data,
+          question: updatedQuestion,
+          metaData: updatedQuestion?.meta_data,
         })}
       </div>
     </div>
@@ -164,7 +224,7 @@ export const renderQuestions = ({ startupInfo, section }) => {
               <>
                 {renderQuestionBox({
                   startupInfo,
-                  question,
+                  question: item,
                 })}
               </>
             );

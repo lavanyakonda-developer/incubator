@@ -39,7 +39,6 @@ const Questionnaire = ({
 
     if (question) {
       // Remove the document at the specified index
-      console.log(' question.answer', question.answer);
       question.answer.splice(documentIndex, 1);
 
       // Update the questionnaire state with the modified question
@@ -87,7 +86,6 @@ const Questionnaire = ({
 
       // Update the 'answer' property of the question with the new documents
 
-      console.log('newDocuments', newDocuments);
       question.answer = newDocuments;
 
       // Update the questionnaire state with the modified question
