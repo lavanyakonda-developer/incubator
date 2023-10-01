@@ -228,3 +228,58 @@ export const updateStartupStatus = async (req, res) => {
     throw error; // You can handle the error as needed
   }
 };
+
+export const getStartupSuppDocs = async (req, res) => {
+  const { startup_id: startupId } = req.body;
+  // Fetch existing requested documents
+  const fetchPendingDocuments =
+    'SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND is_approved = false';
+
+  const fetchApprovedDocuments =
+    'SELECT * FROM startup_documents WHERE startup_id = ? AND  is_onboarding = false AND is_approved = true';
+
+  const [pendingDocumentsData, approvedDocumentsData] = await Promise.all([
+    query(fetchPendingDocuments, [startupId]),
+    query(fetchApprovedDocuments, [startupId]),
+  ]);
+
+  const pendingDocuments = _.map(pendingDocumentsData, (document) => ({
+    name: document?.document_name,
+    size: document?.document_size,
+    format: document?.document_format,
+    isSignatureRequired: document?.is_signature_required,
+    url: document?.document_url,
+  }));
+
+  const approvedDocuments = _.map(approvedDocumentsData, (document) => ({
+    name: document?.document_name,
+    size: document?.document_size,
+    format: document?.document_format,
+    isSignatureRequired: document?.is_signature_required,
+    url: document?.document_url,
+  }));
+
+  console.log(pendingDocuments, approvedDocuments);
+
+  return res.json({
+    pendingDocuments,
+    approvedDocuments,
+  });
+};
+
+export const updateDocumentApproval = async (req, res) => {
+  const { documentId } = req.body;
+
+  try {
+    const updateStartupQuery =
+      'UPDATE startup_documents SET is_approved = true WHERE id = ?';
+
+    await query(updateStartupQuery, [documentId]);
+
+    return res.json({
+      message: 'Successfully updated',
+    });
+  } catch {
+    return res.send({ message: 'Somme error' });
+  }
+};

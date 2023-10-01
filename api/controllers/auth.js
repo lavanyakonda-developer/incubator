@@ -419,7 +419,7 @@ export const startupRegister = async (req, res) => {
 
       // Fetch existing requested documents
       const fetchRequestedDocumentsQuery =
-        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? ADN is_onboarding = ?';
+        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?';
 
       const existingRequestedDocumentsResults = await query(
         fetchRequestedDocumentsQuery,
