@@ -80,7 +80,7 @@ export const DocumentsContainer = ({ documents, skipDetails = false }) => {
 };
 
 export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
-  switch (question.answer_type) {
+  switch (question?.answer_type) {
     case 'number':
     case 'date':
     case 'text':
@@ -110,16 +110,38 @@ export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
         'label',
         'Not answered'
       );
+
+    case 'basicInfoField':
+      console.log(startupInfo);
+      return _.get(
+        startupInfo?.basicDetails,
+        `${question.field_name}`,
+        'Not answered'
+      );
+
+    case 'founderDetails':
+      return;
   }
 };
 
-export const renderQuestionBox = ({ startupInfo, question, metaData }) => {
+export const renderQuestionBox = ({ startupInfo, question }) => {
   if (_.isEmpty(question) || _.isEmpty(question?.question)) return;
 
   return (
     <div className={classes.questionContainer}>
-      <div className={classes.question}>{`${question.question} :`}</div>
-      <div>{renderAnswerBox({ startupInfo, question, metaData })}</div>
+      <div className={classes.question}>{`${question?.question} :`}</div>
+      <div>
+        {renderAnswerBox({
+          startupInfo,
+          question: {
+            ..._.find(startupInfo?.questionnaire, {
+              uid: question?.uid,
+            }),
+            ...question,
+          },
+          metaData: question?.meta_data,
+        })}
+      </div>
     </div>
   );
 };
@@ -134,10 +156,7 @@ export const renderQuestions = ({ startupInfo, section }) => {
       >
         {renderQuestionBox({
           startupInfo,
-          question: _.find(startupInfo?.questionnaire, {
-            uid: question.uid,
-          }),
-          metaData: question?.meta_data,
+          question,
         })}
         {question.subQuestions &&
           _.map(question.subQuestions, (item) => {
@@ -145,10 +164,7 @@ export const renderQuestions = ({ startupInfo, section }) => {
               <>
                 {renderQuestionBox({
                   startupInfo,
-                  question: _.find(startupInfo?.questionnaire, {
-                    uid: item.uid,
-                  }),
-                  metaData: question?.meta_data,
+                  question,
                 })}
               </>
             );

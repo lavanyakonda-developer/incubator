@@ -9,6 +9,7 @@
   flex: 3;
   flex-direction: column;
   display: flex;
+  overflow: auto;
 }
 
 .logo {
@@ -69,4 +70,10 @@
   flex-direction: column;
   align-items: center;
   flex: 0.75;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

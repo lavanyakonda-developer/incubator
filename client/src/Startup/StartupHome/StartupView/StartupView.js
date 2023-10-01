@@ -5,19 +5,46 @@ import { makeRequest, API } from '../../../axios';
 import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../../CommonComponents';
+import { startupProfileQuestions } from '../../../Incubator/RegisterStartup/helper.js';
+import { renderQuestions } from '../../../Incubator/StartupHomeView/helper.js';
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
   {
     label: 'Startup Profile',
     key: 'startupProfile',
+    sections: ['startupIdentifier'],
     subTabs: [
-      { key: 'companyDetails', label: 'Company Details' },
-      { key: 'founderDetails', label: 'Founder Details' },
-      { key: 'pitchAndDigital', label: 'Elevator Pitch and Digital Presence' },
-      { key: 'characteristics', label: 'Characteristics' },
-      { key: 'funding', label: 'Funding' },
-      { key: 'others', label: 'Others' },
+      {
+        key: 'companyDetails',
+        label: 'Company Details',
+        sections: ['startupIdentifier'],
+      },
+      {
+        key: 'founderDetails',
+        label: 'Founder Details',
+        sections: ['founderDetails'],
+      },
+      {
+        key: 'pitchAndDigital',
+        label: 'Elevator Pitch and Digital Presence',
+        sections: ['digitalPresence', 'pitchYourStartup'],
+      },
+      {
+        key: 'characteristics',
+        label: 'Characteristics',
+        sections: ['startupCharacteristics'],
+      },
+      {
+        key: 'funding',
+        label: 'Funding',
+        sections: ['fundDeploymentPlan', 'fundingDetails'],
+      },
+      {
+        key: 'others',
+        label: 'Others',
+        sections: ['intellectualProperty', 'achievements', 'customQuestions'],
+      },
     ],
   },
   {
@@ -97,7 +124,38 @@ const StartupView = () => {
 
   const getRightComponent = () => {
     switch (selectedTab) {
-      case 'startupProfile':
+      case 'companyDetails':
+      case 'founderDetails':
+      case 'pitchAndDigital':
+      case 'characteristics':
+      case 'funding':
+      case 'others': {
+        const subTabs = _.get(
+          _.find(tabs, { key: 'startupProfile' }),
+          'subTabs',
+          []
+        );
+        const sections = _.get(
+          _.find(subTabs, { key: selectedTab }),
+          'sections',
+          []
+        );
+        return (
+          <div className={classes.questionnaireSections}>
+            {_.map(
+              _.filter(startupProfileQuestions, (item) =>
+                _.includes(sections, item.uid)
+              ),
+              (section, index) => (
+                <div key={index} className={classes.section}>
+                  <h3>{section.section}</h3>
+                  {renderQuestions({ startupInfo, section })}
+                </div>
+              )
+            )}
+          </div>
+        );
+      }
       case 'documentRepository':
       case 'reportingTab':
       default:
