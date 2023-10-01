@@ -8,7 +8,18 @@ import { Button } from '../../../CommonComponents';
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
-  { label: 'Startup Profile', key: 'startupProfile' },
+  {
+    label: 'Startup Profile',
+    key: 'startupProfile',
+    subTabs: [
+      { key: 'companyDetails', label: 'Company Details' },
+      { key: 'founderDetails', label: 'Founder Details' },
+      { key: 'pitchAndDigital', label: 'Elevator Pitch and Digital Presence' },
+      { key: 'characteristics', label: 'Characteristics' },
+      { key: 'funding', label: 'Funding' },
+      { key: 'others', label: 'Others' },
+    ],
+  },
   {
     label: 'Documents',
     key: 'documentRepository',
@@ -31,7 +42,7 @@ const tabs = [
 
 const StartupView = () => {
   const { startup_id } = useParams();
-  const [selectedTab, setSelectedTab] = useState('startupProfile');
+  const [selectedTab, setSelectedTab] = useState('companyDetails');
   const [startupInfo, setStartupInfo] = useState({});
   const navigate = useNavigate();
 
@@ -163,7 +174,7 @@ const StartupView = () => {
           />
         </div>
       </div>
-      <div className={classes.rightContainer}>{}</div>
+      <div className={classes.rightContainer}>{getRightComponent()}</div>
     </div>
   );
 };
