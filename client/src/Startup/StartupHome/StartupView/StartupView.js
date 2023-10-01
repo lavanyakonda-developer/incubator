@@ -6,7 +6,11 @@ import _ from 'lodash';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../../CommonComponents';
 import { startupProfileQuestions } from '../../../Incubator/RegisterStartup/helper.js';
-import { renderQuestions } from '../../../Incubator/StartupHomeView/helper.js';
+import {
+  renderQuestions,
+  DocumentsContainer,
+} from '../../../Incubator/StartupHomeView/helper.js';
+import SupplementaryDocuments from './SupplementaryDocuments';
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
@@ -157,6 +161,26 @@ const StartupView = () => {
         );
       }
       case 'documentRepository':
+      case 'onboarding':
+        console.log(startupInfo);
+        return (
+          <>
+            <h3>Onboarding Documents</h3>
+            <DocumentsContainer
+              documents={[
+                ..._.get(startupInfo, 'documentUpload.uploadedDocuments', []),
+                ..._.get(
+                  startupInfo,
+                  'documentUpload.requestedDocumentsList',
+                  []
+                ),
+              ]}
+            />
+          </>
+        );
+
+      case 'supplementary':
+        return <SupplementaryDocuments />;
       case 'reportingTab':
       default:
         return null;
