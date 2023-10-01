@@ -9,3 +9,95 @@
   flex-direction: column;
   gap: 24px;
 }
+
+.heading {
+  display: flex;
+  gap: 24px;
+}
+
+.chooseButtonContainer {
+  display: flex;
+  width: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+.uploadLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  width: fit-content;
+  border: 1px solid #6d48ff;
+  background-color: #6d48ff;
+  border-radius: 4px;
+  padding: 10px 16px;
+  color: #ffffff;
+}
+
+.uploadLabel:hover {
+  background-color: #5a3dd8;
+}
+
+.chooseFileText {
+  font-weight: bold;
+}
+
+.modalBackground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8); /* Semi-transparent background color */
+  z-index: 1000; /* Ensure the modal is on top of other content */
+}
+
+.modal {
+  display: block;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.95);
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-width: 60%;
+  min-width: 40%;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modalTopContent {
+  display: flex;
+  gap: 16px;
+}
+
+.preview {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: center;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}

@@ -283,3 +283,33 @@ export const updateDocumentApproval = async (req, res) => {
     return res.send({ message: 'Somme error' });
   }
 };
+
+export const addSupplementaryDocument = async (req, res) => {
+  const { document, startup_id } = req.body;
+
+  try {
+    const { document_name, document_url, document_size, document_format } =
+      document;
+
+    const createDocumentQuery =
+      'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [
+      startup_id,
+      document_name,
+      document_size,
+      document_format,
+      false,
+      document_url,
+      false,
+      false,
+      false,
+      false,
+    ];
+
+    await query(createDocumentQuery, values);
+
+    return res.send({ message: 'Added Successfully' });
+  } catch {
+    return res.send({ message: 'Error' });
+  }
+};
