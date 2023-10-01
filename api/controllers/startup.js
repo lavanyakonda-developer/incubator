@@ -21,9 +21,9 @@ export const startUpDetails = (req, res) => {
 
     const founderQuery = 'SELECT * FROM startup_founders WHERE startup_id = ?';
     const uploadedDocumentsQuery =
-      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = false AND is_deleted = false';
+      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = false AND is_deleted = false AND is_onboarding = true';
     const requestedDocumentsQuery =
-      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = true AND is_deleted = false';
+      'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = true AND is_deleted = false AND is_onboarding = true';
     const questionnaireQuery =
       'SELECT * FROM questionnaire WHERE startup_id = ?';
 

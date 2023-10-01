@@ -331,11 +331,12 @@ export const startupRegister = async (req, res) => {
       //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.......................................>>>>>>>>>>>>>>>>>>>>>>>>>.
       // Fetch existing documents
       const fetchDocumentsQuery =
-        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ?';
+        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?';
 
       const existingDocumentsResults = await query(fetchDocumentsQuery, [
         startup_id,
         false,
+        true,
       ]);
 
       const existingDocuments = Array.isArray(existingDocumentsResults)
@@ -418,11 +419,11 @@ export const startupRegister = async (req, res) => {
 
       // Fetch existing requested documents
       const fetchRequestedDocumentsQuery =
-        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ?';
+        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? ADN is_onboarding = ?';
 
       const existingRequestedDocumentsResults = await query(
         fetchRequestedDocumentsQuery,
-        [startup_id, true]
+        [startup_id, true, true]
       );
 
       const existingRequestedDocuments = Array.isArray(
