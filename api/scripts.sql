@@ -52,7 +52,7 @@ CREATE TABLE `questionnaire` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`startup_id` INT UNSIGNED NOT NULL,
 	`question` VARCHAR(255) NOT NULL,
-	`answer` VARCHAR(255) NOT NULL,
+	`answer` TEXT,
 	`question_uid` VARCHAR(255) NOT NULL,
 	`meta_data` VARCHAR(255) NOT NULL,
 	`answer_type` VARCHAR(255) NOT NULL
@@ -71,3 +71,46 @@ CREATE TABLE `startup_documents` (
   `is_approved` BOOLEAN NOT NULL,
   FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`)
 );
+
+
+-- For Business updates tabs in startup end
+
+CREATE TABLE `time_periods` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`quarter` VARCHAR(255) NOT NULL,
+	`year` INT NOT NULL,
+	`months` TEXT NOT NULL)
+
+
+		
+CREATE TABLE `business_updates_answers` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`startup_id` INT UNSIGNED NOT NULL,
+	`time_period` INT UNSIGNED NOT NULL,
+	`uid` TEXT NOT NULL,
+	`answer` TEXT NOT NULL,
+	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`), 
+	FOREIGN KEY (`time_period`) REFERENCES `time_periods` (`id`))
+
+
+CREATE TABLE `months` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`month` TEXT NOT NULL
+)
+
+CREATE TABLE `metric_values` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`startup_id` INT UNSIGNED NOT NULL,
+	`time_period` INT UNSIGNED NOT NULL,
+	`month_id` INT UNSIGNED NOT NULL,
+	`value` TEXT NOT NULL,
+	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`), 
+	FOREIGN KEY (`time_period`) REFERENCES `time_periods` (`id`)
+	FOREIGN KEY (`month_id`) REFERENCES `months` (`id`))
+
+
+CREATE TABLE `mandatore_ie` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`startup_id` INT UNSIGNED NOT NULL,
+	`mie` TEXT NOT NULL,
+	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`))
