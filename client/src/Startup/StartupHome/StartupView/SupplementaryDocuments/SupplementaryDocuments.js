@@ -164,19 +164,21 @@ const SupplementaryDocuments = () => {
     <div className={classes.container}>
       <div className={classes.documentsContainer}>
         <div className={classes.heading}>
-          <h3>Pending Documents</h3>{' '}
-          <div className={classes.chooseButtonContainer}>
-            <label className={classes.uploadLabel}>
-              <span className={classes.chooseFileText}>Choose File</span>
-              <input
-                type='file'
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept='.pdf,.doc,.docx'
-                style={{ display: 'none' }}
-              />
-            </label>
-          </div>
+          <h3>Pending Documents</h3>
+          {_.isEmpty(incubatorId) && (
+            <div className={classes.chooseButtonContainer}>
+              <label className={classes.uploadLabel}>
+                <span className={classes.chooseFileText}>Choose File</span>
+                <input
+                  type='file'
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept='.pdf,.doc,.docx'
+                  style={{ display: 'none' }}
+                />
+              </label>
+            </div>
+          )}
         </div>
         <DocumentsContainer
           documents={pendingDocuments}
