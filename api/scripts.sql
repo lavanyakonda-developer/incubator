@@ -114,3 +114,41 @@ CREATE TABLE `mandatore_ie` (
 	`startup_id` INT UNSIGNED NOT NULL,
 	`mie` TEXT NOT NULL,
 	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`))
+
+
+---Months
+INSERT INTO months (month)
+		VALUES('January');
+INSERT INTO months (month)
+		VALUES('February');
+INSERT INTO months (month)
+		VALUES('March');
+INSERT INTO months (month)
+		VALUES('April');
+INSERT INTO months (month)
+		VALUES('May');
+INSERT INTO months (month)
+		VALUES('June');
+INSERT INTO months (month)
+		VALUES('July');
+INSERT INTO months (month)
+		VALUES('August');
+INSERT INTO months (month)
+		VALUES('September');
+INSERT INTO months (month)
+		VALUES('October');
+INSERT INTO months (month)
+		VALUES('November');
+INSERT INTO months (month)
+		VALUES('December');
+
+
+-- Time periods dummy ones
+INSERT INTO time_periods (quarter, year, months)
+		VALUES('Q1 (Jan - Mar)', 2023, '[1, 2, 3]');
+INSERT INTO time_periods (quarter, year, months)
+		VALUES('Q2 (Apr - June)', 2023, '[4, 5, 6]');
+INSERT INTO time_periods (quarter, year, months)
+		VALUES('Q3 (July - Sept)', 2023, '[7, 8, 9]');
+INSERT INTO time_periods (quarter, year, months)
+		VALUES('Q4 (Oct - Dec)', 2023, '[10, 11, 12]');
