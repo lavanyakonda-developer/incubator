@@ -339,7 +339,166 @@ export const addSupplementaryDocument = async (req, res) => {
     await query(createDocumentQuery, values);
 
     return res.send({ message: 'Added Successfully' });
-  } catch {
-    return res.send({ message: 'Error' });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+//TODO : Make it dynamic according to years
+
+export const timePeriods = async (req, res) => {
+  try {
+    const fetchTimePeriods = 'SELECT * FROM time_periods';
+
+    const timePeriods = await query(fetchTimePeriods);
+    return res.send({ timePeriods });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+//TODO : Make it dynamic according to current time
+
+export const QuarterDetails = async (req, res) => {
+  try {
+    const fetchTimePeriodMonths =
+      'SELECT months FROM time_periods WHERE id = 4';
+
+    const timePeriods = await query(fetchTimePeriodMonths);
+    const months = timePeriods[0]['months'];
+
+    const placeholders = _.map(JSON.parse(months), () => '?').join(', ');
+
+    const fetchMonthsDetails = `SELECT * FROM months WHERE id IN (${placeholders})`;
+
+    const quarterMonths = await query(fetchMonthsDetails, JSON.parse(months));
+    return res.send({ months: quarterMonths });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const getBusinessUpdatesAnswers = async (req, res) => {
+  const { startup_id, time_period } = req.body;
+
+  try {
+    const answersQuery =
+      'SELECT * from business_updates_answers WHERE startup_id = ? AND time_period = ?';
+
+    const answers = await query(answersQuery, [startup_id, time_period]);
+
+    return res.send({ answers });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const updateBusinessUpdatesAnswers = async (req, res) => {
+  const { startup_id, time_period, answers } = req.body;
+
+  try {
+    const insertAnswerPromises = _.map(answers, async (answer) => {
+      const insertAnswerQuery =
+        'INSERT INTO business_updates_answers (`startup_id`, `time_period`, `uid`, `answer`) VALUES (?, ?, ?, ?)';
+      const values = [startup_id, time_period, answer.uid || '', answer.answer];
+
+      await query(insertAnswerQuery, values);
+    });
+
+    await Promise.all([...insertAnswerPromises.flat()]);
+
+    return res.send({ message: 'Successfully added' });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const getMetrics = async (req, res) => {
+  const { startup_id } = req.body;
+  try {
+    const metricsQuery =
+      'SELECT * FROM questionnaire WHERE startup_id = ? AND question_uid IN ("metric1", "metric2", "metric3", "metric4")';
+
+    const metricsData = await query(metricsQuery, [startup_id]);
+
+    const metrics = _.map(metricsData, (item) => {
+      return {
+        uid: item?.question_uid,
+        label: item?.question,
+      };
+    });
+
+    return res.send({ metrics });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const updateMetricValues = async (req, res) => {
+  const { startup_id, values } = req.body;
+
+  try {
+    const insertMetrics = _.map(values, async (value) => {
+      const insertMetricQuery =
+        'INSERT INTO metric_values (`startup_id`, `time_period`, `month_id`, `value`, `metric_uid`) VALUES (?, ?, ?, ?, ?)';
+      const values = [
+        startup_id,
+        value?.time_period,
+        value?.month_id,
+        value?.value,
+        value?.metric_uid,
+      ];
+
+      await query(insertMetricQuery, values);
+    });
+
+    await Promise.all([...insertMetrics.flat()]);
+
+    return res.send({ message: 'Successfully added' });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const getMetricValues = async (req, res) => {
+  const { startup_id } = req.body;
+
+  try {
+    const getMetricValuesQuery =
+      'SELECT * from metric_values WHERE startup_id = ?';
+
+    const metricValues = await query(getMetricValuesQuery, [startup_id]);
+
+    return res.send({ metricValues });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const getMie = async (req, res) => {
+  const { startup_id } = req.body;
+
+  try {
+    const getMieQuery =
+      'SELECT * from mandatory_info_exchange WHERE startup_id = ?';
+
+    const mie = query(getMieQuery, [startup_id]);
+    return res.send({ mie });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const updateMie = async (req, res) => {
+  const { startup_id, mie } = req.body;
+
+  try {
+    const insertMieQuery =
+      'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ? )';
+
+    query(insertMieQuery, [startup_id, mie]);
+    return res.send({ message: 'Inserted successfully' });
+  } catch (error) {
+    return res.send({ message: error });
   }
 };

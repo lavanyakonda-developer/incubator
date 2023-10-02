@@ -104,16 +104,18 @@ CREATE TABLE `metric_values` (
 	`time_period` INT UNSIGNED NOT NULL,
 	`month_id` INT UNSIGNED NOT NULL,
 	`value` TEXT NOT NULL,
+	`metric_uid` VARCHAR(255) NOT NULL,
 	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`), 
 	FOREIGN KEY (`time_period`) REFERENCES `time_periods` (`id`)
 	FOREIGN KEY (`month_id`) REFERENCES `months` (`id`))
 
 
-CREATE TABLE `mandatore_ie` (
+CREATE TABLE `mandatory_info_exchange` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`startup_id` INT UNSIGNED NOT NULL,
 	`mie` TEXT NOT NULL,
 	FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`))
+
 
 
 ---Months
@@ -152,3 +154,13 @@ INSERT INTO time_periods (quarter, year, months)
 		VALUES('Q3 (July - Sept)', 2023, '[7, 8, 9]');
 INSERT INTO time_periods (quarter, year, months)
 		VALUES('Q4 (Oct - Dec)', 2023, '[10, 11, 12]');
+
+
+-- 	{
+--     "email" : "lavanya@yopmail.com",
+--     "name" : "Lavanya",
+--     "password" : "Apple@123",
+--     "phone_number" :"9121910427",
+--     "incubator_name" :"Saas Test",
+--     "incubator_logo":"https://png.pngtree.com/png-clipart/20200701/original/pngtree-charminar-illustration-of-historical-monument-hyderabad-vector-png-image_5355377.jpg"
+-- }
