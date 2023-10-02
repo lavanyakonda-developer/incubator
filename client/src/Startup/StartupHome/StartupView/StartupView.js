@@ -11,6 +11,8 @@ import {
   DocumentsContainer,
 } from '../../../Incubator/StartupHomeView/helper.js';
 import SupplementaryDocuments from './SupplementaryDocuments';
+import BusinessUpdates from './BusinessUpdates';
+import Kpi from './Kpi';
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
@@ -63,7 +65,7 @@ const tabs = [
     label: 'Reporting Tab',
     key: 'reportingTab',
     subTabs: [
-      { key: 'businessUpdates ', label: 'Business updates ' },
+      { key: 'businessUpdates', label: 'Business updates' },
       { key: 'kpi', label: 'Key performance indicators' },
       { key: 'mie', label: 'Mandatory Information exchange' },
     ],
@@ -126,6 +128,10 @@ const StartupView = () => {
     navigate('/home-page');
   };
 
+  const MieComponent = () => {
+    return <div>MIE</div>;
+  };
+
   const getRightComponent = () => {
     switch (selectedTab) {
       case 'companyDetails':
@@ -161,7 +167,7 @@ const StartupView = () => {
         );
       }
       case 'documentRepository':
-      case 'onboarding':
+      case 'onboarding': {
         return (
           <>
             <h3>Onboarding Documents</h3>
@@ -177,10 +183,21 @@ const StartupView = () => {
             />
           </>
         );
-
-      case 'supplementary':
+      }
+      case 'supplementary': {
         return <SupplementaryDocuments />;
-      case 'reportingTab':
+      }
+
+      case 'businessUpdates': {
+        return <BusinessUpdates />;
+      }
+
+      case 'kpi':
+        return <Kpi />;
+
+      case 'mie':
+        return <MieComponent />;
+
       default:
         return null;
     }
