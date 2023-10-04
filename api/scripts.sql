@@ -69,6 +69,7 @@ CREATE TABLE `startup_documents` (
   `document_url` VARCHAR(255) NOT NULL,
   `is_deleted` BOOLEAN NOT NULL,
   `is_approved` BOOLEAN NOT NULL,
+  `is_onboarding` BOOLEAN NOT NULL,
   FOREIGN KEY (`startup_id`) REFERENCES `startups` (`id`)
 );
 

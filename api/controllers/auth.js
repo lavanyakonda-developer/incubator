@@ -628,6 +628,7 @@ export const startupRegister = async (req, res) => {
         }
       );
 
+      //
       // Create requested documents
       const requestedDocumentInsertPromises = _.map(
         requestedDocuments,
@@ -635,10 +636,13 @@ export const startupRegister = async (req, res) => {
           if (documentName) {
             // Only insert non-empty document names
             const createRequestedDocumentQuery =
-              'INSERT INTO startup_documents (`startup_id`, `document_name`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+              'INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?,?)';
             const values = [
               startup_id,
               documentName,
+              "",
+              "",
+              "",
               false,
               true,
               false,
@@ -688,7 +692,7 @@ export const startupRegister = async (req, res) => {
                 } = subQuestion;
 
                 const createSubQuestionQuery =
-                  'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`, `parent_question_id`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                  'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
                 const subValues = [
                   startup_id,
                   sub_question_text,
@@ -696,7 +700,6 @@ export const startupRegister = async (req, res) => {
                   sub_question_uid,
                   JSON.stringify(sub_meta_data || null),
                   JSON.stringify(null), // You can set the answer as an empty string by default
-                  result.insertId, // The ID of the parent question
                 ];
 
                 return query(createSubQuestionQuery, subValues);
