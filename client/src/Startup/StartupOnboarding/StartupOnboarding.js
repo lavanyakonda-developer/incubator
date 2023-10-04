@@ -112,7 +112,7 @@ const StartupOnboarding = () => {
   const handleSave = async () => {
     console.log('Here clicked handleSave');
     const data = getModifiedData(false);
-
+    console.log({data})
     try {
       const response = await makeRequest.post('startup/update-startup', {
         ...data,
@@ -120,14 +120,23 @@ const StartupOnboarding = () => {
 
       if (response.status === 200) {
         const data = response.data;
+        const {startup_id} = data;
+        if(startup_id)
+       { navigate(`/startup/${startup_id}/home`);}
+       else {
+        navigate('/');
+       }
+
       } else {
         console.error('Error fetching data:', response.statusText);
+        navigate('/');
       }
     } catch (error) {
       console.error('Error fetching data:', error);
+      navigate('/');
     }
 
-    navigate('/');
+   
   };
 
   // Function to handle "Next" button click

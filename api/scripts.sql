@@ -7,7 +7,8 @@ CREATE TABLE `startups` (
 	`industry` VARCHAR(255) NOT NULL,
 	`referral_code` VARCHAR(255) NOT NULL,
     `status` VARCHAR(255) NOT NULL DEFAULT 'PENDING',
-	`reject_message` VARCHAR(255) NOT NULL DEFAULT ''
+	`reject_message` VARCHAR(255) NOT NULL DEFAULT '',
+	`logo` VARCHAR(255)
 );
 
 CREATE TABLE `incubators` (

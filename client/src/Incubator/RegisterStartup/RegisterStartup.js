@@ -198,6 +198,7 @@ const RegisterStartup = (props) => {
   const handleSave = async () => {
     const data = getModifiedData(false);
 
+   
     try {
       const response = await makeRequest.post('api/auth/startup-register', {
         ...data,
