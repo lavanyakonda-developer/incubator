@@ -497,50 +497,134 @@ export const startupRegister = async (req, res) => {
         : [existingQuestionsResults];
 
       // Update or create questionnaire responses based on the provided data
-      const questionnaireInsertPromises = _.map(questionnaire, (section) => {
-        const { uid: section_uid, questions } = section;
+      const questionnaireInsertPromises = _.map(
+        questionnaire,
+        async (section) => {
+          const { uid: section_uid, questions } = section;
 
-        return _.map(questions, async (question) => {
-          const {
-            question: question_text,
-            answer_type,
-            uid: question_uid,
-            meta_data,
-          } = question;
-
-          const existingQuestion = _.find(
-            existingQuestions,
-            (eq) => eq.question_uid === question_uid
-          );
-
-          if (existingQuestion) {
-            // Question with the same UID exists, update details
-            const updateQuestionQuery =
-              'UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?';
-
-            await query(updateQuestionQuery, [
-              question_text,
+          const sectionPromises = _.map(questions, async (question) => {
+            const {
+              question: question_text,
               answer_type,
-              JSON.stringify(meta_data || null),
-              existingQuestion.id,
-            ]);
-          } else {
-            // Question does not exist, create a new question
-            const createQuestionQuery =
-              'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
-            const values = [
-              startup_id,
-              question_text,
-              answer_type,
-              question_uid,
-              JSON.stringify(meta_data || null),
-              JSON.stringify(null), // You can set the answer as an empty string by default
-            ];
+              uid: question_uid,
+              meta_data,
+              subQuestions, // Use subQuestions here
+            } = question;
 
-            await query(createQuestionQuery, values);
-          }
-        });
-      });
+            const existingQuestion = _.find(
+              existingQuestions,
+              (eq) => eq.question_uid === question_uid
+            );
+
+            if (existingQuestion) {
+              // Question with the same UID exists, update details
+              const updateQuestionQuery =
+                'UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?';
+
+              await query(updateQuestionQuery, [
+                question_text,
+                answer_type,
+                JSON.stringify(meta_data || null),
+                existingQuestion.id,
+              ]);
+
+              // Handle subQuestions here, similar to main questions
+              if (subQuestions && subQuestions.length > 0) {
+                const subQuestionPromises = _.map(
+                  subQuestions,
+                  async (subQuestion) => {
+                    const {
+                      question: sub_question_text,
+                      answer_type: sub_answer_type,
+                      uid: sub_question_uid,
+                      meta_data: sub_meta_data,
+                    } = subQuestion;
+
+                    const existingSubQuestion = _.find(
+                      existingQuestions,
+                      (esq) => esq.question_uid === sub_question_uid
+                    );
+
+                    if (existingSubQuestion) {
+                      // Subquestion with the same UID exists, update details
+                      const updateSubQuestionQuery =
+                        'UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?';
+
+                      await query(updateSubQuestionQuery, [
+                        sub_question_text,
+                        sub_answer_type,
+                        JSON.stringify(sub_meta_data || null),
+                        existingSubQuestion.id,
+                      ]);
+                    } else {
+                      // Subquestion does not exist, create a new subquestion
+                      const createSubQuestionQuery =
+                        'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                      const subQuestionValues = [
+                        startup_id,
+                        sub_question_text,
+                        sub_answer_type,
+                        sub_question_uid,
+                        JSON.stringify(sub_meta_data || null),
+                        JSON.stringify(null), // You can set the answer as an empty string by default
+                      ];
+
+                      await query(createSubQuestionQuery, subQuestionValues);
+                    }
+                  }
+                );
+
+                await Promise.all(subQuestionPromises);
+              }
+            } else {
+              // Question does not exist, create a new question
+              const createQuestionQuery =
+                'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+              const values = [
+                startup_id,
+                question_text,
+                answer_type,
+                question_uid,
+                JSON.stringify(meta_data || null),
+                JSON.stringify(null), // You can set the answer as an empty string by default
+              ];
+
+              await query(createQuestionQuery, values);
+
+              // Handle subQuestions here if they exist
+              if (subQuestions && subQuestions.length > 0) {
+                const subQuestionPromises = _.map(
+                  subQuestions,
+                  async (subQuestion) => {
+                    const {
+                      question: sub_question_text,
+                      answer_type: sub_answer_type,
+                      uid: sub_question_uid,
+                      meta_data: sub_meta_data,
+                    } = subQuestion;
+
+                    // Create a new subquestion
+                    const createSubQuestionQuery =
+                      'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                    const subQuestionValues = [
+                      startup_id,
+                      sub_question_text,
+                      sub_answer_type,
+                      sub_question_uid,
+                      JSON.stringify(sub_meta_data || null),
+                      JSON.stringify(null), // You can set the answer as an empty string by default
+                    ];
+
+                    await query(createSubQuestionQuery, subQuestionValues);
+                  }
+                );
+
+                await Promise.all(subQuestionPromises);
+              }
+            }
+          });
+        }
+      );
 
       // Combine all promises and execute them
       await Promise.all([
