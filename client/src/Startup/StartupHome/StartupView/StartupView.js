@@ -13,6 +13,7 @@ import {
 import SupplementaryDocuments from './SupplementaryDocuments';
 import BusinessUpdates from './BusinessUpdates';
 import Kpi from './Kpi';
+import Mie from './Mie';
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
@@ -128,10 +129,6 @@ const StartupView = () => {
     navigate('/home-page');
   };
 
-  const MieComponent = () => {
-    return <div>MIE</div>;
-  };
-
   const getRightComponent = () => {
     switch (selectedTab) {
       case 'companyDetails':
@@ -196,7 +193,7 @@ const StartupView = () => {
         return <Kpi />;
 
       case 'mie':
-        return <MieComponent />;
+        return <Mie />;
 
       default:
         return null;

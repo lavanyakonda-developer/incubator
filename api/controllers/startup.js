@@ -397,19 +397,44 @@ export const updateBusinessUpdatesAnswers = async (req, res) => {
   const { startup_id, time_period, answers } = req.body;
 
   try {
-    const insertAnswerPromises = _.map(answers, async (answer) => {
-      const insertAnswerQuery =
-        'INSERT INTO business_updates_answers (`startup_id`, `time_period`, `uid`, `answer`) VALUES (?, ?, ?, ?)';
-      const values = [startup_id, time_period, answer.uid || '', answer.answer];
+    await Promise.all(
+      answers.map(async (answer) => {
+        const { uid, answer: business_update_answer } = answer;
 
-      await query(insertAnswerQuery, values);
-    });
+        // Check if a business update answer for the startup, time_period, and uid already exists
+        const existingAnswerQuery =
+          'SELECT id FROM business_updates_answers WHERE startup_id = ? AND time_period = ? AND uid = ?';
+        const [existingAnswer] = await query(existingAnswerQuery, [
+          startup_id,
+          time_period,
+          uid,
+        ]);
 
-    await Promise.all([...insertAnswerPromises.flat()]);
+        if (existingAnswer) {
+          // Business update answer for the startup, time_period, and uid already exists, update details
+          const updateAnswerQuery =
+            'UPDATE business_updates_answers SET answer = ? WHERE id = ?';
+          await query(updateAnswerQuery, [
+            business_update_answer,
+            existingAnswer.id,
+          ]);
+        } else {
+          // Business update answer does not exist, create a new business update answer
+          const insertAnswerQuery =
+            'INSERT INTO business_updates_answers (`startup_id`, `time_period`, `uid`, `answer`) VALUES (?, ?, ?, ?)';
+          await query(insertAnswerQuery, [
+            startup_id,
+            time_period,
+            uid,
+            business_update_answer,
+          ]);
+        }
+      })
+    );
 
-    return res.send({ message: 'Successfully added' });
+    return res.send({ message: 'Successfully added/updated' });
   } catch (error) {
-    return res.send({ message: error });
+    return res.status(500).send({ message: 'Error: ' + error.message });
   }
 };
 
@@ -438,25 +463,51 @@ export const updateMetricValues = async (req, res) => {
   const { startup_id, values } = req.body;
 
   try {
-    const insertMetrics = _.map(values, async (value) => {
-      const insertMetricQuery =
-        'INSERT INTO metric_values (`startup_id`, `time_period`, `month_id`, `value`, `metric_uid`) VALUES (?, ?, ?, ?, ?)';
-      const values = [
-        startup_id,
-        value?.time_period,
-        value?.month_id,
-        value?.value,
-        value?.metric_uid,
-      ];
+    await Promise.all(
+      _.map(values, async (value) => {
+        const {
+          time_period,
+          month_id,
+          value: metric_value,
+          metric_uid,
+        } = value;
 
-      await query(insertMetricQuery, values);
-    });
+        // Check if a metric value for the startup and metric_uid already exists
+        const existingMetricQuery =
+          'SELECT id FROM metric_values WHERE startup_id = ? AND metric_uid = ?';
+        const [existingMetric] = await query(existingMetricQuery, [
+          startup_id,
+          metric_uid,
+        ]);
 
-    await Promise.all([...insertMetrics.flat()]);
+        if (existingMetric) {
+          // Metric value for the startup and metric_uid already exists, update details
+          const updateMetricQuery =
+            'UPDATE metric_values SET time_period = ?, month_id = ?, value = ? WHERE id = ?';
+          await query(updateMetricQuery, [
+            time_period,
+            month_id,
+            metric_value,
+            existingMetric.id,
+          ]);
+        } else {
+          // Metric value does not exist, create a new metric value
+          const insertMetricQuery =
+            'INSERT INTO metric_values (`startup_id`, `time_period`, `month_id`, `value`, `metric_uid`) VALUES (?, ?, ?, ?, ?)';
+          await query(insertMetricQuery, [
+            startup_id,
+            time_period,
+            month_id,
+            metric_value,
+            metric_uid,
+          ]);
+        }
+      })
+    );
 
-    return res.send({ message: 'Successfully added' });
+    return res.send({ message: 'Successfully added/updated' });
   } catch (error) {
-    return res.send({ message: error });
+    return res.status(500).send({ message: 'Error: ' + error.message });
   }
 };
 
@@ -483,9 +534,47 @@ export const getMie = async (req, res) => {
       'SELECT * from mandatory_info_exchange WHERE startup_id = ?';
 
     const mie = query(getMieQuery, [startup_id]);
-    return res.send({ mie });
+    return res.send({ mie: mie?.[0]['mie'] });
   } catch (error) {
     return res.send({ message: error });
+  }
+};
+
+// export const updateMie = async (req, res) => {
+//   const { startup_id, mie } = req.body;
+
+//   try {
+//     const insertMieQuery =
+//       'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ? )';
+
+//     query(insertMieQuery, [startup_id, mie]);
+//     return res.send({ message: 'Inserted successfully' });
+//   } catch (error) {
+//     return res.send({ message: error });
+//   }
+// };
+
+// Update or create mandatory info exchange based on the provided data
+const updateOrCreateMIE = async (startup_id, mie) => {
+  try {
+    // Check if MIE for the startup already exists
+    const existingMIEQuery =
+      'SELECT id FROM mandatory_info_exchange WHERE startup_id = ?';
+    const [existingMIE] = await query(existingMIEQuery, [startup_id]);
+
+    if (existingMIE) {
+      // MIE for the startup already exists, update details
+      const updateMIEQuery =
+        'UPDATE mandatory_info_exchange SET mie = ? WHERE startup_id = ?';
+      await query(updateMIEQuery, [mie, startup_id]);
+    } else {
+      // MIE does not exist, create a new MIE
+      const insertMIEQuery =
+        'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ?)';
+      await query(insertMIEQuery, [startup_id, mie]);
+    }
+  } catch (error) {
+    throw error;
   }
 };
 
@@ -493,12 +582,9 @@ export const updateMie = async (req, res) => {
   const { startup_id, mie } = req.body;
 
   try {
-    const insertMieQuery =
-      'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ? )';
-
-    query(insertMieQuery, [startup_id, mie]);
-    return res.send({ message: 'Inserted successfully' });
+    await updateOrCreateMIE(startup_id, mie);
+    return res.send({ message: 'Inserted/Updated successfully' });
   } catch (error) {
-    return res.send({ message: error });
+    return res.status(500).send({ message: 'Error: ' + error.message });
   }
 };

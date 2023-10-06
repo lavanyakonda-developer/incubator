@@ -1,7 +1,155 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { makeRequest } from '../../../../axios';
+import classes from './BusinessUpdates.module.css';
+import _ from 'lodash';
+import { useParams } from 'react-router-dom';
+import { businessUpdateQuestions } from './helper';
+import { Button } from '../../../../CommonComponents';
 
 const BusinessUpdates = () => {
-  return <div>BusinessUpdates</div>;
+  const [timePeriods, setTimePeriods] = useState([]);
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
+  const [businessUpdateAnswers, setBusinessUpdateAnswers] = useState([]);
+  const { startup_id } = useParams();
+
+  const handleAnswerChange = (uid, value) => {
+    console.log('uid, value', uid, value);
+
+    // Check if an answer with the same UID exists in the array
+    const existingAnswerIndex = businessUpdateAnswers.findIndex(
+      (answer) => answer.uid === uid
+    );
+
+    if (existingAnswerIndex !== -1) {
+      // If an answer with the same UID exists, update its value
+      const updatedAnswers = [...businessUpdateAnswers];
+      updatedAnswers[existingAnswerIndex].answer = value;
+
+      console.log('businessUpdateAnswers>>>>>>>>', updatedAnswers);
+
+      // Update the state with the new array
+      setBusinessUpdateAnswers(updatedAnswers);
+    } else {
+      // If no answer with the same UID exists, add a new answer to the array
+      const newAnswer = {
+        startup_id,
+        time_period: selectedTimePeriod,
+        uid,
+        answer: value,
+      };
+
+      const updatedAnswers = [...businessUpdateAnswers, newAnswer];
+      setBusinessUpdateAnswers(updatedAnswers);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await makeRequest.post(`startup/get-time-periods`);
+
+        if (response.status === 200) {
+          const data = response.data;
+          setTimePeriods(data?.timePeriods);
+          setSelectedTimePeriod(_.first(data?.timePeriods)?.id);
+          console.log({ data });
+        } else {
+          console.error('Error fetching data:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await makeRequest.post(
+          `startup/get-business-update-answers`,
+          {
+            startup_id,
+            time_period: selectedTimePeriod,
+          }
+        );
+
+        if (response.status === 200) {
+          const data = response.data;
+          setBusinessUpdateAnswers(data?.answers);
+
+          console.log({ data });
+        } else {
+          console.error('Error fetching data:', response.statusText);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    if (selectedTimePeriod) {
+      fetchData();
+    }
+  }, [selectedTimePeriod]);
+
+  const onSave = async () => {
+    try {
+      await makeRequest.post(`startup/update-business-update-answers`, {
+        startup_id,
+        time_period: selectedTimePeriod,
+        answers: businessUpdateAnswers,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  console.log({ businessUpdateAnswers });
+
+  return (
+    <div className={classes.container}>
+      <div className={classes.topContainer}>
+        <select
+          style={{ margin: '8px 0px', width: '20%', height: 30 }}
+          onChange={(e) => {
+            setSelectedTimePeriod(
+              _.find(timePeriods, { quarter: e.target.value })?.id
+            );
+          }}
+          value={_.find(timePeriods, { id: selectedTimePeriod })?.quarter || ''}
+        >
+          <option value=''>Select</option>
+          {_.map(timePeriods, (option) => (
+            <option key={option.id} value={option.quarter}>
+              {option.quarter}
+            </option>
+          ))}
+        </select>
+        <Button name={'Save'} onClick={onSave} />
+      </div>
+      <div className={classes.bottomContainer}>
+        {_.map(businessUpdateQuestions, (question) => {
+          return (
+            <>
+              <h4>{question?.question}</h4>
+              <textarea
+                style={{ width: '90%' }}
+                onChange={(e) =>
+                  handleAnswerChange(question.uid, e.target.value)
+                }
+                value={
+                  _.find(businessUpdateAnswers, {
+                    uid: question.uid,
+                  })?.answer || ''
+                }
+              />
+            </>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default BusinessUpdates;

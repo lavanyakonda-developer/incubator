@@ -446,10 +446,13 @@ export const startupRegister = async (req, res) => {
             if (!existingRequestedDocument) {
               // Requested document does not exist, create a new requested document
               const createRequestedDocumentQuery =
-                'INSERT INTO startup_documents (`startup_id`, `document_name`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+                'INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)';
               const values = [
                 startup_id,
                 documentName,
+                '',
+                '',
+                '',
                 false,
                 true,
                 false,
@@ -640,9 +643,9 @@ export const startupRegister = async (req, res) => {
             const values = [
               startup_id,
               documentName,
-              "",
-              "",
-              "",
+              '',
+              '',
+              '',
               false,
               true,
               false,
