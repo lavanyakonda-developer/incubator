@@ -864,7 +864,11 @@ export const startupFounderRegister = (req, res) => {
     );
 
     const token = jwt.sign(
-      { id: startup.id, role: 'startup_founder', startup_id: startup.id },
+      {
+        id: startup.id,
+        role: startup.role,
+        startup_id: startup.startup_id,
+      },
       process.env.SECRET
     );
 
@@ -875,7 +879,7 @@ export const startupFounderRegister = (req, res) => {
 
     return res.json({
       token,
-      user: { startup_id: startup.id, email, role: startup.role },
+      user: { ...startup },
     });
   });
 };
