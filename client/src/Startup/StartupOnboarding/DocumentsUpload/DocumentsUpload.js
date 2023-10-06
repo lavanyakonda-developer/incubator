@@ -283,103 +283,111 @@ const DocumentsUpload = ({ onNext, onBack, startupInfo, setStartupInfo }) => {
         )}
         <div className={classes.uploadedDocuments}>
           <h3>Documents uploaded by Incubator</h3>
-          <div className={classes.previewDocumentsContainer}>
-            {_.map(uploadedDocuments, (document, index) => (
-              <div className={classes.documentCard} key={index}>
-                <div className={classes.cardPreview}>
-                  <img
-                    src={
-                      documentInfo.format === 'application/pdf'
-                        ? placeholderPdfImage
-                        : placeholderDocImage
-                    }
-                    alt={`Document ${index + 1}`}
-                    width='40'
-                    height='60'
-                  />
-                </div>
-                <div className={classes.cardActions}>
-                  <FaDownload
-                    className={classes.icon}
-                    onClick={() => handleDownload(index, false)}
-                  />
-                </div>
-                <div className={classes.cardDetails}>
-                  <div>
-                    <strong>Name:</strong> {document.name}
+          {!_.isEmpty(uploadedDocuments) ? (
+            <div className={classes.previewDocumentsContainer}>
+              {_.map(uploadedDocuments, (document, index) => (
+                <div className={classes.documentCard} key={index}>
+                  <div className={classes.cardPreview}>
+                    <img
+                      src={
+                        documentInfo.format === 'application/pdf'
+                          ? placeholderPdfImage
+                          : placeholderDocImage
+                      }
+                      alt={`Document ${index + 1}`}
+                      width='40'
+                      height='60'
+                    />
                   </div>
-                  <div>
-                    <strong>Size:</strong> {document.size}
+                  <div className={classes.cardActions}>
+                    <FaDownload
+                      className={classes.icon}
+                      onClick={() => handleDownload(index, false)}
+                    />
                   </div>
-                  <div>
-                    <strong>Signature Required:</strong>{' '}
-                    {document.isSignatureRequired ? 'Yes' : 'No'}
+                  <div className={classes.cardDetails}>
+                    <div>
+                      <strong>Name:</strong> {document.name}
+                    </div>
+                    <div>
+                      <strong>Size:</strong> {document.size}
+                    </div>
+                    <div>
+                      <strong>Signature Required:</strong>{' '}
+                      {document.isSignatureRequired ? 'Yes' : 'No'}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <h4 style={{ fontWeight: 'normal' }}>No Documents uploaded</h4>
+          )}
         </div>
 
-        <div className={classes.requestedDocuments}>
-          <h3>Documents requested to upload</h3>
-          <div className={classes.requestedDocumentsContainer}>
-            {_.map(updatedRequestedDocuments, (document, index) => (
-              <div className={classes.requestedDocumentContainer}>
-                <div> {document.name} </div>
-                {_.isEmpty(document.url) ? (
-                  <div className={classes.chooseButtonContainer}>
-                    <label className={classes.uploadLabel}>
-                      <span className={classes.chooseFileText}>
-                        Choose File
-                      </span>
-                      <input
-                        type='file'
-                        ref={fileInputRef}
-                        onChange={(e) => handleFileChange(e, document.name)}
-                        accept='.pdf,.doc,.docx'
-                        style={{ display: 'none' }}
-                      />
-                    </label>
-                  </div>
-                ) : (
-                  <div className={classes.documentCard} key={index}>
-                    <div className={classes.cardPreview}>
-                      <img
-                        src={
-                          documentInfo.format === 'application/pdf'
-                            ? placeholderPdfImage
-                            : placeholderDocImage
-                        }
-                        alt={`Document ${index + 1}`}
-                        width='40'
-                        height='60'
-                      />
-                    </div>
-                    <div className={classes.cardActions}>
-                      <FaDownload
-                        className={classes.icon}
-                        onClick={() => handleDownload(index, true)}
-                      />
-                      <FaTrash
-                        className={classes.icon}
-                        onClick={() => handleDelete(index)}
-                      />
-                    </div>
-                    <div className={classes.cardDetails}>
-                      <div>
-                        <strong>Name:</strong> {document.name}
+        {!_.isEmpty(updatedRequestedDocuments) && (
+          <div className={classes.requestedDocuments}>
+            <h3>Documents requested to upload</h3>
+            {
+              <div className={classes.requestedDocumentsContainer}>
+                {_.map(updatedRequestedDocuments, (document, index) => (
+                  <div className={classes.requestedDocumentContainer}>
+                    <div> {document.name} </div>
+                    {_.isEmpty(document.url) ? (
+                      <div className={classes.chooseButtonContainer}>
+                        <label className={classes.uploadLabel}>
+                          <span className={classes.chooseFileText}>
+                            Choose File
+                          </span>
+                          <input
+                            type='file'
+                            ref={fileInputRef}
+                            onChange={(e) => handleFileChange(e, document.name)}
+                            accept='.pdf,.doc,.docx'
+                            style={{ display: 'none' }}
+                          />
+                        </label>
                       </div>
-                      <div>
-                        <strong>Size:</strong> {document.size}
+                    ) : (
+                      <div className={classes.documentCard} key={index}>
+                        <div className={classes.cardPreview}>
+                          <img
+                            src={
+                              documentInfo.format === 'application/pdf'
+                                ? placeholderPdfImage
+                                : placeholderDocImage
+                            }
+                            alt={`Document ${index + 1}`}
+                            width='40'
+                            height='60'
+                          />
+                        </div>
+                        <div className={classes.cardActions}>
+                          <FaDownload
+                            className={classes.icon}
+                            onClick={() => handleDownload(index, true)}
+                          />
+                          <FaTrash
+                            className={classes.icon}
+                            onClick={() => handleDelete(index)}
+                          />
+                        </div>
+                        <div className={classes.cardDetails}>
+                          <div>
+                            <strong>Name:</strong> {document.name}
+                          </div>
+                          <div>
+                            <strong>Size:</strong> {document.size}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-            ))}
+            }
           </div>
-        </div>
+        )}
         <div className={classes.buttonContainer}>
           <div className={classes.buttonContainer}>
             <Button

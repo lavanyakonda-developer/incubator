@@ -384,12 +384,17 @@ const Questionnaire = ({
     <div className={classes.questionnaireContainer}>
       <div className={classes.detailedQuestionnaire}>
         <div className={classes.questionnaireSections}>
-          {_.map(questions, (section, index) => (
-            <div key={index} className={classes.section}>
-              <h3>{section.section}</h3>
-              {renderQuestions(section)}
-            </div>
-          ))}
+          {_.map(questions, (section, index) => {
+            return (
+              <div key={index} className={classes.section}>
+                {_.some(
+                  section?.questions,
+                  (item) => !_.isEmpty(item?.question)
+                ) && <h3>{section.section}</h3>}
+                {renderQuestions(section)}
+              </div>
+            );
+          })}
         </div>
         <div className={classes.buttonContainer}>
           <Button name={'Back'} onClick={onBack} />
