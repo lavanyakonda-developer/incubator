@@ -112,7 +112,6 @@ const StartupOnboarding = () => {
   const handleSave = async () => {
     console.log('Here clicked handleSave');
     const data = getModifiedData(false);
-    console.log({ data });
     try {
       const response = await makeRequest.post('startup/update-startup', {
         ...data,

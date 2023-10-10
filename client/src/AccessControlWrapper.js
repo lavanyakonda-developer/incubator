@@ -17,15 +17,12 @@ const userIsAuthorized = ({ user, startup_id, incubator_id }) => {
         return false;
       }
 
-      console.log(user?.startups, startup_id);
-
       // Check if startup_id is a valid numeric string and exists in the user's startups
       if (
         startup_id &&
         (!numericRegex.test(startup_id) ||
           !_.includes(user?.startups, parseInt(startup_id)))
       ) {
-        console.log('Here>>>>>>.');
         return false;
       }
 

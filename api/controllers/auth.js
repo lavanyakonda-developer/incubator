@@ -159,8 +159,6 @@ export const incubatorLogin = (req, res) => {
 
       const startupIds = startupData.map((startup) => startup.startup_id);
 
-      console.log(startupIds);
-
       const token = jwt.sign(
         {
           id: data[0].id,

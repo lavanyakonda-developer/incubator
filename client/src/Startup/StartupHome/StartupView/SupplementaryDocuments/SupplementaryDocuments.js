@@ -149,7 +149,6 @@ const SupplementaryDocuments = () => {
       if (response.status === 200) {
         const data = response.data;
 
-        console.log('data>>>>>>>>>>>>>>', data);
         setPendingDocuments(data.pendingDocuments);
         setApprovedDocuments(data.approvedDocuments);
       } else {

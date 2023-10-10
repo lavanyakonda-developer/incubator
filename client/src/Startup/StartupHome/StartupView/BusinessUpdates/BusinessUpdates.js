@@ -13,8 +13,6 @@ const BusinessUpdates = () => {
   const { startup_id } = useParams();
 
   const handleAnswerChange = (uid, value) => {
-    console.log('uid, value', uid, value);
-
     // Check if an answer with the same UID exists in the array
     const existingAnswerIndex = businessUpdateAnswers.findIndex(
       (answer) => answer.uid === uid
@@ -24,8 +22,6 @@ const BusinessUpdates = () => {
       // If an answer with the same UID exists, update its value
       const updatedAnswers = [...businessUpdateAnswers];
       updatedAnswers[existingAnswerIndex].answer = value;
-
-      console.log('businessUpdateAnswers>>>>>>>>', updatedAnswers);
 
       // Update the state with the new array
       setBusinessUpdateAnswers(updatedAnswers);
@@ -52,7 +48,6 @@ const BusinessUpdates = () => {
           const data = response.data;
           setTimePeriods(data?.timePeriods);
           setSelectedTimePeriod(_.first(data?.timePeriods)?.id);
-          console.log({ data });
         } else {
           console.error('Error fetching data:', response.statusText);
         }
@@ -78,8 +73,6 @@ const BusinessUpdates = () => {
         if (response.status === 200) {
           const data = response.data;
           setBusinessUpdateAnswers(data?.answers);
-
-          console.log({ data });
         } else {
           console.error('Error fetching data:', response.statusText);
         }
@@ -104,8 +97,6 @@ const BusinessUpdates = () => {
       console.error(error);
     }
   };
-
-  console.log({ businessUpdateAnswers });
 
   return (
     <div className={classes.container}>
