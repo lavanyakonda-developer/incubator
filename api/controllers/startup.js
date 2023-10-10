@@ -528,34 +528,23 @@ export const getMetricValues = async (req, res) => {
 
 export const getMie = async (req, res) => {
   const { startup_id } = req.body;
-
   try {
     const getMieQuery =
       'SELECT * from mandatory_info_exchange WHERE startup_id = ?';
 
-    const mie = query(getMieQuery, [startup_id]);
-    return res.send({ mie: mie?.[0]['mie'] });
+    const mie = await query(getMieQuery, [startup_id]);
+
+    console.log('>>>>>', mie?.[0]);
+    return res.send({ mie: _.get(mie, '0.mie', '') });
   } catch (error) {
+    console.log('error>>>>.', error);
     return res.send({ message: error });
   }
 };
 
-// export const updateMie = async (req, res) => {
-//   const { startup_id, mie } = req.body;
+export const updateMie = async (req, res) => {
+  const { startup_id, mie } = req.body;
 
-//   try {
-//     const insertMieQuery =
-//       'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ? )';
-
-//     query(insertMieQuery, [startup_id, mie]);
-//     return res.send({ message: 'Inserted successfully' });
-//   } catch (error) {
-//     return res.send({ message: error });
-//   }
-// };
-
-// Update or create mandatory info exchange based on the provided data
-const updateOrCreateMIE = async (startup_id, mie) => {
   try {
     // Check if MIE for the startup already exists
     const existingMIEQuery =
@@ -573,16 +562,6 @@ const updateOrCreateMIE = async (startup_id, mie) => {
         'INSERT INTO mandatory_info_exchange (startup_id, mie) VALUES (?, ?)';
       await query(insertMIEQuery, [startup_id, mie]);
     }
-  } catch (error) {
-    throw error;
-  }
-};
-
-export const updateMie = async (req, res) => {
-  const { startup_id, mie } = req.body;
-
-  try {
-    await updateOrCreateMIE(startup_id, mie);
     return res.send({ message: 'Inserted/Updated successfully' });
   } catch (error) {
     return res.status(500).send({ message: 'Error: ' + error.message });
