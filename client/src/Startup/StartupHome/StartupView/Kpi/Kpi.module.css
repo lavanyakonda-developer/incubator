@@ -1,0 +1,11 @@
+.topContainer {
+  display: flex;
+  justify-content: space-between;
+  padding-right: 60px;
+}
+
+.dropdowns {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+}
