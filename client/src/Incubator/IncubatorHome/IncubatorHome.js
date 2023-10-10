@@ -5,6 +5,7 @@ import { makeRequest, API } from '../../axios';
 import { Button } from '../../CommonComponents';
 import { logout } from '../../auth/helper';
 import { useNavigate, useParams } from 'react-router-dom';
+import { updateStartupIdsOfIncubator } from '../../auth/helper.js';
 
 const tabs = [
   { label: 'Home Dashboard', key: 'homeDashboard' },
@@ -30,6 +31,8 @@ const IncubatorHome = (props) => {
     logo: '',
   });
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,10 +45,14 @@ const IncubatorHome = (props) => {
 
           setIncubatorDetails(data.incubator);
           setStartups(data.startups);
+
+          const startupIds = _.map(data.startups, (item) => item.id);
+          updateStartupIdsOfIncubator({ startupIds });
         } else {
           console.error('Error fetching data:', response.statusText);
         }
       } catch (error) {
+        navigate('/');
         console.error('Error fetching data:', error);
       }
     };
@@ -191,7 +198,6 @@ const IncubatorHome = (props) => {
     }
   };
 
-  const navigate = useNavigate();
   const userLogout = () => {
     logout();
     navigate('/home-page');

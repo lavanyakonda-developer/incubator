@@ -134,7 +134,7 @@ export const incubatorRegister = (req, res) => {
 export const incubatorLogin = (req, res) => {
   const q = 'SELECT * FROM incubator_founders WHERE email = ?';
 
-  db.query(q, [req.body.email], (err, data) => {
+  db.query(q, [req.body.email], async (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0)
       return res
@@ -151,23 +151,35 @@ export const incubatorLogin = (req, res) => {
     if (!checkPassword)
       return res.status(400).json('Wrong password or username!');
 
-    const token = jwt.sign(
-      {
-        id: data[0].id,
-        role: data[0].role,
-        incubator_id: data[0].incubator_id,
-      },
-      process.env.SECRET
-    );
+    // Fetch the list of startups associated with the incubator
+    const startupQuery =
+      'SELECT startup_id FROM incubator_startup WHERE incubator_id = ?';
+    db.query(startupQuery, [data[0].incubator_id], (err, startupData) => {
+      if (err) return res.status(500).json(err);
 
-    const { password, ...others } = data[0];
+      const startupIds = startupData.map((startup) => startup.startup_id);
 
-    res.cookie('accessToken', token, {
-      httpOnly: true,
-      expire: new Date() + 9999,
+      console.log(startupIds);
+
+      const token = jwt.sign(
+        {
+          id: data[0].id,
+          role: data[0].role,
+          incubator_id: data[0].incubator_id,
+          startups: startupIds, // Include the list of startup IDs
+        },
+        process.env.SECRET
+      );
+
+      const { password, ...others } = data[0];
+
+      res.cookie('accessToken', token, {
+        httpOnly: true,
+        expire: new Date() + 9999,
+      });
+
+      return res.json({ token, user: { ...others, startups: startupIds } });
     });
-
-    return res.json({ token, user: { ...others } });
   });
 };
 

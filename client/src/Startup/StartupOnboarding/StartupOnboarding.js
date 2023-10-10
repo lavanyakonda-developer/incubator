@@ -112,7 +112,7 @@ const StartupOnboarding = () => {
   const handleSave = async () => {
     console.log('Here clicked handleSave');
     const data = getModifiedData(false);
-    console.log({data})
+    console.log({ data });
     try {
       const response = await makeRequest.post('startup/update-startup', {
         ...data,
@@ -120,13 +120,12 @@ const StartupOnboarding = () => {
 
       if (response.status === 200) {
         const data = response.data;
-        const {startup_id} = data;
-        if(startup_id)
-       { navigate(`/startup/${startup_id}/home`);}
-       else {
-        navigate('/');
-       }
-
+        const { startup_id } = data;
+        if (startup_id) {
+          navigate(`/startup/${startup_id}/home`);
+        } else {
+          navigate('/');
+        }
       } else {
         console.error('Error fetching data:', response.statusText);
         navigate('/');
@@ -135,8 +134,6 @@ const StartupOnboarding = () => {
       console.error('Error fetching data:', error);
       navigate('/');
     }
-
-   
   };
 
   // Function to handle "Next" button click
@@ -161,6 +158,10 @@ const StartupOnboarding = () => {
     !startupInfo?.basicDetails?.dpiitNumber ||
     _.some(startupInfo?.documentUpload?.updatedRequestedDocuments, (item) =>
       _.isEmpty(item.url)
+    ) ||
+    _.some(
+      startupInfo?.questionnaire,
+      (item) => _.isEmpty(item?.answer) && !_.isEmpty(item?.question)
     );
 
   const renderTabContent = () => {
