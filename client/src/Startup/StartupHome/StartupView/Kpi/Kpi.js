@@ -10,20 +10,56 @@ const getUpdatedTimePeriods = ({ timePeriods }) => {
     return { ...period, id: index, ids: [period.id] };
   });
 
-  const groupedYears = _.groupBy(timePeriods, 'year');
+  const groupedYears = _.groupBy(updatedTimePeriods, 'fyear');
 
-  const financialYears = _.map(groupedYears, (yearTimePeriods, year) => {
-    const ids = _.flatMap(yearTimePeriods, 'id');
+  const financialYears = _.map(groupedYears, (yearTimePeriods, fyear) => {
+    const ids = _.orderBy(
+      _.uniq(_.flatMap(yearTimePeriods, 'ids')),
+      [
+        (id) => {
+          const timePeriod = _.find(timePeriods, (item) => item.id === id);
+
+          return timePeriod.year;
+        },
+        (id) => {
+          const timePeriod = _.find(timePeriods, (item) => item.id === id);
+          const monthsArray = timePeriod.months;
+          return _.max(monthsArray);
+        },
+      ],
+      ['asc', 'asc']
+    );
+
     const allMonths = _.uniq(_.flatMap(yearTimePeriods, 'months'));
-    const id = timePeriods.length + parseInt(year); // Assign a unique ID for the year
-    return { quarter: `FY - ${parseInt(year)}`, id, ids, months: allMonths };
+    const id = timePeriods.length + parseInt(fyear); // Assign a unique ID for the fyear
+    return {
+      quarter: `FY - (${parseInt(fyear - 1)}-${parseInt(fyear)})`,
+      id,
+      ids,
+      months: allMonths,
+    };
   });
 
   return [
     ...updatedTimePeriods,
     ...financialYears,
     {
-      ids: _.map(timePeriods, (item) => item.id),
+      ids: _.orderBy(
+        _.map(timePeriods, (item) => item.id),
+        [
+          (id) => {
+            const timePeriod = _.find(timePeriods, (item) => item.id === id);
+
+            return timePeriod.year;
+          },
+          (id) => {
+            const timePeriod = _.find(timePeriods, (item) => item.id === id);
+            const monthsArray = timePeriod.months;
+            return _.max(monthsArray);
+          },
+        ],
+        ['asc', 'asc']
+      ),
       id: 'ALL',
       quarter: 'All years',
       months: _.uniq(_.flatMap(timePeriods, 'months')),
@@ -46,6 +82,7 @@ const getTableData = ({
   const quarterIds = _.get(selectedTimePeriodData, 'ids', []);
   const tableHeaders = [];
   const tableValues = [];
+  const tablePercentages = [];
 
   _.forEach(quarterIds, (quarterId) => {
     const quarter = _.find(allQuarters, (item) => item.id == quarterId);
@@ -54,12 +91,9 @@ const getTableData = ({
     _.forEach(monthIds, (monthId) => {
       tableHeaders.push({
         id: `${quarterId}-${monthId}-header`,
-        label:
-          selectedTimePeriod == 'ALL'
-            ? `${_.find(months, (month) => month.id == monthId)?.month}-${
-                quarter?.year
-              }`
-            : _.find(months, (month) => month.id == monthId)?.month,
+        label: `${_.find(months, (month) => month.id == monthId)?.month}-${
+          quarter?.year
+        }`,
       });
 
       const metricValue = _.find(
@@ -70,19 +104,69 @@ const getTableData = ({
           item.metric_uid == selectedMetric
       );
 
-      console.log('******', metricValue, metricValues, monthId, quarterId);
-
+      const currentValue = _.get(metricValue, 'value', 0);
       tableValues.push({
         id: `${quarterId}-${monthId}-value`,
-        value: metricValue?.value,
+        value: currentValue,
         time_period: quarterId,
         month_id: monthId,
         metric_uid: metricValue?.metric_uid,
       });
+
+      const prevMonthId = monthId == 1 ? 12 : monthId - 1;
+
+      const quarterData = _.find(allQuarters, (item) => item.id == quarterId);
+
+      const prevQuarterId =
+        monthId == 4
+          ? _.find(
+              allQuarters,
+              (item) =>
+                _.includes(item.months, prevMonthId) &&
+                item.fyear == quarterData.fyear - 1
+            )?.id
+          : _.includes([7, 10, 1], monthId)
+          ? _.find(
+              allQuarters,
+              (item) =>
+                _.includes(item.months, prevMonthId) &&
+                item.fyear == quarterData.fyear
+            )?.id
+          : quarterId;
+
+      const prevMetricValue = _.find(
+        metricValues,
+        (item) =>
+          item.month_id == prevMonthId &&
+          item.time_period == prevQuarterId &&
+          item.metric_uid == selectedMetric
+      );
+
+      const prevValue = _.get(prevMetricValue, 'value', 0);
+
+      const percentageChange =
+        ((currentValue - prevValue) /
+          (prevValue !== 0
+            ? prevValue
+            : currentValue !== 0
+            ? currentValue
+            : 1)) *
+        100;
+      const formattedPercentageChange =
+        percentageChange == 0
+          ? '0%'
+          : percentageChange < 0
+          ? `${percentageChange.toFixed(2)}%`
+          : `${percentageChange.toFixed(2)}%`;
+
+      tablePercentages.push({
+        id: `${prevQuarterId}-${prevMonthId}-percentage`,
+        value: formattedPercentageChange,
+      });
     });
   });
 
-  return { tableHeaders, tableValues };
+  return { tableHeaders, tableValues, tablePercentages };
 };
 
 const Kpi = () => {
@@ -200,15 +284,7 @@ const Kpi = () => {
 
   const onSave = () => {};
 
-  console.log(
-    'metrics, metricValues',
-    metrics,
-    metricValues,
-    months,
-    timePeriods
-  );
-
-  const { tableHeaders, tableValues } = getTableData({
+  const { tableHeaders, tableValues, tablePercentages } = getTableData({
     timePeriods,
     selectedTimePeriod,
     selectedMetric,
@@ -217,7 +293,6 @@ const Kpi = () => {
     metricValues: allValues,
   });
 
-  console.log('tableValues', tableValues);
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>
@@ -281,6 +356,16 @@ const Kpi = () => {
             <tr>
               <td className={classes.cellLabel}>Values</td>
               {_.map(tableValues, (value) => {
+                return (
+                  <td key={value.id} className={classes.cellValue}>
+                    {value?.value}
+                  </td>
+                );
+              })}
+            </tr>
+            <tr>
+              <td className={classes.cellLabel}>Percentages</td>
+              {_.map(tablePercentages, (value) => {
                 return (
                   <td key={value.id} className={classes.cellValue}>
                     {value?.value}

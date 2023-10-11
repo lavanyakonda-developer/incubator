@@ -82,7 +82,8 @@ CREATE TABLE `startup_documents` (
 CREATE TABLE `time_periods` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`quarter` VARCHAR(255) NOT NULL,
-	`year` INT NOT NULL,
+	`fyear` INT NOT NULL,
+  `year` INT NOT NULL,
 	`months` TEXT NOT NULL)
 
 
@@ -150,17 +151,17 @@ INSERT INTO months (month)
 
 
 -- Time periods dummy ones
-INSERT INTO time_periods (quarter, year, months)
+INSERT INTO time_periods (quarter, fyear, months)
 		VALUES('Q1 (Jan - Mar)', 2023, '[1, 2, 3]');
-INSERT INTO time_periods (quarter, year, months)
+INSERT INTO time_periods (quarter, fyear, months)
 		VALUES('Q2 (Apr - June)', 2023, '[4, 5, 6]');
-INSERT INTO time_periods (quarter, year, months)
+INSERT INTO time_periods (quarter, fyear, months)
 		VALUES('Q3 (July - Sept)', 2023, '[7, 8, 9]');
-INSERT INTO time_periods (quarter, year, months)
+INSERT INTO time_periods (quarter, fyear, months)
 		VALUES('Q4 (Oct - Dec)', 2023, '[10, 11, 12]');
 
 -- For 2022
-INSERT INTO `time_periods` (`quarter`, `year`, `months`)
+INSERT INTO `time_periods` (`quarter`, `fyear`, `months`)
 VALUES
   ('Q4 (Jan - Mar)', 2022, '[1, 2, 3]'),
   ('Q1 (Apr - June)', 2022, '[4, 5, 6]'),
@@ -168,7 +169,7 @@ VALUES
   ('Q3 (Oct - Dec)', 2022, '[10, 11, 12]');
 
 -- For 2021
-INSERT INTO `time_periods` (`quarter`, `year`, `months`)
+INSERT INTO `time_periods` (`quarter`, `fyear`, `months`)
 VALUES
   ('Q4 (Jan - Mar)', 2021, '[1, 2, 3]'),
   ('Q1 (Apr - June)', 2021, '[4, 5, 6]'),

@@ -365,13 +365,14 @@ export const timePeriods = async (req, res) => {
     SELECT *
     FROM time_periods
     WHERE
-      year > ?
+      (year > ? AND year < ? )
       OR (year = ? AND ? >= JSON_UNQUOTE(JSON_EXTRACT(months, '$[0]')))
       OR (year = ? AND ? <= JSON_UNQUOTE(JSON_EXTRACT(months, '$[0]')))
   `;
 
     const timePeriods = await query(fetchTimePeriods, [
       startupCreatedAt.getFullYear(),
+      currentYear,
       currentYear,
       currentMonth,
       startupCreatedAt.getFullYear(),
@@ -381,7 +382,7 @@ export const timePeriods = async (req, res) => {
     const sortedTimePeriods = _.orderBy(
       timePeriods,
       [
-        (period) => parseInt(period.year),
+        (period) => parseInt(period.fyear),
         (period) => {
           const monthsArray = JSON.parse(period.months);
           return _.max(monthsArray); // Get the maximum month value
@@ -393,7 +394,7 @@ export const timePeriods = async (req, res) => {
     const updatedTimePeriods = _.map(sortedTimePeriods, (period) => {
       return {
         ...period,
-        quarter: `${period.quarter}-${period.year}`,
+        quarter: `${period.quarter} - (FY ${period.fyear})`,
         months: JSON.parse(period.months),
       };
     });
