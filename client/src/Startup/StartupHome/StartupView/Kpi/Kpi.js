@@ -5,6 +5,31 @@ import _ from 'lodash';
 import { useParams } from 'react-router-dom';
 import { Button } from '../../../../CommonComponents';
 
+const getUpdatedTimePeriods = ({ timePeriods }) => {
+  const updatedTimePeriods = _.map(timePeriods, (period, index) => {
+    return { ...period, id: index, ids: [period.id] };
+  });
+
+  const groupedYears = _.groupBy(timePeriods, 'year');
+
+  const financialYears = _.map(groupedYears, (yearTimePeriods, year) => {
+    const ids = _.flatMap(yearTimePeriods, 'id');
+    const allMonths = _.uniq(_.flatMap(yearTimePeriods, 'months'));
+    const id = timePeriods.length + parseInt(year); // Assign a unique ID for the year
+    return { quarter: `FY - ${parseInt(year)}`, id, ids, months: allMonths };
+  });
+
+  return [
+    ...updatedTimePeriods,
+    ...financialYears,
+    {
+      ids: _.map(timePeriods, (item) => item.id),
+      id: 'all',
+      quarter: 'All years',
+    },
+  ];
+};
+
 const Kpi = () => {
   const [timePeriods, setTimePeriods] = useState([]);
   const [metrics, setMetrics] = useState([]);
@@ -12,6 +37,7 @@ const Kpi = () => {
   const [selectedMetric, setSelectedMetric] = useState('');
   const [months, setMonths] = useState([]);
 
+  const [allValues, setAllValues] = useState([]);
   const [metricValues, setMetricValues] = useState([]);
   const { startup_id } = useParams();
 
@@ -43,21 +69,20 @@ const Kpi = () => {
           metricValuesResponse.status === 200
         ) {
           const timePeriodsData = timePeriodsResponse.data;
-          setTimePeriods(_.get(timePeriodsData, 'timePeriods', []));
+          const updatedTimePeriods = getUpdatedTimePeriods({
+            timePeriods: _.get(timePeriodsData, 'timePeriods', []),
+          });
+          setTimePeriods(updatedTimePeriods);
 
           const currentDate = new Date();
           const currentYear = currentDate.getFullYear();
           const currentMonth = currentDate.getMonth() + 1;
 
-          const currentQuarter = _.find(
-            _.get(timePeriodsData, 'timePeriods', []),
-            (item) => {
-              return (
-                item.year === currentYear &&
-                _.includes(item.months, currentMonth)
-              );
-            }
-          );
+          const currentQuarter = _.find(updatedTimePeriods, (item) => {
+            return (
+              item.year === currentYear && _.includes(item.months, currentMonth)
+            );
+          });
 
           setSelectedTimePeriod(currentQuarter?.id);
 
@@ -68,9 +93,23 @@ const Kpi = () => {
 
           const metricValuesData = metricValuesResponse.data;
 
-          setMetricValues(_.get(metricValuesData, 'metricValues', []));
+          setAllValues(_.get(metricValuesData, 'metricValues', []));
 
           setMonths(_.get(monthsResponse, 'data.months'), []);
+
+          setMetricValues(
+            _.filter(_.get(metricValuesData, 'metricValues', []), (value) => {
+              const ids = _.get(
+                _.find(timePeriods, (item) => item.id == selectedTimePeriod),
+                'ids',
+                []
+              );
+              return (
+                _.includes(ids, value?.time_period) &&
+                value?.metric_uid == selectedMetric
+              );
+            })
+          );
         } else {
           console.error(
             'Error fetching data:',
@@ -85,6 +124,22 @@ const Kpi = () => {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    setMetricValues(
+      _.filter(allValues, (value) => {
+        const ids = _.get(
+          _.find(timePeriods, (item) => item.id == selectedTimePeriod),
+          'ids',
+          []
+        );
+        return (
+          _.includes(ids, value?.time_period) &&
+          value?.metric_uid == selectedMetric
+        );
+      })
+    );
+  }, [selectedTimePeriod, selectedMetric]);
 
   const onSave = () => {};
 
