@@ -449,7 +449,7 @@ export const getMetrics = async (req, res) => {
     const metrics = _.map(metricsData, (item) => {
       return {
         uid: item?.question_uid,
-        label: item?.question,
+        label: JSON.parse(item?.answer),
       };
     });
 
@@ -474,22 +474,20 @@ export const updateMetricValues = async (req, res) => {
 
         // Check if a metric value for the startup and metric_uid already exists
         const existingMetricQuery =
-          'SELECT id FROM metric_values WHERE startup_id = ? AND metric_uid = ?';
+          'SELECT id FROM metric_values WHERE startup_id = ? , metric_uid = ?, month_id = ? AND time_period = ?';
+
         const [existingMetric] = await query(existingMetricQuery, [
           startup_id,
           metric_uid,
+          month_id,
+          time_period,
         ]);
 
         if (existingMetric) {
           // Metric value for the startup and metric_uid already exists, update details
           const updateMetricQuery =
-            'UPDATE metric_values SET time_period = ?, month_id = ?, value = ? WHERE id = ?';
-          await query(updateMetricQuery, [
-            time_period,
-            month_id,
-            metric_value,
-            existingMetric.id,
-          ]);
+            'UPDATE metric_values SET value = ? WHERE id = ?';
+          await query(updateMetricQuery, [metric_value, existingMetric.id]);
         } else {
           // Metric value does not exist, create a new metric value
           const insertMetricQuery =

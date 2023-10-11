@@ -28,7 +28,22 @@ const Kpi = () => {
         ) {
           const timePeriodsData = timePeriodsResponse.data;
           setTimePeriods(_.get(timePeriodsData, 'timePeriods', []));
-          setSelectedTimePeriod(_.first(timePeriodsData?.timePeriods)?.id);
+
+          const currentDate = new Date();
+          const currentYear = currentDate.getFullYear();
+          const currentMonth = currentDate.getMonth() + 1;
+
+          const currentQuarter = _.find(
+            _.get(timePeriodsData, 'timePeriods', []),
+            (item) => {
+              return (
+                item.year === currentYear &&
+                _.includes(item.months, currentMonth)
+              );
+            }
+          );
+
+          setSelectedTimePeriod(currentQuarter?.id);
 
           const metricsData = metricsResponse.data;
 

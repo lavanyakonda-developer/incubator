@@ -159,6 +159,23 @@ INSERT INTO time_periods (quarter, year, months)
 INSERT INTO time_periods (quarter, year, months)
 		VALUES('Q4 (Oct - Dec)', 2023, '[10, 11, 12]');
 
+-- For 2022
+INSERT INTO `time_periods` (`quarter`, `year`, `months`)
+VALUES
+  ('Q4 (Jan - Mar)', 2022, '[1, 2, 3]'),
+  ('Q1 (Apr - June)', 2022, '[4, 5, 6]'),
+  ('Q2 (July - Sept)', 2022, '[7, 8, 9]'),
+  ('Q3 (Oct - Dec)', 2022, '[10, 11, 12]');
+
+-- For 2021
+INSERT INTO `time_periods` (`quarter`, `year`, `months`)
+VALUES
+  ('Q4 (Jan - Mar)', 2021, '[1, 2, 3]'),
+  ('Q1 (Apr - June)', 2021, '[4, 5, 6]'),
+  ('Q2 (July - Sept)', 2021, '[7, 8, 9]'),
+  ('Q3 (Oct - Dec)', 2021, '[10, 11, 12]');
+
+
 
 -- 	{
 --     "email" : "lavanya@yopmail.com",

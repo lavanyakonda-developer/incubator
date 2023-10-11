@@ -46,8 +46,20 @@ const BusinessUpdates = () => {
 
         if (response.status === 200) {
           const data = response.data;
+          console.log('*******', data?.timePeriods);
           setTimePeriods(data?.timePeriods);
-          setSelectedTimePeriod(_.first(data?.timePeriods)?.id);
+
+          const currentDate = new Date();
+          const currentYear = currentDate.getFullYear();
+          const currentMonth = currentDate.getMonth() + 1;
+
+          const currentQuarter = _.find(data?.timePeriods, (item) => {
+            return (
+              item.year === currentYear && _.includes(item.months, currentMonth)
+            );
+          });
+
+          setSelectedTimePeriod(currentQuarter?.id);
         } else {
           console.error('Error fetching data:', response.statusText);
         }
