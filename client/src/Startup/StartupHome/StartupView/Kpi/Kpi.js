@@ -83,6 +83,7 @@ const getTableData = ({
   const tableHeaders = [];
   const tableValues = [];
   const tablePercentages = [];
+  const logs = [];
 
   _.forEach(quarterIds, (quarterId) => {
     const quarter = _.find(allQuarters, (item) => item.id == quarterId);
@@ -163,10 +164,32 @@ const getTableData = ({
         id: `${prevQuarterId}-${prevMonthId}-percentage`,
         value: formattedPercentageChange,
       });
+
+      console.log('>>>>>>>>>>>>>>>>>>>>metricValue', metricValue);
+      logs.push({
+        id: `${quarterId}-${monthId}-log`,
+        label: `${_.find(months, (month) => month.id == monthId)?.month}-${
+          quarter?.year
+        }`,
+        value: _.map(metricValue?.logs, (item) => {
+          const changeDate = new Date(item.change_date);
+          const formattedDate = changeDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          });
+          return `${item?.changed_by} changed value from ${item.old_value} to ${item.new_value} on ${formattedDate}`;
+        }),
+      });
     });
   });
 
-  return { tableHeaders, tableValues, tablePercentages };
+  return {
+    tableHeaders,
+    tableValues,
+    tablePercentages,
+    logs: _.filter(logs, (item) => !_.isEmpty(item.value)),
+  };
 };
 
 const Kpi = () => {
@@ -176,9 +199,10 @@ const Kpi = () => {
   const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
   const [selectedMetric, setSelectedMetric] = useState('');
   const [months, setMonths] = useState([]);
-
   const [allValues, setAllValues] = useState([]);
   const [metricValues, setMetricValues] = useState([]);
+  const [showLogsModal, setShowLogsModal] = useState(false);
+
   const { startup_id } = useParams();
 
   useEffect(() => {
@@ -284,7 +308,15 @@ const Kpi = () => {
 
   const onSave = () => {};
 
-  const { tableHeaders, tableValues, tablePercentages } = getTableData({
+  const onClickLogButton = () => {
+    setShowLogsModal(true);
+  };
+
+  const closeModal = () => {
+    setShowLogsModal(false);
+  };
+
+  const { tableHeaders, tableValues, tablePercentages, logs } = getTableData({
     timePeriods,
     selectedTimePeriod,
     selectedMetric,
@@ -293,6 +325,7 @@ const Kpi = () => {
     metricValues: allValues,
   });
 
+  console.log('********metricValues*********', { logs });
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>
@@ -330,7 +363,10 @@ const Kpi = () => {
             ))}
           </select>
         </div>
-        <Button name={'Save'} onClick={onSave} />
+        <div className={classes.buttonContainer}>
+          <Button name={'View changed logs'} onClick={onClickLogButton} />
+          <Button name={'Save'} onClick={onSave} />
+        </div>
       </div>
 
       <div className={classes.bottomContainer}>
@@ -376,6 +412,45 @@ const Kpi = () => {
           </tbody>
         </table>
       </div>
+      {showLogsModal && (
+        <div className={classes.modalBackground}>
+          <div className={classes.modal}>
+            <div className={classes.modalContent}>
+              <div className={classes.modalTopContent}>{'Changed Logs'}</div>
+              <div
+                className={classes.signature}
+                style={_.isEmpty(logs) ? { justifyContent: 'center' } : {}}
+              >
+                {_.isEmpty(logs) ? (
+                  <div>{'No logs'} </div>
+                ) : (
+                  <div className={classes.logs}>
+                    {_.map(logs, (item) => {
+                      return (
+                        <div className={classes.log}>
+                          <h4>{item?.label}</h4>
+                          <div className={classes.log}>
+                            {_.map(item?.value, (i) => (
+                              <span>{i}</span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <div className={classes.buttons}>
+                <Button
+                  name={'Close'}
+                  onClick={closeModal}
+                  customStyles={{ backgroundColor: '#ff6d6d' }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

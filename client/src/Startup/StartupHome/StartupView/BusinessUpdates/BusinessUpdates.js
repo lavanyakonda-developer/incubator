@@ -48,7 +48,6 @@ const BusinessUpdates = () => {
 
         if (response.status === 200) {
           const data = response.data;
-          console.log('*******', data?.timePeriods);
           setTimePeriods(data?.timePeriods);
 
           const currentDate = new Date();
