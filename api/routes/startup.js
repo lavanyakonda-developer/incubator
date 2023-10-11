@@ -16,6 +16,7 @@ import {
   getMetricValues,
   getMie,
   updateMie,
+  getMonths,
 } from '../controllers/startup.js';
 
 const router = express.Router();
@@ -35,6 +36,9 @@ router.post('/update-business-update-answers', updateBusinessUpdatesAnswers);
 router.post('/get-time-periods', timePeriods);
 
 router.post('/get-metrics', getMetrics);
+router.post('/get-months', getMonths);
+
+//TODO : IS THIS REQUIRED?
 router.post('/get-quarter-details', QuarterDetails);
 
 router.post('/get-metric-values', getMetricValues);

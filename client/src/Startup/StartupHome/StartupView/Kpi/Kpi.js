@@ -10,21 +10,37 @@ const Kpi = () => {
   const [metrics, setMetrics] = useState([]);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
   const [selectedMetric, setSelectedMetric] = useState('');
+  const [months, setMonths] = useState([]);
+
+  const [metricValues, setMetricValues] = useState([]);
   const { startup_id } = useParams();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const timePeriodsResponse = await makeRequest.post(
-          `startup/get-time-periods`
+          `startup/get-time-periods`,
+          {
+            startup_id,
+          }
         );
         const metricsResponse = await makeRequest.post(`startup/get-metrics`, {
           startup_id,
         });
 
+        const metricValuesResponse = await makeRequest.post(
+          `startup/get-metric-values`,
+          {
+            startup_id,
+          }
+        );
+
+        const monthsResponse = await makeRequest.post(`startup/get-months`);
+
         if (
           timePeriodsResponse.status === 200 &&
-          metricsResponse.status === 200
+          metricsResponse.status === 200 &&
+          metricValuesResponse.status === 200
         ) {
           const timePeriodsData = timePeriodsResponse.data;
           setTimePeriods(_.get(timePeriodsData, 'timePeriods', []));
@@ -49,6 +65,12 @@ const Kpi = () => {
 
           setMetrics(_.get(metricsData, 'metrics', []));
           setSelectedMetric(_.first(metricsData?.metrics)?.uid);
+
+          const metricValuesData = metricValuesResponse.data;
+
+          setMetricValues(_.get(metricValuesData, 'metricValues', []));
+
+          setMonths(_.get(monthsResponse, 'data.months'), []);
         } else {
           console.error(
             'Error fetching data:',
@@ -66,7 +88,13 @@ const Kpi = () => {
 
   const onSave = () => {};
 
-  console.log('metrics', metrics);
+  console.log(
+    'metrics, metricValues',
+    metrics,
+    metricValues,
+    months,
+    timePeriods
+  );
 
   return (
     <div className={classes.container}>

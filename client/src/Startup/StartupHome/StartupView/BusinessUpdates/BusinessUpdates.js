@@ -42,7 +42,9 @@ const BusinessUpdates = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await makeRequest.post(`startup/get-time-periods`);
+        const response = await makeRequest.post(`startup/get-time-periods`, {
+          startup_id,
+        });
 
         if (response.status === 200) {
           const data = response.data;

@@ -344,14 +344,61 @@ export const addSupplementaryDocument = async (req, res) => {
   }
 };
 
-//TODO : Make it dynamic according to years
-
 export const timePeriods = async (req, res) => {
   try {
-    const fetchTimePeriods = 'SELECT * FROM time_periods';
+    const { startup_id } = req.body;
+    const fetchStartupCreatedAt =
+      'SELECT created_at FROM startups WHERE id = ?';
 
-    const timePeriods = await query(fetchTimePeriods);
-    return res.send({ timePeriods });
+    const startupCreatedAtData = await query(fetchStartupCreatedAt, [
+      startup_id,
+    ]);
+
+    const startupCreatedAt = startupCreatedAtData[0]['created_at'];
+
+    // Assuming startupCreatedAt is a Date object representing the startup's creation date
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // Adding 1 because months are 0-indexed in JavaScript Date
+
+    const fetchTimePeriods = `
+    SELECT *
+    FROM time_periods
+    WHERE
+      year > ?
+      OR (year = ? AND ? >= JSON_UNQUOTE(JSON_EXTRACT(months, '$[0]')))
+      OR (year = ? AND ? <= JSON_UNQUOTE(JSON_EXTRACT(months, '$[0]')))
+  `;
+
+    const timePeriods = await query(fetchTimePeriods, [
+      startupCreatedAt.getFullYear(),
+      currentYear,
+      currentMonth,
+      startupCreatedAt.getFullYear(),
+      startupCreatedAt.getMonth(),
+    ]);
+
+    const sortedTimePeriods = _.orderBy(
+      timePeriods,
+      [
+        (period) => parseInt(period.year),
+        (period) => {
+          const monthsArray = JSON.parse(period.months);
+          return _.max(monthsArray); // Get the maximum month value
+        },
+      ],
+      ['desc', 'desc']
+    );
+
+    const updatedTimePeriods = _.map(sortedTimePeriods, (period) => {
+      return {
+        ...period,
+        quarter: `${period.quarter}-${period.year}`,
+        months: JSON.parse(period.months),
+      };
+    });
+
+    return res.send({ timePeriods: updatedTimePeriods });
   } catch (error) {
     return res.send({ message: error });
   }
@@ -373,6 +420,18 @@ export const QuarterDetails = async (req, res) => {
 
     const quarterMonths = await query(fetchMonthsDetails, JSON.parse(months));
     return res.send({ months: quarterMonths });
+  } catch (error) {
+    return res.send({ message: error });
+  }
+};
+
+export const getMonths = async (req, res) => {
+  try {
+    const fetchMonths = 'SELECT * FROM months';
+
+    const months = await query(fetchMonths);
+
+    return res.send({ months });
   } catch (error) {
     return res.send({ message: error });
   }
@@ -460,7 +519,7 @@ export const getMetrics = async (req, res) => {
 };
 
 export const updateMetricValues = async (req, res) => {
-  const { startup_id, values } = req.body;
+  const { startup_id, values, user } = req.body;
 
   try {
     await Promise.all(
@@ -474,7 +533,7 @@ export const updateMetricValues = async (req, res) => {
 
         // Check if a metric value for the startup and metric_uid already exists
         const existingMetricQuery =
-          'SELECT id FROM metric_values WHERE startup_id = ? , metric_uid = ?, month_id = ? AND time_period = ?';
+          'SELECT id, value FROM metric_values WHERE startup_id = ? AND metric_uid = ? AND month_id = ? AND time_period = ?';
 
         const [existingMetric] = await query(existingMetricQuery, [
           startup_id,
@@ -488,16 +547,38 @@ export const updateMetricValues = async (req, res) => {
           const updateMetricQuery =
             'UPDATE metric_values SET value = ? WHERE id = ?';
           await query(updateMetricQuery, [metric_value, existingMetric.id]);
+
+          // Insert a record into the metric_value_changes table to log the change
+          const insertChangeLogQuery =
+            'INSERT INTO metric_value_changes (`metric_value_id`, `old_value`, `new_value`, `change_date`, `changed_by`) VALUES (?, ?, ?, ?, ?)';
+          await query(insertChangeLogQuery, [
+            existingMetric.id,
+            existingMetric.value, // Store the old value
+            metric_value, // Store the new value
+            new Date(), // Current date and time
+            user.email,
+          ]);
         } else {
           // Metric value does not exist, create a new metric value
           const insertMetricQuery =
             'INSERT INTO metric_values (`startup_id`, `time_period`, `month_id`, `value`, `metric_uid`) VALUES (?, ?, ?, ?, ?)';
-          await query(insertMetricQuery, [
+          const { insertId } = await query(insertMetricQuery, [
             startup_id,
             time_period,
             month_id,
             metric_value,
             metric_uid,
+          ]);
+
+          // Insert a record into the metric_value_changes table to log the change
+          const insertChangeLogQuery =
+            'INSERT INTO metric_value_changes (`metric_value_id`, `old_value`, `new_value`, `change_date`, `changed_by`) VALUES (?, ?, ?, ?, ?)';
+          await query(insertChangeLogQuery, [
+            insertId,
+            '',
+            metric_value, // Store the new value
+            new Date(), // Current date and time
+            user.email,
           ]);
         }
       })
@@ -514,9 +595,42 @@ export const getMetricValues = async (req, res) => {
 
   try {
     const getMetricValuesQuery =
-      'SELECT * from metric_values WHERE startup_id = ?';
+      'SELECT mv.*, mvc.old_value, mvc.new_value, mvc.change_date, mvc.changed_by ' +
+      'FROM metric_values mv ' +
+      'LEFT JOIN metric_value_changes mvc ON mv.id = mvc.metric_value_id ' +
+      'WHERE mv.startup_id = ?';
 
-    const metricValues = await query(getMetricValuesQuery, [startup_id]);
+    const metricValuesWithLogs = await query(getMetricValuesQuery, [
+      startup_id,
+    ]);
+
+    // Group metric values by their unique identifiers
+    const metricValuesGrouped = _.reduce(
+      metricValuesWithLogs,
+      (result, row) => {
+        const { id, ...metricValueData } = row;
+        if (!result[id]) {
+          result[id] = {
+            ...metricValueData,
+            logs: [], // Initialize logs array
+          };
+        }
+        // Append change log to logs array
+        if (row.old_value !== null && row.new_value !== null) {
+          result[id].logs.push({
+            old_value: row.old_value,
+            new_value: row.new_value,
+            change_date: row.change_date,
+            changed_by: row.changed_by,
+          });
+        }
+        return result;
+      },
+      {}
+    );
+
+    // Convert the object of grouped metric values back to an array
+    const metricValues = Object.values(metricValuesGrouped);
 
     return res.send({ metricValues });
   } catch (error) {
