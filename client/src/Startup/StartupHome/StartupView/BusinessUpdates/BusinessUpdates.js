@@ -124,7 +124,6 @@ const BusinessUpdates = () => {
           }}
           value={_.find(timePeriods, { id: selectedTimePeriod })?.quarter || ''}
         >
-          <option value=''>Select</option>
           {_.map(timePeriods, (option) => (
             <option key={option.id} value={option.quarter}>
               {option.quarter}

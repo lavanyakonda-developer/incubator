@@ -261,7 +261,6 @@ const Questionnaire = ({
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ''}
           >
-            <option value=''>Select</option>
             {_.map(metaData, (option) => (
               <option key={option.key} value={option.key}>
                 {option.label}

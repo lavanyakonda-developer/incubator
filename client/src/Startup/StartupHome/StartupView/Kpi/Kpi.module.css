@@ -1,3 +1,9 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
 .topContainer {
   display: flex;
   justify-content: space-between;
@@ -8,4 +14,23 @@
   display: flex;
   gap: 20px;
   width: 100%;
+}
+
+.bottomContainer {
+  overflow-x: auto;
+}
+
+.myTable {
+  width: 100%;
+  text-align: left;
+  max-width: 100%;
+  overflow: auto;
+  border-collapse: collapse;
+}
+
+.cellValue,
+.cellLabel {
+  min-width: 50px;
+  padding: 8px;
+  border: 1px solid #000;
 }

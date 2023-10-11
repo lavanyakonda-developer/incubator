@@ -24,14 +24,70 @@ const getUpdatedTimePeriods = ({ timePeriods }) => {
     ...financialYears,
     {
       ids: _.map(timePeriods, (item) => item.id),
-      id: 'all',
+      id: 'ALL',
       quarter: 'All years',
+      months: _.uniq(_.flatMap(timePeriods, 'months')),
     },
   ];
 };
 
+const getTableData = ({
+  timePeriods,
+  selectedTimePeriod,
+  allQuarters,
+  months,
+  metricValues,
+  selectedMetric,
+}) => {
+  const selectedTimePeriodData = _.find(
+    timePeriods,
+    (item) => item.id == selectedTimePeriod
+  );
+  const quarterIds = _.get(selectedTimePeriodData, 'ids', []);
+  const tableHeaders = [];
+  const tableValues = [];
+
+  _.forEach(quarterIds, (quarterId) => {
+    const quarter = _.find(allQuarters, (item) => item.id == quarterId);
+    const monthIds = _.get(quarter, 'months', []);
+
+    _.forEach(monthIds, (monthId) => {
+      tableHeaders.push({
+        id: `${quarterId}-${monthId}-header`,
+        label:
+          selectedTimePeriod == 'ALL'
+            ? `${_.find(months, (month) => month.id == monthId)?.month}-${
+                quarter?.year
+              }`
+            : _.find(months, (month) => month.id == monthId)?.month,
+      });
+
+      const metricValue = _.find(
+        metricValues,
+        (item) =>
+          item.month_id == monthId &&
+          item.time_period == quarterId &&
+          item.metric_uid == selectedMetric
+      );
+
+      console.log('******', metricValue, metricValues, monthId, quarterId);
+
+      tableValues.push({
+        id: `${quarterId}-${monthId}-value`,
+        value: metricValue?.value,
+        time_period: quarterId,
+        month_id: monthId,
+        metric_uid: metricValue?.metric_uid,
+      });
+    });
+  });
+
+  return { tableHeaders, tableValues };
+};
+
 const Kpi = () => {
   const [timePeriods, setTimePeriods] = useState([]);
+  const [allQuarters, setAllQuarters] = useState([]);
   const [metrics, setMetrics] = useState([]);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
   const [selectedMetric, setSelectedMetric] = useState('');
@@ -69,6 +125,7 @@ const Kpi = () => {
           metricValuesResponse.status === 200
         ) {
           const timePeriodsData = timePeriodsResponse.data;
+          setAllQuarters(_.get(timePeriodsData, 'timePeriods', []));
           const updatedTimePeriods = getUpdatedTimePeriods({
             timePeriods: _.get(timePeriodsData, 'timePeriods', []),
           });
@@ -151,6 +208,16 @@ const Kpi = () => {
     timePeriods
   );
 
+  const { tableHeaders, tableValues } = getTableData({
+    timePeriods,
+    selectedTimePeriod,
+    selectedMetric,
+    allQuarters,
+    months,
+    metricValues: allValues,
+  });
+
+  console.log('tableValues', tableValues);
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>
@@ -166,7 +233,6 @@ const Kpi = () => {
               _.find(timePeriods, { id: selectedTimePeriod })?.quarter || ''
             }
           >
-            <option value=''>Select</option>
             {_.map(timePeriods, (option) => (
               <option key={option.id} value={option.quarter}>
                 {option.quarter}
@@ -182,7 +248,6 @@ const Kpi = () => {
             }}
             value={_.find(metrics, { uid: selectedMetric })?.label || ''}
           >
-            <option value=''>Select</option>
             {_.map(metrics, (option) => (
               <option key={option.uid} value={option.label}>
                 {option.label}
@@ -191,6 +256,40 @@ const Kpi = () => {
           </select>
         </div>
         <Button name={'Save'} onClick={onSave} />
+      </div>
+
+      <div className={classes.bottomContainer}>
+        <table className={classes.myTable}>
+          <thead>
+            <tr>
+              <th className={classes.cellLabel}>
+                {
+                  _.find(timePeriods, (item) => item.id == selectedTimePeriod)
+                    ?.quarter
+                }
+              </th>
+              {_.map(tableHeaders, (header) => {
+                return (
+                  <th key={header.id} className={classes.cellLabel}>
+                    {header.label}
+                  </th>
+                );
+              })}
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td className={classes.cellLabel}>Values</td>
+              {_.map(tableValues, (value) => {
+                return (
+                  <td key={value.id} className={classes.cellValue}>
+                    {value?.value}
+                  </td>
+                );
+              })}
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   );
