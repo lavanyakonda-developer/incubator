@@ -382,7 +382,6 @@ const Kpi = () => {
     metricValues: allValues,
   });
 
-  console.log('********metricValues*********', tableHeaders, tableValues);
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>

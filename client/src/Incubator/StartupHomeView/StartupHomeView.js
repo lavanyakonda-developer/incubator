@@ -7,9 +7,11 @@ import classes from './StartupHomeView.module.css';
 import { questions } from '../RegisterStartup/helper.js';
 import StartupView from '../../Startup/StartupHome/StartupView';
 import { renderQuestions, DocumentsContainer } from './helper';
+import { isAuthenticated } from '../../auth/helper';
 
 const StartupHomeView = () => {
   const { startup_id } = useParams();
+  const { user } = isAuthenticated();
 
   const [rejectMessage, setRejectMessage] = useState('');
   const [showRejectBox, setShowRejectBox] = useState(false);
@@ -83,7 +85,11 @@ const StartupHomeView = () => {
           'name',
           ''
         )} but the founders haven't registered yet`}
-        <Button shouldRedirect={true} redirectUrl={`/`} name={'Go Home'} />
+        <Button
+          shouldRedirect={true}
+          redirectUrl={`/incubator/${user?.incubator_id}/home`}
+          name={'Go Home'}
+        />
       </div>
     );
   };
@@ -98,7 +104,11 @@ const StartupHomeView = () => {
             ''
           )}`}
         </span>
-        <Button shouldRedirect={true} redirectUrl={`/`} name={'Go Home'} />
+        <Button
+          shouldRedirect={true}
+          redirectUrl={`/incubator/${user?.incubator_id}/home`}
+          name={'Go Home'}
+        />
       </div>
     );
   };
@@ -115,7 +125,11 @@ const StartupHomeView = () => {
             )} has submitted onboarding details. Please review and approve for incubatee list`}
           </div>
           <div className={classes.buttonContainer}>
-            <Button shouldRedirect={true} redirectUrl={`/`} name={'Go Home'} />
+            <Button
+              shouldRedirect={true}
+              redirectUrl={`/incubator/${user?.incubator_id}/home`}
+              name={'Go Home'}
+            />
             <Button
               onClick={handleReject}
               name={'Reject'}

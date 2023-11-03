@@ -110,7 +110,6 @@ const StartupOnboarding = () => {
 
   // Function to handle saving the data in the current tab
   const handleSave = async () => {
-    console.log('Here clicked handleSave');
     const data = getModifiedData(false);
     try {
       const response = await makeRequest.post('startup/update-startup', {

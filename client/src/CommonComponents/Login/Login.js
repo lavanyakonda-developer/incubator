@@ -8,7 +8,6 @@ import { authenticate } from '../../auth/helper';
 const Login = (props) => {
   const { isIncubator = false } = props;
 
-  console.log('**************Here', isIncubator);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');

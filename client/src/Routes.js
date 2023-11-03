@@ -41,23 +41,26 @@ const AppRoutes = () => {
           }
         />
 
-        {/* <Route
+        <Route
           path='/incubator-login'
           element={
-            <Navigate
-              replace={true}
-              to={
-                token && user?.incubator_id && isIncubatorFounder
-                  ? `/incubator/${user?.incubator_id}/home`
-                  : token && user?.startup_id && isStartupFounder
-                  ? `/startup/${user?.startup_id}/home`
-                  : '/incubator-login'
-              }
-            />
+            token &&
+            ((user?.incubator_id && isIncubatorFounder) ||
+              (user?.startup_id && isStartupFounder)) ? (
+              <Navigate
+                replace={true}
+                to={
+                  isIncubatorFounder
+                    ? `/incubator/${user?.incubator_id}/home`
+                    : `/startup/${user?.startup_id}/home`
+                }
+              />
+            ) : (
+              <IncubatorLogin />
+            )
           }
-        /> */}
+        />
 
-        <Route path='/incubator-login' element={<IncubatorLogin />} />
         <Route
           path={`/incubator/:incubator_id/home/register-startup`}
           element={<RegisterStartup incubatorId={user?.incubator_id} />}
@@ -77,43 +80,45 @@ const AppRoutes = () => {
         />
 
         {/* Startup Routes */}
-        {/* <Route
+
+        <Route
           path='/startup-login'
           element={
-            <Navigate
-              replace={true}
-              to={
-                token && user?.incubator_id && isIncubatorFounder
-                  ? `/incubator/${user?.incubator_id}/home`
-                  : token && user?.startup_id && isStartupFounder
-                  ? `/startup/${user?.startup_id}/home`
-                  : '/startup-login'
-              }
-            />
+            token &&
+            ((user?.incubator_id && isIncubatorFounder) ||
+              (user?.startup_id && isStartupFounder)) ? (
+              <Navigate
+                replace={true}
+                to={
+                  isIncubatorFounder
+                    ? `/incubator/${user?.incubator_id}/home`
+                    : `/startup/${user?.startup_id}/home`
+                }
+              />
+            ) : (
+              <StartupLogin />
+            )
           }
-        /> */}
+        />
 
-        <Route path='/startup-login' element={<StartupLogin />} />
-        {/* 
         <Route
           path='/startup-founder-registration'
           element={
-            <Navigate
-              replace={true}
-              to={
-                token && user?.incubator_id && isIncubatorFounder
-                  ? `/incubator/${user?.incubator_id}/home`
-                  : token && user?.startup_id && isStartupFounder
-                  ? `/startup/${user?.startup_id}/home`
-                  : '/startup-founder-registration'
-              }
-            />
+            token &&
+            ((user?.incubator_id && isIncubatorFounder) ||
+              (user?.startup_id && isStartupFounder)) ? (
+              <Navigate
+                replace={true}
+                to={
+                  isIncubatorFounder
+                    ? `/incubator/${user?.incubator_id}/home`
+                    : `/startup/${user?.startup_id}/home`
+                }
+              />
+            ) : (
+              <StartupFounderRegister />
+            )
           }
-        /> */}
-
-        <Route
-          path='/startup-founder-registration'
-          element={<StartupFounderRegister />}
         />
 
         <Route

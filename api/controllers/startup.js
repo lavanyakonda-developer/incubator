@@ -647,10 +647,8 @@ export const getMie = async (req, res) => {
 
     const mie = await query(getMieQuery, [startup_id]);
 
-    console.log('>>>>>', mie?.[0]);
     return res.send({ mie: _.get(mie, '0.mie', '') });
   } catch (error) {
-    console.log('error>>>>.', error);
     return res.send({ message: error });
   }
 };

@@ -18,7 +18,6 @@ const Mie = () => {
         if (response.status === 200) {
           const data = response.data;
           setMie(data?.mie);
-          console.log({ data });
         } else {
           console.error('Error fetching data:', response.statusText);
         }
