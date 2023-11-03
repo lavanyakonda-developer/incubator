@@ -4,6 +4,64 @@ import classes from './Kpi.module.css';
 import _ from 'lodash';
 import { useParams } from 'react-router-dom';
 import { Button } from '../../../../CommonComponents';
+import { Line } from 'react-chartjs-2';
+import { Chart, registerables } from 'chart.js';
+
+const LineGraph = (props) => {
+  const { tableHeaders, tableValues } = props;
+  // Sample data (replace with your data)
+  const data = {
+    labels: _.map(tableHeaders, (item) => item?.label),
+    datasets: [
+      {
+        data: _.map(tableValues, (item) => item?.value),
+        borderColor: '#6d48ff',
+        borderWidth: 2,
+        fill: false,
+      },
+    ],
+  };
+
+  const options = {
+    maintainAspectRatio: false,
+    legend: {
+      display: false,
+    },
+    plugins: {
+      legend: false,
+    },
+    scales: {
+      x: [
+        {
+          type: 'category', // Specify the scale type as 'category'
+          ticks: {
+            autoSkip: true,
+            maxTicksLimit: 10,
+          },
+        },
+      ],
+      y: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+    tooltips: {
+      mode: 'index',
+      intersect: false,
+    },
+  };
+
+  return (
+    <div style={{ height: '500px' }}>
+      <Line data={data} options={options} />
+    </div>
+  );
+};
+
+Chart.register(...registerables);
 
 const getUpdatedTimePeriods = ({ timePeriods }) => {
   const updatedTimePeriods = _.map(timePeriods, (period, index) => {
@@ -165,7 +223,6 @@ const getTableData = ({
         value: formattedPercentageChange,
       });
 
-      console.log('>>>>>>>>>>>>>>>>>>>>metricValue', metricValue);
       logs.push({
         id: `${quarterId}-${monthId}-log`,
         label: `${_.find(months, (month) => month.id == monthId)?.month}-${
@@ -325,7 +382,7 @@ const Kpi = () => {
     metricValues: allValues,
   });
 
-  console.log('********metricValues*********', { logs });
+  console.log('********metricValues*********', tableHeaders, tableValues);
   return (
     <div className={classes.container}>
       <div className={classes.topContainer}>
@@ -370,47 +427,51 @@ const Kpi = () => {
       </div>
 
       <div className={classes.bottomContainer}>
-        <table className={classes.myTable}>
-          <thead>
-            <tr>
-              <th className={classes.cellLabel}>
-                {
-                  _.find(timePeriods, (item) => item.id == selectedTimePeriod)
-                    ?.quarter
-                }
-              </th>
-              {_.map(tableHeaders, (header) => {
-                return (
-                  <th key={header.id} className={classes.cellLabel}>
-                    {header.label}
-                  </th>
-                );
-              })}
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className={classes.cellLabel}>Values</td>
-              {_.map(tableValues, (value) => {
-                return (
-                  <td key={value.id} className={classes.cellValue}>
-                    {value?.value}
-                  </td>
-                );
-              })}
-            </tr>
-            <tr>
-              <td className={classes.cellLabel}>Percentages</td>
-              {_.map(tablePercentages, (value) => {
-                return (
-                  <td key={value.id} className={classes.cellValue}>
-                    {value?.value}
-                  </td>
-                );
-              })}
-            </tr>
-          </tbody>
-        </table>
+        <div className={classes.tableContainer}>
+          <table className={classes.myTable}>
+            <thead>
+              <tr>
+                <th className={classes.cellLabel}>
+                  {
+                    _.find(timePeriods, (item) => item.id == selectedTimePeriod)
+                      ?.quarter
+                  }
+                </th>
+                {_.map(tableHeaders, (header) => {
+                  return (
+                    <th key={header.id} className={classes.cellLabel}>
+                      {header.label}
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className={classes.cellLabel}>Values</td>
+                {_.map(tableValues, (value) => {
+                  return (
+                    <td key={value.id} className={classes.cellValue}>
+                      {value?.value}
+                    </td>
+                  );
+                })}
+              </tr>
+              <tr>
+                <td className={classes.cellLabel}>Percentages</td>
+                {_.map(tablePercentages, (value) => {
+                  return (
+                    <td key={value.id} className={classes.cellValue}>
+                      {value?.value}
+                    </td>
+                  );
+                })}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <LineGraph tableHeaders={tableHeaders} tableValues={tableValues} />
       </div>
       {showLogsModal && (
         <div className={classes.modalBackground}>

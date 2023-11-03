@@ -108,3 +108,14 @@
   flex-direction: column;
   gap: 4px;
 }
+
+.bottomContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+  width: 100%;
+}
+
+.tableContainer {
+  overflow-x: auto;
+}

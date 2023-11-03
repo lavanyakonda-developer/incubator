@@ -41,7 +41,7 @@ const AppRoutes = () => {
           }
         />
 
-        <Route
+        {/* <Route
           path='/incubator-login'
           element={
             <Navigate
@@ -55,7 +55,7 @@ const AppRoutes = () => {
               }
             />
           }
-        />
+        /> */}
 
         <Route path='/incubator-login' element={<IncubatorLogin />} />
         <Route
@@ -77,7 +77,7 @@ const AppRoutes = () => {
         />
 
         {/* Startup Routes */}
-        <Route
+        {/* <Route
           path='/startup-login'
           element={
             <Navigate
@@ -91,10 +91,10 @@ const AppRoutes = () => {
               }
             />
           }
-        />
+        /> */}
 
         <Route path='/startup-login' element={<StartupLogin />} />
-
+        {/* 
         <Route
           path='/startup-founder-registration'
           element={
@@ -109,7 +109,7 @@ const AppRoutes = () => {
               }
             />
           }
-        />
+        /> */}
 
         <Route
           path='/startup-founder-registration'
