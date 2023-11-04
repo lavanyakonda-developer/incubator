@@ -48,7 +48,7 @@ const Mie = () => {
         {!isIncubatorFounder && <Button name={'Save'} onClick={onSave} />}
       </div>
       <textarea
-        style={{ width: '90%', marginTop: 60 }}
+        style={{ width: '90%', marginTop: 60, color: 'black', padding: 16 }}
         onChange={(e) => setMie(e.target.value)}
         value={mie}
         rows={10}

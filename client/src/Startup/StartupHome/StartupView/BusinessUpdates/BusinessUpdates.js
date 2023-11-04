@@ -138,7 +138,7 @@ const BusinessUpdates = () => {
             <>
               <h4>{question?.question}</h4>
               <textarea
-                style={{ width: '90%' }}
+                style={{ width: '90%', color: 'black', padding: 12 }}
                 onChange={(e) =>
                   handleAnswerChange(question.uid, e.target.value)
                 }
