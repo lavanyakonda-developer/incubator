@@ -80,11 +80,11 @@ const StartupHomeView = () => {
   const PendingComponent = () => {
     return (
       <div className={classes.waitingContainer}>
-        {`You have initiated the onboarding for ${_.get(
+        {`You have initiated the onboarding for "${_.get(
           basicDetails,
           'name',
           ''
-        )} but the founders haven't registered yet`}
+        )}" but the founders haven't registered yet`}
         <Button
           shouldRedirect={true}
           redirectUrl={`/incubator/${user?.incubator_id}/home`}
@@ -98,11 +98,11 @@ const StartupHomeView = () => {
     return (
       <div className={classes.rejectBox}>
         <span className={classes.text}>
-          {`You have rejected the startup onboarding with the following message: ${_.get(
+          {`You have rejected the startup onboarding with the following message: "${_.get(
             basicDetails,
             'reject_message',
             ''
-          )}`}
+          )}"`}
         </span>
         <Button
           shouldRedirect={true}

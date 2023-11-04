@@ -37,27 +37,39 @@ const ReferralCode = ({
           </div>
           {!_.isEmpty(basicDetails?.coFounders) && (
             <div className={classes.coFoundersList}>
-              <label>Co-Founders:</label>
-              {_.map(basicDetails?.coFounders, (coFounder, index) => (
-                <>
-                  <div className={classes.info}>
-                    <label>Co-Founder Name:</label>
-                    <p>{coFounder.name}</p>
-                  </div>
-                  <div className={classes.info}>
-                    <label>Co-Founder Role:</label>
-                    <p>{coFounder.designation}</p>
-                  </div>
-                  <div className={classes.info}>
-                    <label>Co-Founder Email:</label>
-                    <p>{coFounder.email}</p>
-                  </div>
-                  <div className={classes.info}>
-                    <label>Co-Founder Mobile:</label>
-                    <p>{coFounder.phone_number}</p>
-                  </div>
-                </>
-              ))}
+              {_.some(basicDetails?.coFounders, (coFounder, index) => {
+                return (
+                  !_.isEmpty(coFounder.name) ||
+                  !_.isEmpty(coFounder.designation) ||
+                  !_.isEmpty(coFounder.email) ||
+                  !_.isEmpty(coFounder.phone_number)
+                );
+              }) && <label>Co-Founders:</label>}
+              {_.map(basicDetails?.coFounders, (coFounder, index) => {
+                return !_.isEmpty(coFounder.name) ||
+                  !_.isEmpty(coFounder.designation) ||
+                  !_.isEmpty(coFounder.email) ||
+                  !_.isEmpty(coFounder.phone_number) ? (
+                  <>
+                    <div className={classes.info}>
+                      <label>Co-Founder Name:</label>
+                      <p>{coFounder.name}</p>
+                    </div>
+                    <div className={classes.info}>
+                      <label>Co-Founder Role:</label>
+                      <p>{coFounder.designation}</p>
+                    </div>
+                    <div className={classes.info}>
+                      <label>Co-Founder Email:</label>
+                      <p>{coFounder.email}</p>
+                    </div>
+                    <div className={classes.info}>
+                      <label>Co-Founder Mobile:</label>
+                      <p>{coFounder.phone_number}</p>
+                    </div>
+                  </>
+                ) : null;
+              })}
             </div>
           )}
           <div className={classes.info}>

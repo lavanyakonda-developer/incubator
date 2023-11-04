@@ -198,7 +198,6 @@ const RegisterStartup = (props) => {
   const handleSave = async () => {
     const data = getModifiedData(false);
 
-   
     try {
       const response = await makeRequest.post('api/auth/startup-register', {
         ...data,
@@ -269,10 +268,16 @@ const RegisterStartup = (props) => {
     (!_.isEmpty(startupInfo.basicDetails.coFounders) &&
       _.some(startupInfo.basicDetails.coFounders, (item) => {
         return (
-          _.isEmpty(item.name) ||
-          _.isEmpty(item.designation) ||
-          _.isEmpty(item.phone_number) ||
-          _.isEmpty(item.email)
+          (_.isEmpty(item.name) ||
+            _.isEmpty(item.designation) ||
+            _.isEmpty(item.phone_number) ||
+            _.isEmpty(item.email)) &&
+          !(
+            _.isEmpty(item.name) &&
+            _.isEmpty(item.designation) &&
+            _.isEmpty(item.phone_number) &&
+            _.isEmpty(item.email)
+          )
         );
       }));
 
@@ -320,6 +325,7 @@ const RegisterStartup = (props) => {
           <DetailedQuestionnaire
             questionnaireData={startupInfo.questionnaire}
             onDraftExit={handleDraftExit}
+            onBack={handleBack}
             onCancel={handleCancel}
             onNext={handleNext}
             onSave={handleSave}
@@ -346,6 +352,7 @@ const RegisterStartup = (props) => {
             color: 'black',
             justifyContent: 'left',
             backgroundColor: '#f0f0f0',
+            padding: '24px 16px',
           }}
         />
         <div className={classes.tabMenu}>

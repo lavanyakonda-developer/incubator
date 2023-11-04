@@ -260,7 +260,8 @@ const Kpi = () => {
   const [metricValues, setMetricValues] = useState([]);
   const [showLogsModal, setShowLogsModal] = useState(false);
 
-  const { startup_id } = useParams();
+  const { startup_id, incubator_id: incubatorId } = useParams();
+  const isIncubatorFounder = !_.isEmpty(incubatorId);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -419,9 +420,14 @@ const Kpi = () => {
             ))}
           </select>
         </div>
+
         <div className={classes.buttonContainer}>
-          <Button name={'View changed logs'} onClick={onClickLogButton} />
-          <Button name={'Save'} onClick={onSave} />
+          <Button
+            name={'View changed logs'}
+            onClick={onClickLogButton}
+            customStyles={{ width: 'max-content' }}
+          />
+          {!isIncubatorFounder && <Button name={'Save'} onClick={onSave} />}
         </div>
       </div>
 

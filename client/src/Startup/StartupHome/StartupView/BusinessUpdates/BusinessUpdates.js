@@ -10,7 +10,8 @@ const BusinessUpdates = () => {
   const [timePeriods, setTimePeriods] = useState([]);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
   const [businessUpdateAnswers, setBusinessUpdateAnswers] = useState([]);
-  const { startup_id } = useParams();
+  const { startup_id, incubator_id: incubatorId } = useParams();
+  const isIncubatorFounder = !_.isEmpty(incubatorId);
 
   const handleAnswerChange = (uid, value) => {
     // Check if an answer with the same UID exists in the array
@@ -129,7 +130,7 @@ const BusinessUpdates = () => {
             </option>
           ))}
         </select>
-        <Button name={'Save'} onClick={onSave} />
+        {!isIncubatorFounder && <Button name={'Save'} onClick={onSave} />}
       </div>
       <div className={classes.bottomContainer}>
         {_.map(businessUpdateQuestions, (question) => {
@@ -146,6 +147,7 @@ const BusinessUpdates = () => {
                     uid: question.uid,
                   })?.answer || ''
                 }
+                disabled={isIncubatorFounder}
               />
             </>
           );

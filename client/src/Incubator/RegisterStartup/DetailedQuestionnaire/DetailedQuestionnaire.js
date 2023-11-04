@@ -128,7 +128,11 @@ const DetailedQuestionnaire = ({
             disabled={disableDraft}
             customStyles={{ backgroundColor: '#ccc' }}
           />
-          <Button name={'Back'} onClick={onBack} />
+          <Button
+            name={'Back'}
+            onClick={onBack}
+            customStyles={{ backgroundColor: '#ff6d6d' }}
+          />
           <Button
             name={'Cancel'}
             onClick={onCancel}

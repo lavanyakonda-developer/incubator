@@ -12,7 +12,7 @@
 .buttonContainer {
   display: flex;
   gap: 16px;
-  width: 30%;
+  /* width: 30%; */
 }
 
 .dropdowns {

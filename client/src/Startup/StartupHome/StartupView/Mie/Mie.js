@@ -6,7 +6,8 @@ import { useParams } from 'react-router-dom';
 import { Button } from '../../../../CommonComponents';
 
 const Mie = () => {
-  const { startup_id } = useParams();
+  const { startup_id, incubator_id: incubatorId } = useParams();
+  const isIncubatorFounder = !_.isEmpty(incubatorId);
   const [mie, setMie] = useState('');
 
   useEffect(() => {
@@ -43,15 +44,15 @@ const Mie = () => {
   return (
     <>
       <div className={classes.header}>
-        {' '}
         <h4>{'Mandatory Information Exchange'}</h4>
-        <Button name={'Save'} onClick={onSave} />
+        {!isIncubatorFounder && <Button name={'Save'} onClick={onSave} />}
       </div>
       <textarea
         style={{ width: '90%', marginTop: 60 }}
         onChange={(e) => setMie(e.target.value)}
         value={mie}
         rows={10}
+        disabled={isIncubatorFounder}
       />
     </>
   );

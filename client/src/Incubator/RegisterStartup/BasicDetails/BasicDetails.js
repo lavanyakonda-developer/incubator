@@ -97,7 +97,7 @@ const BasicDetails = ({
     <div className={classes.basicDetails}>
       <div className={classes.basicInfoCard}>
         <div className={classes.inputContainer}>
-          <label>Name of the incubatee startup</label>
+          <label>Name of the incubatee startup*</label>
           <input
             type='text'
             value={startupDetails.name}
@@ -106,7 +106,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>DPIIT Number</label>
+          <label>DPIIT Number*</label>
           <input
             type='text'
             value={startupDetails.dpiitNumber}
@@ -117,7 +117,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>Industry Segment</label>
+          <label>Industry Segment*</label>
           <input
             type='text'
             value={startupDetails.industrySegment}
@@ -128,7 +128,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>Name of Founder</label>
+          <label>Name of Founder*</label>
           <input
             type='text'
             value={startupDetails.founderName}
@@ -139,7 +139,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>Role of Founder</label>
+          <label>Role of Founder*</label>
           <input
             type='text'
             value={startupDetails.founderRole}
@@ -150,7 +150,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>Email of Founder</label>
+          <label>Email of Founder*</label>
           <input
             type='email'
             value={startupDetails.founderEmail}
@@ -161,7 +161,7 @@ const BasicDetails = ({
           />
         </div>
         <div className={classes.inputContainer}>
-          <label>Mobile Number of Founder</label>
+          <label>Mobile Number of Founder*</label>
           <input
             type='tel'
             value={startupDetails.founderMobile}
