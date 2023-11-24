@@ -1,10 +1,13 @@
-import React from 'react';
-import classes from './Questionnaire.module.css'; // Import your CSS file
-import { Button } from '../../../CommonComponents';
-import _ from 'lodash';
-import { questions } from '../../../Incubator/RegisterStartup/helper.js';
-import { FaTrash } from 'react-icons/fa';
-import { makeRequest } from '../../../axios';
+import React, { useState } from "react";
+import classes from "./Questionnaire.module.css"; // Import your CSS file
+import { Button } from "../../../CommonComponents";
+import _ from "lodash";
+import { questions } from "../../../Incubator/RegisterStartup/helper.js";
+import { FaTrash } from "react-icons/fa";
+import { makeRequest } from "../../../axios";
+
+const placeholderPdfImage =
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
 const Questionnaire = ({
   startupInfo,
@@ -14,10 +17,11 @@ const Questionnaire = ({
   disableSave,
 }) => {
   const { questionnaire } = startupInfo;
+  const [showSizeExceededModal, setShowSizeExceededModal] = useState(false);
 
-  const customQuestions = _.filter(questionnaire, (question) =>
-    _.startsWith(question.uid, 'customQuestion')
-  );
+  const closeSizeExceededModal = () => {
+    setShowSizeExceededModal(false); // Close the size exceeded modal
+  };
 
   const handleCustomAnswerChange = (questionUid, answer) => {
     const index = _.findIndex(questionnaire, { uid: questionUid });
@@ -49,14 +53,14 @@ const Questionnaire = ({
 
   const uploadFile = async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await makeRequest.post('/incubator/upload', formData);
+    const response = await makeRequest.post("/incubator/upload", formData);
 
     if (response.status === 200) {
       return response.data.fileUrl;
     } else {
-      console.error('Error fetching data:', response.statusText);
+      console.error("Error fetching data:", response.statusText);
     }
   };
 
@@ -70,9 +74,13 @@ const Questionnaire = ({
     if (question) {
       // Prepare an array to hold the uploaded documents
       const newDocuments = question.answer ? [...question.answer] : [];
-
       // Loop through the uploaded files
       for (const file of files) {
+        if (file.size > 50 * 1024 * 1024) {
+          setShowSizeExceededModal(true); // Show the size exceeded modal
+          return; // Exit the function
+        }
+
         // Create a new document object
         const url = await uploadFile(file);
         const newDocument = {
@@ -82,11 +90,11 @@ const Questionnaire = ({
 
         // Push the new document to the array
         newDocuments.push(newDocument);
+
+        // Update the 'answer' property of the question with the new documents
+
+        question.answer = newDocuments;
       }
-
-      // Update the 'answer' property of the question with the new documents
-
-      question.answer = newDocuments;
 
       // Update the questionnaire state with the modified question
       updatedStartupInfo.questionnaire = updatedQuestionnaire;
@@ -112,22 +120,22 @@ const Questionnaire = ({
 
   const renderAnswerBox = (question, metaData) => {
     switch (question.answer_type) {
-      case 'text':
+      case "text":
         return (
           <textarea
-            style={{ width: '90%' }}
+            style={{ width: "90%" }}
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={
               _.find(questionnaire, {
                 uid: question.uid,
-              })?.answer || ''
+              })?.answer || ""
             }
           />
         );
 
-      case 'images': {
+      case "images": {
         return (
           <div className={classes.images}>
             {!_.isEmpty(question.answer) && (
@@ -136,8 +144,8 @@ const Questionnaire = ({
                   <div key={index} className={classes.imageCard}>
                     <a
                       href={document.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={classes.fileName}
                     >
                       {document.name}
@@ -155,13 +163,13 @@ const Questionnaire = ({
               <label className={classes.uploadLabel}>
                 <span className={classes.chooseFileText}>Choose File</span>
                 <input
-                  type='file'
-                  accept='image/*' // Accepts all image formats
+                  type="file"
+                  accept="image/*" // Accepts all image formats
                   onChange={(e) =>
                     handleFileUpload(question.uid, e.target.files)
                   }
                   multiple={true}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
               </label>
             </div>
@@ -169,8 +177,8 @@ const Questionnaire = ({
         );
       }
 
-      case 'files':
-      case 'file':
+      case "files":
+      case "file":
         return (
           <div className={classes.images}>
             {!_.isEmpty(question.answer) && (
@@ -179,8 +187,8 @@ const Questionnaire = ({
                   <div key={index} className={classes.imageCard}>
                     <a
                       href={document.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={classes.fileName}
                     >
                       {document.name}
@@ -198,20 +206,20 @@ const Questionnaire = ({
               <label className={classes.uploadLabel}>
                 <span className={classes.chooseFileText}>Choose File</span>
                 <input
-                  type='file'
-                  accept='.doc, .pdf' // Accepts only .doc and .pdf files
+                  type="file"
+                  accept=".doc, .pdf" // Accepts only .doc and .pdf files
                   onChange={(e) =>
                     handleFileUpload(question.uid, e.target.files)
                   }
-                  multiple={question.answer_type === 'files'}
-                  style={{ display: 'none' }}
+                  multiple={question.answer_type === "files"}
+                  style={{ display: "none" }}
                 />
               </label>
             </div>
           </div>
         );
 
-      case 'video':
+      case "video":
         return (
           <div className={classes.images}>
             {!_.isEmpty(question.answer) && (
@@ -220,8 +228,8 @@ const Questionnaire = ({
                   <div key={index} className={classes.imageCard}>
                     <a
                       href={document.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={classes.fileName}
                     >
                       {document.name}
@@ -239,27 +247,27 @@ const Questionnaire = ({
               <label className={classes.uploadLabel}>
                 <span className={classes.chooseFileText}>Choose File</span>
                 <input
-                  type='file'
-                  accept='video/*' // Accepts all video formats
+                  type="file"
+                  accept="video/*" // Accepts all video formats
                   onChange={(e) =>
                     handleFileUpload(question.uid, e.target.files)
                   }
                   multiple={false}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
               </label>
             </div>
           </div>
         );
 
-      case 'dropdown':
+      case "dropdown":
         return (
           <select
-            style={{ margin: '8px 0px', width: '20%', height: 30 }}
+            style={{ margin: "8px 0px", width: "20%", height: 30 }}
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
-            value={_.find(questionnaire, { uid: question.uid })?.answer || ''}
+            value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
           >
             {_.map(metaData, (option) => (
               <option key={option.key} value={option.key}>
@@ -269,31 +277,31 @@ const Questionnaire = ({
           </select>
         );
 
-      case 'date':
+      case "date":
         return (
           <input
-            type='date'
+            type="date"
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
-            value={_.find(questionnaire, { uid: question.uid })?.answer || ''}
+            value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
             style={{ height: 30, width: 120 }}
           />
         );
 
-      case 'number':
+      case "number":
         return (
           <input
-            type='number'
+            type="number"
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
-            value={_.find(questionnaire, { uid: question.uid })?.answer || ''}
+            value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
             style={{ height: 20, width: 120 }}
           />
         );
 
-      case 'startup_logo':
+      case "startup_logo":
         return (
           <div className={classes.images}>
             {!_.isEmpty(question.answer) && (
@@ -302,8 +310,8 @@ const Questionnaire = ({
                   <div key={index} className={classes.imageCard}>
                     <a
                       href={document.url}
-                      target='_blank'
-                      rel='noopener noreferrer'
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className={classes.fileName}
                     >
                       {document.name}
@@ -321,13 +329,13 @@ const Questionnaire = ({
               <label className={classes.uploadLabel}>
                 <span className={classes.chooseFileText}>Choose File</span>
                 <input
-                  type='file'
-                  accept='image/*'
+                  type="file"
+                  accept="image/*"
                   onChange={(e) =>
                     handleLogoUpload(question.uid, e.target.files)
                   }
                   multiple={false}
-                  style={{ display: 'none' }}
+                  style={{ display: "none" }}
                 />
               </label>
             </div>
@@ -396,12 +404,45 @@ const Questionnaire = ({
           })}
         </div>
         <div className={classes.buttonContainer}>
-          <Button name={'Back'} onClick={onBack} />
+          <Button name={"Back"} onClick={onBack} />
 
           {/* TODO : Add tooltip when disabled. */}
-          <Button name={'Save'} onClick={onSave} disabled={disableSave} />
+          <Button name={"Save"} onClick={onSave} disabled={disableSave} />
         </div>
       </div>
+      {showSizeExceededModal && (
+        <div className={classes.modalBackground}>
+          <div className={classes.modal}>
+            <div className={classes.modalContent}>
+              <div className={classes.modalTopContent}>
+                <div className={classes.preview}>
+                  <img
+                    src={placeholderPdfImage}
+                    alt="Document Preview"
+                    width="100"
+                    height="100"
+                  />
+                </div>
+                <div className={classes.details}>
+                  <div className={classes.detail}>
+                    <strong>File size exceeded</strong>
+                  </div>
+                  <div className={classes.detail}>
+                    File size exceeds the maximum allowed size of 50MB.
+                  </div>
+                </div>
+              </div>
+              <div className={classes.buttons}>
+                <Button
+                  name={"Cancel"}
+                  onClick={closeSizeExceededModal}
+                  customStyles={{ backgroundColor: "#ff6d6d" }}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

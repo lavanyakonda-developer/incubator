@@ -38,6 +38,7 @@
   min-width: 50px;
   padding: 8px;
   border: 1px solid #000;
+  height: 30px;
 }
 
 .modalBackground {
@@ -112,7 +113,7 @@
 .bottomContainer {
   display: flex;
   flex-direction: column;
-  gap: 80px;
+  gap: 60px;
   width: 100%;
 }
 

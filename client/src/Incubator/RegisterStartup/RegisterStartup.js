@@ -31,8 +31,8 @@ const generateRandomCode = (length) => {
   return code;
 };
 
-const RegisterStartup = (props) => {
-  const { incubatorId } = props;
+const RegisterStartup = () => {
+  const { incubator_id: incubatorId } = useParams();
 
   const [draftStartup, setDraftStartup] = useState(null);
 

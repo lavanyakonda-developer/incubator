@@ -319,20 +319,6 @@ const Kpi = () => {
           setAllValues(_.get(metricValuesData, 'metricValues', []));
 
           setMonths(_.get(monthsResponse, 'data.months'), []);
-
-          setMetricValues(
-            _.filter(_.get(metricValuesData, 'metricValues', []), (value) => {
-              const ids = _.get(
-                _.find(timePeriods, (item) => item.id == selectedTimePeriod),
-                'ids',
-                []
-              );
-              return (
-                _.includes(ids, value?.time_period) &&
-                value?.metric_uid == selectedMetric
-              );
-            })
-          );
         } else {
           console.error(
             'Error fetching data:',
@@ -348,23 +334,27 @@ const Kpi = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    setMetricValues(
-      _.filter(allValues, (value) => {
-        const ids = _.get(
-          _.find(timePeriods, (item) => item.id == selectedTimePeriod),
-          'ids',
-          []
-        );
-        return (
-          _.includes(ids, value?.time_period) &&
-          value?.metric_uid == selectedMetric
-        );
-      })
-    );
-  }, [selectedTimePeriod, selectedMetric]);
+  // useEffect(() => {
+  //   setMetricValues(
+  //     _.filter(allValues, (value) => {
+  //       const ids = _.get(
+  //         _.find(timePeriods, (item) => item.id == selectedTimePeriod),
+  //         'ids',
+  //         []
+  //       );
+  //       return (
+  //         _.includes(ids, value?.time_period) &&
+  //         value?.metric_uid == selectedMetric
+  //       );
+  //     })
+  //   );
+  // }, [selectedTimePeriod, selectedMetric]);
 
   const onSave = () => {};
+
+  const handleValueChange = (e, id) => {
+    console.log('******** e, id', e.target.value, id);
+  };
 
   const onClickLogButton = () => {
     setShowLogsModal(true);
@@ -457,6 +447,17 @@ const Kpi = () => {
                 {_.map(tableValues, (value) => {
                   return (
                     <td key={value.id} className={classes.cellValue}>
+                      {/* {isIncubatorFounder ? (
+                        value?.value
+                      ) : (
+                        <input
+                          type='number'
+                          step='0.01' // Specify the step for decimal places (e.g., 2 decimal places)
+                          value={value.value}
+                          onChange={(e) => handleValueChange(e, value.id)}
+                          style={{ width: '95%', height: 24 }}
+                        />
+                      )} */}
                       {value?.value}
                     </td>
                   );
