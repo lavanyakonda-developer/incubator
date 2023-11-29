@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import classes from './IncubatorHome.module.css'; // Import your CSS file
-import _ from 'lodash';
-import { makeRequest, API } from '../../axios';
-import { Button } from '../../CommonComponents';
-import { logout } from '../../auth/helper';
-import { useNavigate, useParams } from 'react-router-dom';
-import { updateStartupIdsOfIncubator } from '../../auth/helper.js';
-import moment from 'moment';
+import React, { useState, useEffect } from "react";
+import classes from "./IncubatorHome.module.css"; // Import your CSS file
+import _ from "lodash";
+import { makeRequest, API } from "../../axios";
+import { Button } from "../../CommonComponents";
+import { logout } from "../../auth/helper";
+import { useNavigate, useParams } from "react-router-dom";
+import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
+import moment from "moment";
 
 const tabs = [
-  { label: 'Home Dashboard', key: 'homeDashboard' },
+  { label: "Home Dashboard", key: "homeDashboard" },
   // { label: 'Document Repository', key: 'documentRepository' },
   // { label: 'Onboarding Hub', key: 'onboardingHub' },
   // { label: 'Communication Tab', key: 'communicationTab' },
@@ -22,14 +22,14 @@ const buttonStyle = {
 
 const IncubatorHome = (props) => {
   const { incubator_id: incubatorId } = useParams();
-  const [selectedTab, setSelectedTab] = useState('homeDashboard');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTab, setSelectedTab] = useState("homeDashboard");
+  const [searchTerm, setSearchTerm] = useState("");
   const [startups, setStartups] = useState([]);
 
   const [incubatorDetails, setIncubatorDetails] = useState({
     id: incubatorId,
-    name: '',
-    logo: '',
+    name: "",
+    logo: "",
   });
 
   const navigate = useNavigate();
@@ -50,11 +50,11 @@ const IncubatorHome = (props) => {
           const startupIds = _.map(data.startups, (item) => item.id);
           updateStartupIdsOfIncubator({ startupIds });
         } else {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
         }
       } catch (error) {
-        navigate('/');
-        console.error('Error fetching data:', error);
+        navigate("/");
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -79,17 +79,17 @@ const IncubatorHome = (props) => {
 
   const getStatus = ({ status, isDraft }) => {
     if (isDraft) {
-      return 'Drafted by you';
+      return "Drafted by you";
     } else {
       switch (status) {
-        case 'PENDING':
-          return 'Pending from startup';
-        case 'SUBMITTED':
-          return 'Waiting for Approval';
-        case 'APPROVED':
-          return 'Approved';
-        case 'REJECTED':
-          return 'Rejected by you';
+        case "PENDING":
+          return "Pending from startup";
+        case "SUBMITTED":
+          return "Waiting for Approval";
+        case "APPROVED":
+          return "Approved";
+        case "REJECTED":
+          return "Rejected by you";
       }
     }
   };
@@ -100,10 +100,10 @@ const IncubatorHome = (props) => {
       return;
     } else {
       switch (status) {
-        case 'PENDING':
-        case 'SUBMITTED':
-        case 'APPROVED':
-        case 'REJECTED':
+        case "PENDING":
+        case "SUBMITTED":
+        case "APPROVED":
+        case "REJECTED":
           navigate(`/incubator/${incubatorId}/home/startup-home/${id}`);
 
         default:
@@ -114,22 +114,22 @@ const IncubatorHome = (props) => {
 
   const getRightComponent = () => {
     switch (selectedTab) {
-      case 'homeDashboard':
+      case "homeDashboard":
         return (
           <div className={classes.rightColumn}>
             <div className={classes.tableContainer}>
               <div className={classes.tableHeader}>
                 <input
-                  type='text'
+                  type="text"
                   className={classes.searchBar}
-                  placeholder='Search startups'
+                  placeholder="Search startups"
                   value={searchTerm}
                   onChange={handleSearch}
                 />
                 <Button
                   shouldRedirect={true}
                   redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
-                  name={'Add Startup'}
+                  name={"Add Startup"}
                   customStyles={buttonStyle}
                 />
               </div>
@@ -139,9 +139,10 @@ const IncubatorHome = (props) => {
               <div className={classes.startupTableContainer}>
                 <table className={classes.startupTable}>
                   <thead>
-                    <tr key={'header'}>
+                    <tr key={"header"}>
                       <th>Startup Name</th>
                       <th>Sector</th>
+                      <th style={{ width: 200 }}>Stage</th>
                       <th>Status</th>
                       <th>Date of joining</th>
                     </tr>
@@ -149,12 +150,12 @@ const IncubatorHome = (props) => {
                   <tbody>
                     {_.map(filteredStartups, (startup) => {
                       const startupLogoName = _.last(
-                        _.split(startup.logo, '/')
+                        _.split(startup.logo, "/")
                       );
                       // Set the href attribute to the document's URL
                       const startupLogo = !_.isEmpty(startupLogoName)
                         ? `${API}/uploads/${startupLogoName}`
-                        : '';
+                        : "";
                       return (
                         <tr key={startup.id}>
                           <td>
@@ -180,6 +181,7 @@ const IncubatorHome = (props) => {
                             </div>
                           </td>
                           <td>{startup.industry}</td>
+                          <td>{startup.stateOfStartup}</td>
                           <td>
                             {getStatus({
                               status: startup.status,
@@ -187,7 +189,7 @@ const IncubatorHome = (props) => {
                             })}
                           </td>
                           <td>
-                            {moment(startup.created_at).format('Do MMM YYYY')}
+                            {moment(startup.created_at).format("Do MMM YYYY")}
                           </td>
                         </tr>
                       );
@@ -205,7 +207,7 @@ const IncubatorHome = (props) => {
 
   const userLogout = () => {
     logout();
-    navigate('/home-page');
+    navigate("/home-page");
   };
 
   return (
@@ -221,7 +223,7 @@ const IncubatorHome = (props) => {
             return (
               <div
                 className={`${classes.tab} ${
-                  selectedTab === tab.key ? classes.activeTab : ''
+                  selectedTab === tab.key ? classes.activeTab : ""
                 }`}
                 onClick={() => handleTabClick(tab.key)}
                 key={tab.key}
@@ -233,14 +235,14 @@ const IncubatorHome = (props) => {
         </div>
         <div className={classes.logout}>
           <Button
-            name={'Logout'}
+            name={"Logout"}
             onClick={userLogout}
             customStyles={{
               width: 100,
               fontSize: 16,
-              color: 'black',
-              justifyContent: 'left',
-              backgroundColor: '#f0f0f0',
+              color: "black",
+              justifyContent: "left",
+              backgroundColor: "#f0f0f0",
             }}
           />
         </div>

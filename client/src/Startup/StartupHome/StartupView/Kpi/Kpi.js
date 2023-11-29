@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { makeRequest } from '../../../../axios';
-import classes from './Kpi.module.css';
-import _ from 'lodash';
-import { useParams } from 'react-router-dom';
-import { Button } from '../../../../CommonComponents';
-import { Line } from 'react-chartjs-2';
-import { Chart, registerables } from 'chart.js';
+import React, { useEffect, useState } from "react";
+import { makeRequest } from "../../../../axios";
+import classes from "./Kpi.module.css";
+import _ from "lodash";
+import { useParams } from "react-router-dom";
+import { Button } from "../../../../CommonComponents";
+import { Line } from "react-chartjs-2";
+import { Chart, registerables } from "chart.js";
 
 const LineGraph = (props) => {
   const { tableHeaders, tableValues } = props;
@@ -15,7 +15,7 @@ const LineGraph = (props) => {
     datasets: [
       {
         data: _.map(tableValues, (item) => item?.value),
-        borderColor: '#6d48ff',
+        borderColor: "#6d48ff",
         borderWidth: 2,
         fill: false,
       },
@@ -33,7 +33,7 @@ const LineGraph = (props) => {
     scales: {
       x: [
         {
-          type: 'category', // Specify the scale type as 'category'
+          type: "category", // Specify the scale type as 'category'
           ticks: {
             autoSkip: true,
             maxTicksLimit: 10,
@@ -49,13 +49,13 @@ const LineGraph = (props) => {
       ],
     },
     tooltips: {
-      mode: 'index',
+      mode: "index",
       intersect: false,
     },
   };
 
   return (
-    <div style={{ height: '500px' }}>
+    <div style={{ height: "500px" }}>
       <Line data={data} options={options} />
     </div>
   );
@@ -68,11 +68,11 @@ const getUpdatedTimePeriods = ({ timePeriods }) => {
     return { ...period, id: index, ids: [period.id] };
   });
 
-  const groupedYears = _.groupBy(updatedTimePeriods, 'fyear');
+  const groupedYears = _.groupBy(updatedTimePeriods, "fyear");
 
   const financialYears = _.map(groupedYears, (yearTimePeriods, fyear) => {
     const ids = _.orderBy(
-      _.uniq(_.flatMap(yearTimePeriods, 'ids')),
+      _.uniq(_.flatMap(yearTimePeriods, "ids")),
       [
         (id) => {
           const timePeriod = _.find(timePeriods, (item) => item.id === id);
@@ -85,10 +85,10 @@ const getUpdatedTimePeriods = ({ timePeriods }) => {
           return _.max(monthsArray);
         },
       ],
-      ['asc', 'asc']
+      ["asc", "asc"]
     );
 
-    const allMonths = _.uniq(_.flatMap(yearTimePeriods, 'months'));
+    const allMonths = _.uniq(_.flatMap(yearTimePeriods, "months"));
     const id = timePeriods.length + parseInt(fyear); // Assign a unique ID for the fyear
     return {
       quarter: `FY - (${parseInt(fyear - 1)}-${parseInt(fyear)})`,
@@ -116,11 +116,11 @@ const getUpdatedTimePeriods = ({ timePeriods }) => {
             return _.max(monthsArray);
           },
         ],
-        ['asc', 'asc']
+        ["asc", "asc"]
       ),
-      id: 'ALL',
-      quarter: 'All years',
-      months: _.uniq(_.flatMap(timePeriods, 'months')),
+      id: "ALL",
+      quarter: "All years",
+      months: _.uniq(_.flatMap(timePeriods, "months")),
     },
   ];
 };
@@ -137,7 +137,7 @@ const getTableData = ({
     timePeriods,
     (item) => item.id == selectedTimePeriod
   );
-  const quarterIds = _.get(selectedTimePeriodData, 'ids', []);
+  const quarterIds = _.get(selectedTimePeriodData, "ids", []);
   const tableHeaders = [];
   const tableValues = [];
   const tablePercentages = [];
@@ -145,7 +145,7 @@ const getTableData = ({
 
   _.forEach(quarterIds, (quarterId) => {
     const quarter = _.find(allQuarters, (item) => item.id == quarterId);
-    const monthIds = _.get(quarter, 'months', []);
+    const monthIds = _.get(quarter, "months", []);
 
     _.forEach(monthIds, (monthId) => {
       tableHeaders.push({
@@ -163,7 +163,7 @@ const getTableData = ({
           item.metric_uid == selectedMetric
       );
 
-      const currentValue = _.get(metricValue, 'value', 0);
+      const currentValue = _.get(metricValue, "value", 0);
       tableValues.push({
         id: `${quarterId}-${monthId}-value`,
         value: currentValue,
@@ -201,7 +201,7 @@ const getTableData = ({
           item.metric_uid == selectedMetric
       );
 
-      const prevValue = _.get(prevMetricValue, 'value', 0);
+      const prevValue = _.get(prevMetricValue, "value", 0);
 
       const percentageChange =
         ((currentValue - prevValue) /
@@ -213,7 +213,7 @@ const getTableData = ({
         100;
       const formattedPercentageChange =
         percentageChange == 0
-          ? '0%'
+          ? "0%"
           : percentageChange < 0
           ? `${percentageChange.toFixed(2)}%`
           : `${percentageChange.toFixed(2)}%`;
@@ -230,10 +230,10 @@ const getTableData = ({
         }`,
         value: _.map(metricValue?.logs, (item) => {
           const changeDate = new Date(item.change_date);
-          const formattedDate = changeDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
+          const formattedDate = changeDate.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
           });
           return `${item?.changed_by} changed value from ${item.old_value} to ${item.new_value} on ${formattedDate}`;
         }),
@@ -253,8 +253,8 @@ const Kpi = () => {
   const [timePeriods, setTimePeriods] = useState([]);
   const [allQuarters, setAllQuarters] = useState([]);
   const [metrics, setMetrics] = useState([]);
-  const [selectedTimePeriod, setSelectedTimePeriod] = useState('');
-  const [selectedMetric, setSelectedMetric] = useState('');
+  const [selectedTimePeriod, setSelectedTimePeriod] = useState("");
+  const [selectedMetric, setSelectedMetric] = useState("");
   const [months, setMonths] = useState([]);
   const [allValues, setAllValues] = useState([]);
   const [metricValues, setMetricValues] = useState([]);
@@ -291,9 +291,9 @@ const Kpi = () => {
           metricValuesResponse.status === 200
         ) {
           const timePeriodsData = timePeriodsResponse.data;
-          setAllQuarters(_.get(timePeriodsData, 'timePeriods', []));
+          setAllQuarters(_.get(timePeriodsData, "timePeriods", []));
           const updatedTimePeriods = getUpdatedTimePeriods({
-            timePeriods: _.get(timePeriodsData, 'timePeriods', []),
+            timePeriods: _.get(timePeriodsData, "timePeriods", []),
           });
           setTimePeriods(updatedTimePeriods);
 
@@ -311,23 +311,23 @@ const Kpi = () => {
 
           const metricsData = metricsResponse.data;
 
-          setMetrics(_.get(metricsData, 'metrics', []));
+          setMetrics(_.get(metricsData, "metrics", []));
           setSelectedMetric(_.first(metricsData?.metrics)?.uid);
 
           const metricValuesData = metricValuesResponse.data;
 
-          setAllValues(_.get(metricValuesData, 'metricValues', []));
+          setAllValues(_.get(metricValuesData, "metricValues", []));
 
-          setMonths(_.get(monthsResponse, 'data.months'), []);
+          setMonths(_.get(monthsResponse, "data.months"), []);
         } else {
           console.error(
-            'Error fetching data:',
+            "Error fetching data:",
             timePeriodsResponse,
             metricsResponse
           );
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -353,7 +353,7 @@ const Kpi = () => {
   const onSave = () => {};
 
   const handleValueChange = (e, id) => {
-    console.log('******** e, id', e.target.value, id);
+    console.log("******** e, id", e.target.value, id);
   };
 
   const onClickLogButton = () => {
@@ -378,14 +378,14 @@ const Kpi = () => {
       <div className={classes.topContainer}>
         <div className={classes.dropdowns}>
           <select
-            style={{ margin: '8px 0px', width: '20%', height: 30 }}
+            style={{ margin: "8px 0px", width: "20%", height: 30 }}
             onChange={(e) => {
               setSelectedTimePeriod(
                 _.find(timePeriods, { quarter: e.target.value })?.id
               );
             }}
             value={
-              _.find(timePeriods, { id: selectedTimePeriod })?.quarter || ''
+              _.find(timePeriods, { id: selectedTimePeriod })?.quarter || ""
             }
           >
             {_.map(timePeriods, (option) => (
@@ -395,13 +395,13 @@ const Kpi = () => {
             ))}
           </select>
           <select
-            style={{ margin: '8px 0px', width: '20%', height: 30 }}
+            style={{ margin: "8px 0px", width: "20%", height: 30 }}
             onChange={(e) => {
               setSelectedMetric(
                 _.find(metrics, { label: e.target.value })?.uid
               );
             }}
-            value={_.find(metrics, { uid: selectedMetric })?.label || ''}
+            value={_.find(metrics, { uid: selectedMetric })?.label || ""}
           >
             {_.map(metrics, (option) => (
               <option key={option.uid} value={option.label}>
@@ -413,11 +413,11 @@ const Kpi = () => {
 
         <div className={classes.buttonContainer}>
           <Button
-            name={'View changed logs'}
+            name={"View changed logs"}
             onClick={onClickLogButton}
-            customStyles={{ width: 'max-content' }}
+            customStyles={{ width: "max-content" }}
           />
-          {!isIncubatorFounder && <Button name={'Save'} onClick={onSave} />}
+          {!isIncubatorFounder && <Button name={"Save"} onClick={onSave} />}
         </div>
       </div>
 
@@ -483,13 +483,13 @@ const Kpi = () => {
         <div className={classes.modalBackground}>
           <div className={classes.modal}>
             <div className={classes.modalContent}>
-              <div className={classes.modalTopContent}>{'Changed Logs'}</div>
+              <div className={classes.modalTopContent}>{"Changed Logs"}</div>
               <div
                 className={classes.signature}
-                style={_.isEmpty(logs) ? { justifyContent: 'center' } : {}}
+                style={_.isEmpty(logs) ? { justifyContent: "center" } : {}}
               >
                 {_.isEmpty(logs) ? (
-                  <div>{'No logs'} </div>
+                  <div>{"No logs"} </div>
                 ) : (
                   <div className={classes.logs}>
                     {_.map(logs, (item) => {
@@ -509,9 +509,9 @@ const Kpi = () => {
               </div>
               <div className={classes.buttons}>
                 <Button
-                  name={'Close'}
+                  name={"Close"}
                   onClick={closeModal}
-                  customStyles={{ backgroundColor: '#ff6d6d' }}
+                  customStyles={{ backgroundColor: "#ff6d6d" }}
                 />
               </div>
             </div>
