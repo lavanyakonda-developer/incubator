@@ -7,6 +7,7 @@ import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
 import moment from "moment";
+import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 
 const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
@@ -145,6 +146,7 @@ const IncubatorHome = (props) => {
                       <th style={{ width: 200 }}>Stage</th>
                       <th>Status</th>
                       <th>Date of joining</th>
+                      <th>Reporting Hub</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -190,6 +192,17 @@ const IncubatorHome = (props) => {
                           </td>
                           <td>
                             {moment(startup.created_at).format("Do MMM YYYY")}
+                          </td>
+                          <td style={{ textAlign: "center" }}>
+                            {startup?.color == "green" ? (
+                              <FaCheckCircle style={{ color: "green" }} />
+                            ) : (
+                              <FaTimesCircle
+                                style={{
+                                  color: _.get(startup, "color", "red"),
+                                }}
+                              />
+                            )}
                           </td>
                         </tr>
                       );

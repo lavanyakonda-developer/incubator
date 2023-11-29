@@ -30,36 +30,88 @@ const processQuestionnaireData = (questionnaireData) => {
   return enhancedData;
 };
 
-// Function to enhance startups with questionnaire data
-const enhanceStartupsWithQuestionnaireData = (startups, callback) => {
+// Function to enhance startups with questionnaire data and isKPIAdded flag
+const enhanceStartupsWithQuestionnaireDataAndKPI = (startups, callback) => {
   const enhancedStartups = [];
 
-  _.forEach(startups, (startup, index) => {
-    // Fetch questionnaire data for the startup
-    const questionnaireQuery = `
-      SELECT answer, meta_data
-      FROM questionnaire
-      WHERE startup_id = ? AND question_uid = 'stageOfStartup'
-    `;
+  const getCurrentDate = new Date();
+  const currentDay = getCurrentDate.getDate();
+  const currentYear = getCurrentDate.getFullYear();
+  const currentMonth =
+    getCurrentDate.getMonth() == 0 ? 12 : getCurrentDate.getMonth(); // Previous month KPI is checked
 
-    db.query(questionnaireQuery, [startup.id], (err, questionnaireData) => {
+  let timePeriodId = null;
+
+  const findTimePeriodQuery = `
+  SELECT id FROM time_periods
+  WHERE year = ? AND JSON_CONTAINS(months, JSON_ARRAY(?)) LIMIT 1;
+  `;
+
+  db.query(
+    findTimePeriodQuery,
+    [currentYear, currentMonth],
+    (err, timePeriodData) => {
       if (err) {
-        enhancedStartups.push(startup);
-      } else {
-        const enhancedData = processQuestionnaireData(questionnaireData);
+        return callback(err);
+      }
 
-        enhancedStartups.push({
-          ...startup,
-          stateOfStartup: enhancedData,
+      if (timePeriodData.length > 0) {
+        timePeriodId = timePeriodData[0].id;
+      }
+
+      _.forEach(startups, (startup, index) => {
+        const questionnaireQuery = `
+        SELECT answer, meta_data
+        FROM questionnaire
+        WHERE startup_id = ? AND question_uid = 'stageOfStartup'
+      `;
+
+        db.query(questionnaireQuery, [startup.id], (err, questionnaireData) => {
+          if (err) {
+            return callback(err);
+          }
+
+          const enhancedData = processQuestionnaireData(questionnaireData);
+
+          const findKPIQuery = `
+          SELECT COUNT(*) as rowCount
+          FROM metric_values
+          WHERE
+            startup_id = ? 
+            AND time_period = ?
+            AND month_id = ?
+            AND metric_uid IN ('metric1', 'metric2', 'metric3', 'metric4')
+        `;
+
+          db.query(
+            findKPIQuery,
+            [startup.id, timePeriodId, currentMonth],
+            (err, kpiData) => {
+              if (err) {
+                return callback(err);
+              }
+
+              const isKPIAdded = kpiData[0].rowCount == 4;
+
+              enhancedStartups.push({
+                ...startup,
+                stateOfStartup: enhancedData,
+                color: !isKPIAdded
+                  ? currentDay < 16
+                    ? "yellow"
+                    : "red"
+                  : "green",
+              });
+
+              if (index === startups.length - 1) {
+                callback(null, enhancedStartups);
+              }
+            }
+          );
         });
-      }
-
-      // Check if this is the last startup
-      if (index === startups.length - 1) {
-        callback(null, enhancedStartups);
-      }
-    });
-  });
+      });
+    }
+  );
 };
 
 // Controller function to fetch incubator home details
@@ -93,7 +145,7 @@ export const incubatorHomeDetails = (req, res) => {
       }
 
       // Enhance startups with questionnaire data
-      enhanceStartupsWithQuestionnaireData(
+      enhanceStartupsWithQuestionnaireDataAndKPI(
         startups,
         (err, enhancedStartups) => {
           if (err) {
