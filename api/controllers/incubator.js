@@ -133,7 +133,7 @@ export const incubatorHomeDetails = (req, res) => {
 
     // Get all non-draft startups associated with the incubator
     const allStartupsQuery = `
-      SELECT s.*
+      SELECT s.*, isu.is_draft
       FROM startups s
       INNER JOIN incubator_startup isu ON s.id = isu.startup_id
       WHERE isu.incubator_id = ?

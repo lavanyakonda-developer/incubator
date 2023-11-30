@@ -13,7 +13,7 @@ const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
   // { label: 'Document Repository', key: 'documentRepository' },
   // { label: 'Onboarding Hub', key: 'onboardingHub' },
-  // { label: 'Communication Tab', key: 'communicationTab' },
+  { label: "Communication Tab", key: "communicationTab" },
 ];
 
 const buttonStyle = {
@@ -65,6 +65,7 @@ const IncubatorHome = (props) => {
   }, [incubatorId]);
 
   const handleTabClick = (tabName) => {
+    setSearchTerm("");
     setSelectedTab(tabName);
   };
 
@@ -74,7 +75,21 @@ const IncubatorHome = (props) => {
 
   const filteredStartups = _.filter(startups, (item) =>
     !_.isEmpty(searchTerm)
-      ? _.includes(_.lowerCase(item.name), _.lowerCase(searchTerm))
+      ? _.some(_.values(item), (value) =>
+          _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
+        )
+      : true
+  );
+
+  const approvedStartups = _.filter(startups, (item) => {
+    return item.status == "APPROVED";
+  });
+
+  const filteredApprovedStartups = _.filter(approvedStartups, (item) =>
+    !_.isEmpty(searchTerm)
+      ? _.some(_.values(item), (value) =>
+          _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
+        )
       : true
   );
 
@@ -111,6 +126,11 @@ const IncubatorHome = (props) => {
           return;
       }
     }
+  };
+
+  const goToStartupChat = ({ id }) => {
+    console.log("id>>>>>>>>>>>>>", id);
+    return null;
   };
 
   const getRightComponent = () => {
@@ -213,6 +233,55 @@ const IncubatorHome = (props) => {
                     })}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "communicationTab":
+        return (
+          <div className={classes.rightColumn}>
+            <div className={classes.tableContainer}>
+              <div className={classes.tableHeader}>
+                <input
+                  type="text"
+                  className={classes.searchBar}
+                  placeholder="Search startups"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+              </div>
+              <div className={classes.startupsCount}>{`${_.size(
+                approvedStartups
+              )} Approved Startups`}</div>
+              <div className={classes.startupsList}>
+                {_.map(filteredApprovedStartups, (startup) => {
+                  const startupLogoName = _.last(_.split(startup.logo, "/"));
+                  // Set the href attribute to the document's URL
+                  const startupLogo = !_.isEmpty(startupLogoName)
+                    ? `${API}/uploads/${startupLogoName}`
+                    : "";
+                  return (
+                    <div className={classes.startupNameLogo}>
+                      <div className={classes.imageContainer}>
+                        <img
+                          className={classes.startupLogo}
+                          src={startupLogo}
+                        />
+                      </div>
+                      <div
+                        className={classes.startupName}
+                        onClick={() =>
+                          goToStartupChat({
+                            id: startup.id,
+                          })
+                        }
+                      >
+                        {startup.name}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
