@@ -465,3 +465,26 @@ VALUES
 --     "incubator_name" :"Saas Test",
 --     "incubator_logo":"https://png.pngtree.com/png-clipart/20200701/original/pngtree-charminar-illustration-of-historical-monument-hyderabad-vector-png-image_5355377.jpg"
 -- }
+
+
+CREATE TABLE `chats` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`incubator_id` INT UNSIGNED NOT NULL,
+    `startup_id` INT UNSIGNED NOT NULL,
+	`sender` VARCHAR(255) NOT NULL,
+	`message` VARCHAR(255) NOT NULL,
+	`time` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	 FOREIGN KEY (`incubator_id`) REFERENCES `incubators`(`id`),
+     FOREIGN KEY (`startup_id`) REFERENCES `startups`(`id`)
+);
+
+
+CREATE TABLE `chat_timestamps` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`incubator_id` INT UNSIGNED NOT NULL,
+    `startup_id` INT UNSIGNED NOT NULL,
+	`email` VARCHAR(255) NOT NULL,
+	`time` TIMESTAMP,
+	 FOREIGN KEY (`incubator_id`) REFERENCES `incubators`(`id`),
+     FOREIGN KEY (`startup_id`) REFERENCES `startups`(`id`)
+);
