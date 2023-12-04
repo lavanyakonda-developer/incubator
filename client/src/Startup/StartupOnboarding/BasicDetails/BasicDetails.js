@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import classes from './BasicDetails.module.css';
-import _ from 'lodash';
-import { Button } from '../../../CommonComponents';
+import React from "react";
+import classes from "./BasicDetails.module.css";
+import { Button } from "../../../CommonComponents";
 
 const BasicDetails = ({ startupInfo, onNext, setStartupInfo }) => {
   const startupDetails = startupInfo?.basicDetails;
@@ -23,37 +22,37 @@ const BasicDetails = ({ startupInfo, onNext, setStartupInfo }) => {
         <div className={classes.inputContainer}>
           <label>Name of the incubatee startup</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails?.name}
-            onChange={(e) => handleBasicDetailsChange('name', e.target.value)}
-            placeholder='Enter startup name'
+            onChange={(e) => handleBasicDetailsChange("name", e.target.value)}
+            placeholder="Enter startup name"
           />
         </div>
         <div className={classes.inputContainer}>
           <label>DPIIT Number</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails?.dpiitNumber}
             onChange={(e) =>
-              handleBasicDetailsChange('dpiitNumber', e.target.value)
+              handleBasicDetailsChange("dpiitNumber", e.target.value)
             }
-            placeholder='Enter DPIIT number'
+            placeholder="Enter DPIIT number"
           />
         </div>
         <div className={classes.inputContainer}>
           <label>Industry Segment</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails?.industrySegment}
             onChange={(e) =>
-              handleBasicDetailsChange('industrySegment', e.target.value)
+              handleBasicDetailsChange("industrySegment", e.target.value)
             }
-            placeholder='Enter industry segment'
+            placeholder="Enter industry segment"
           />
         </div>
 
         <div className={classes.buttonContainer}>
-          <Button name={'Next'} onClick={onNext} />
+          <Button name={"Next"} onClick={onNext} />
         </div>
       </div>
     </div>

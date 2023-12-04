@@ -1,0 +1,141 @@
+.chatWindow {
+  height: 100%;
+}
+
+.chatWindow p {
+  margin: 0;
+}
+.chatWindow .chatHeader {
+  display: flex;
+  height: 45px;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  position: relative;
+  cursor: pointer;
+}
+.chatWindow .chatHeader p {
+  display: block;
+  padding: 0 1em 0 2em;
+  color: #fff;
+  font-weight: 700;
+  line-height: 45px;
+}
+
+.chatWindow .chatBody {
+  height: calc(100% - (90px));
+  background: #fff;
+  position: relative;
+}
+.chatWindow .chatBody .messageContainer {
+  width: 100%;
+  height: 95%;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+.chatWindow .chatBody .messageContainer::-webkit-scrollbar {
+  display: none;
+}
+.yourMessage {
+  height: auto;
+  padding: 10px;
+  display: flex;
+}
+
+.otherMessage {
+  height: auto;
+  padding: 10px;
+  display: flex;
+}
+
+.messageContent {
+  width: auto;
+  height: auto;
+  min-height: 40px;
+  max-width: 400px;
+  background-color: #43a047;
+  border-radius: 5px;
+  color: white;
+  display: flex;
+  align-items: center;
+  margin-right: 5px;
+  margin-left: 5px;
+  padding-right: 12px;
+  padding-left: 12px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.yourMessage {
+  justify-content: flex-start;
+}
+
+.yourMessage .messageContent {
+  justify-content: flex-start;
+}
+
+.yourMessage .messageMeta {
+  justify-content: flex-start;
+  margin-left: 5px;
+}
+
+.otherMessage {
+  justify-content: flex-end;
+}
+
+.otherMessage .messageContent {
+  justify-content: flex-end;
+  background-color: cornflowerblue;
+}
+
+.otherMessage .messageMeta {
+  justify-content: flex-end;
+  margin-right: 5px;
+}
+
+.author {
+  margin-left: 10px;
+  font-weight: bold;
+}
+
+.messageMeta {
+  display: flex;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.chatWindow .chatFooter {
+  height: 40px;
+  border: 1px solid #263238;
+
+  display: flex;
+}
+
+.chatWindow .chatFooter input {
+  height: 100%;
+  flex: 85%;
+  border: 0;
+  padding: 0 0.7em;
+  font-size: 1em;
+  border-right: 1px dotted #607d8b;
+
+  outline: none;
+  font-family: "Open Sans", sans-serif;
+}
+
+.chatWindow .chatFooter button {
+  border: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex: 15%;
+  height: 100%;
+  background: transparent;
+  outline: none;
+  font-size: 25px;
+  color: lightgray;
+}
+
+.chatWindow .chatFooter button:hover {
+  color: #43a047;
+}

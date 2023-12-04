@@ -5,13 +5,12 @@ import util from "util";
 
 const query = util.promisify(db.query).bind(db);
 
-// Controller function to fetch incubator chats
 export const incubatorChats = async (req, res) => {
   const { incubator_id, email } = req.body;
 
   // Fetch all chats for the given incubator_id
   const chatsQuery = `
-    SELECT startup_id, sender, message, time
+    SELECT id, startup_id, sender, message, time
     FROM chats
     WHERE incubator_id = ?
     ORDER BY time ASC;
@@ -23,20 +22,17 @@ export const incubatorChats = async (req, res) => {
     }
 
     // Use _.groupBy to organize chats by startup_id
-    const chatData = _.reduce(
-      chats,
-      (acc, chat) => {
-        const { startup_id, sender, message, time } = chat;
-        _.set(
-          acc,
-          [startup_id, "chats"],
-          _.get(acc, [startup_id, "chats"], [])
-        );
-        _.get(acc, [startup_id, "chats"]).push({ sender, message, time });
-        return acc;
-      },
-      {}
-    );
+    let chatData = chats.reduce((acc, chat) => {
+      const { startup_id, sender, message, time, id } = chat;
+
+      if (!acc[startup_id]) {
+        acc[startup_id] = { chats: [] };
+      }
+
+      acc[startup_id].chats.push({ sender, message, time, id });
+
+      return acc;
+    }, {});
 
     // Fetch the last_seen time from chat_timestamps table
     const lastSeenQuery = `
@@ -48,37 +44,38 @@ export const incubatorChats = async (req, res) => {
 
     const startupIds = Object.keys(chatData);
 
-    // Use _.forEach to iterate through startupIds and update last_seen and unreadCount
-    _.forEach(startupIds, async (startupId) => {
-      const lastSeenResult = await db.query(lastSeenQuery, [
+    // Use a loop with async/await to update chatData with last_seen and unreadCount
+
+    for (const startupId of startupIds) {
+      const lastSeenResult = await query(lastSeenQuery, [
         incubator_id,
         startupId,
         email,
       ]);
 
       if (lastSeenResult.length > 0) {
-        _.set(chatData, [startupId, "last_seen"], lastSeenResult[0].time);
+        chatData[startupId] = {
+          ...chatData[startupId],
+          last_seen: lastSeenResult[0].time,
+          unreadCount: _.filter(chatData[startupId].chats, (chat) => {
+            const chatTime = new Date(chat.time);
+            const lastSeenTimeUpdated = new Date(lastSeenResult[0].time);
 
-        // Calculate unreadCount based on last_seen
-        const unreadCount = _.size(
-          _.filter(
-            _.get(chatData, [startupId, "chats"]),
-            (chat) => chat.time > lastSeenResult[0].time
-          )
-        );
-
-        _.set(chatData, [startupId, "unreadCount"], unreadCount);
+            return chatTime > lastSeenTimeUpdated;
+          }).length,
+        };
       } else {
-        // If last_seen is NA, set unreadCount as total number of chats
-        _.set(
-          chatData,
-          [startupId, "unreadCount"],
-          _.size(_.get(chatData, [startupId, "chats"], []))
-        );
+        chatData[startupId] = {
+          ...chatData[startupId],
+          unreadCount: chatData[startupId].chats
+            ? chatData[startupId].chats.length
+            : 0,
+        };
       }
-    });
+    }
 
     // Send the organized chat data as a response
+
     return res.json(chatData);
   });
 };
@@ -89,7 +86,7 @@ export const startupChats = async (req, res) => {
 
   // Fetch all chats for the given incubator_id and startup_id
   const chatsQuery = `
-    SELECT sender, message, time
+    SELECT id, sender, message, time
     FROM chats
     WHERE incubator_id = ? AND startup_id = ?
     ORDER BY time ASC;
@@ -100,9 +97,6 @@ export const startupChats = async (req, res) => {
       return res.status(500).json(chatsErr);
     }
 
-    // Organize chats by sender and time using _.groupBy
-    const chatData = _.groupBy(chats, (chat) => chat.sender);
-
     // Fetch the last_seen time from chat_timestamps table
     const lastSeenQuery = `
       SELECT time
@@ -111,31 +105,33 @@ export const startupChats = async (req, res) => {
       LIMIT 1;
     `;
 
-    // Use _.forEach to iterate through senders and update last_seen and unreadCount
-    _.forEach(chatData, async (chats, sender) => {
-      const lastSeenResult = await db.query(lastSeenQuery, [
-        incubator_id,
-        startup_id,
-        email,
-      ]);
+    const lastSeenResult = await query(lastSeenQuery, [
+      incubator_id,
+      startup_id,
+      email,
+    ]);
 
-      if (lastSeenResult.length > 0) {
-        _.set(chatData, [sender, "last_seen"], lastSeenResult[0].time);
+    // Calculate unreadCount based on last_seen
+    const lastSeenTime =
+      lastSeenResult.length > 0 ? lastSeenResult[0].time : "NA";
+    const unreadCount = _.size(
+      _.filter(chats, (chat) => {
+        const chatTime = new Date(chat.time);
+        const lastSeenTimeUpdated = new Date(lastSeenTime);
 
-        // Calculate unreadCount based on last_seen
-        const unreadCount = _.size(
-          _.filter(chats, (chat) => chat.time > lastSeenResult[0].time)
-        );
+        return chatTime > lastSeenTimeUpdated;
+      })
+    );
 
-        _.set(chatData, [sender, "unreadCount"], unreadCount);
-      } else {
-        // If last_seen is NA, set unreadCount as total number of chats
-        _.set(chatData, [sender, "unreadCount"], _.size(chats));
-      }
-    });
+    // Create the response object with chats, unreadCount, and last_seen
+    const response = {
+      chats,
+      unreadCount,
+      last_seen: lastSeenTime,
+    };
 
-    // Send the organized chat data as a response
-    return res.json(chatData);
+    // Send the response
+    return res.json(response);
   });
 };
 
@@ -168,18 +164,52 @@ export const addTime = async (req, res) => {
   try {
     const { incubator_id, startup_id, email, time } = req.body;
 
-    // SQL query to insert timestamp data into the chat_timestamps table
-    const insertTimeQuery = `
+    // Check if a row with the given incubator_id, startup_id, and email already exists
+    const checkExistingRowQuery = `
+      SELECT id FROM chat_timestamps
+      WHERE incubator_id = ? AND startup_id = ? AND email = ?
+    `;
+
+    const [existingRow] = await query(checkExistingRowQuery, [
+      incubator_id,
+      startup_id,
+      email,
+    ]);
+
+    if (existingRow) {
+      // Row exists, update the timestamp
+      const updateTimestampQuery = `
+        UPDATE chat_timestamps
+        SET time = ?
+        WHERE incubator_id = ? AND startup_id = ? AND email = ?
+      `;
+
+      await db.query(updateTimestampQuery, [
+        time,
+        incubator_id,
+        startup_id,
+        email,
+      ]);
+    } else {
+      // Row does not exist, insert a new row with the timestamp
+      const insertTimestampQuery = `
         INSERT INTO chat_timestamps (incubator_id, startup_id, email, time)
         VALUES (?, ?, ?, ?)
       `;
 
-    // Execute the query with provided values
-    await db.query(insertTimeQuery, [incubator_id, startup_id, email, time]);
+      await db.query(insertTimestampQuery, [
+        incubator_id,
+        startup_id,
+        email,
+        time,
+      ]);
+    }
 
-    return res.status(200).json({ message: "Timestamp added successfully" });
+    return res
+      .status(200)
+      .json({ message: "Timestamp added/updated successfully" });
   } catch (error) {
-    console.error("Error adding timestamp:", error);
+    console.error("Error adding/updating timestamp:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

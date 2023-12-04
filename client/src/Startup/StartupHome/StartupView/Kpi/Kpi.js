@@ -334,22 +334,6 @@ const Kpi = () => {
     fetchData();
   }, []);
 
-  // useEffect(() => {
-  //   setMetricValues(
-  //     _.filter(allValues, (value) => {
-  //       const ids = _.get(
-  //         _.find(timePeriods, (item) => item.id == selectedTimePeriod),
-  //         'ids',
-  //         []
-  //       );
-  //       return (
-  //         _.includes(ids, value?.time_period) &&
-  //         value?.metric_uid == selectedMetric
-  //       );
-  //     })
-  //   );
-  // }, [selectedTimePeriod, selectedMetric]);
-
   const onSave = () => {};
 
   const handleValueChange = (e, id) => {

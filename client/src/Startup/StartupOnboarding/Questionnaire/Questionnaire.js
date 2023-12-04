@@ -120,6 +120,7 @@ const Questionnaire = ({
 
   const renderAnswerBox = (question, metaData) => {
     switch (question.answer_type) {
+      default:
       case "text":
         return (
           <textarea

@@ -1,27 +1,27 @@
-import { makeRequest } from '../axios';
-import _ from 'lodash';
+import { makeRequest } from "../axios";
+import _ from "lodash";
 
 export const isAuthenticated = () => {
-  if (typeof window == 'undefined') {
+  if (typeof window == "undefined") {
     return false;
   }
 
-  if (localStorage.getItem('jwt')) {
-    return JSON.parse(localStorage.getItem('jwt'));
+  if (localStorage.getItem("jwt")) {
+    return JSON.parse(localStorage.getItem("jwt"));
   } else {
     return false;
   }
 };
 
 export const authenticate = (data, next) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('jwt', JSON.stringify(data));
+  if (typeof window !== "undefined") {
+    localStorage.setItem("jwt", JSON.stringify(data));
   }
 };
 
 export const updateStartupIdsOfIncubator = ({ startupIds }) => {
   const { user, token } = isAuthenticated();
-  if (user?.role != 'incubator_founder') return;
+  if (user?.role !== "incubator_founder") return;
   let existingStartups = _.cloneDeep(user?.startups);
 
   _.forEach(startupIds, (id) => {
@@ -39,16 +39,16 @@ export const updateStartupIdsOfIncubator = ({ startupIds }) => {
 };
 
 export const signout = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.removeItem('jwt');
+  if (typeof window !== "undefined") {
+    localStorage.removeItem("jwt");
   }
 };
 
 export const logout = async () => {
   try {
-    const response = await makeRequest.post('api/auth/logout');
+    await makeRequest.post("api/auth/logout");
     signout();
   } catch (error) {
-    console.log('Errorrr', error);
+    console.log("Errorrr", error);
   }
 };

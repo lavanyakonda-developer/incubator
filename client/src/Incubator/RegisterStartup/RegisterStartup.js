@@ -1,27 +1,27 @@
 // RegisterStartup.js
 
-import React, { useState, useEffect } from 'react';
-import classes from './RegisterStartup..module.css'; // Import your CSS file
-import BasicDetails from './BasicDetails';
-import ReferralCode from './ReferralCode';
-import DocumentUpload from './DocumentUpload';
-import DetailedQuestionnaire from './DetailedQuestionnaire';
-import { useNavigate, useParams } from 'react-router-dom';
-import _ from 'lodash';
-import { questions } from './helper';
-import { makeRequest } from '../../axios';
-import { Button } from '../../CommonComponents';
+import React, { useState, useEffect } from "react";
+import classes from "./RegisterStartup..module.css"; // Import your CSS file
+import BasicDetails from "./BasicDetails";
+import ReferralCode from "./ReferralCode";
+import DocumentUpload from "./DocumentUpload";
+import DetailedQuestionnaire from "./DetailedQuestionnaire";
+import { useNavigate, useParams } from "react-router-dom";
+import _ from "lodash";
+import { questions } from "./helper";
+import { makeRequest } from "../../axios";
+import { Button } from "../../CommonComponents";
 
 const tabs = [
-  { label: 'Basic Info', key: 'basicDetails' },
-  { label: 'Referral Link', key: 'referralLink' },
-  { label: 'Document Upload', key: 'documentUpload' },
-  { label: 'Detailed Questionnaire', key: 'questionnaire' },
+  { label: "Basic Info", key: "basicDetails" },
+  { label: "Referral Link", key: "referralLink" },
+  { label: "Document Upload", key: "documentUpload" },
+  { label: "Detailed Questionnaire", key: "questionnaire" },
 ];
 
 const generateRandomCode = (length) => {
-  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-  let code = '';
+  const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
 
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * charset.length);
@@ -48,7 +48,7 @@ const RegisterStartup = () => {
         documentUpload: {
           uploadedDocuments: startup.documentUpload.uploadedDocuments,
           requestedDocuments: startup.documentUpload.requestedDocuments.concat(
-            Array(5 - startup.documentUpload.requestedDocuments.length).fill('')
+            Array(5 - startup.documentUpload.requestedDocuments.length).fill("")
           ),
         },
         questionnaire: _.map(questions, (section) => {
@@ -63,7 +63,7 @@ const RegisterStartup = () => {
                       ...subItem,
                       question: _.get(
                         _.find(existingQuestions, { uid: subItem.uid }),
-                        'question',
+                        "question",
                         subItem.question
                       ),
                     };
@@ -78,7 +78,7 @@ const RegisterStartup = () => {
                   ...item,
                   question: _.get(
                     _.find(existingQuestions, { uid: item.uid }),
-                    'question',
+                    "question",
                     item.question
                   ),
                 };
@@ -91,20 +91,20 @@ const RegisterStartup = () => {
     } else {
       return {
         basicDetails: {
-          id: '',
-          name: '',
-          dpiitNumber: '',
-          industrySegment: '',
-          founderName: '',
-          founderRole: '',
-          founderEmail: '',
-          founderMobile: '',
+          id: "",
+          name: "",
+          dpiitNumber: "",
+          industrySegment: "",
+          founderName: "",
+          founderRole: "",
+          founderEmail: "",
+          founderMobile: "",
           coFounders: [],
           referralCode: generateRandomCode(10),
         },
         documentUpload: {
           uploadedDocuments: [],
-          requestedDocuments: ['', '', '', '', ''],
+          requestedDocuments: ["", "", "", "", ""],
         },
         questionnaire: questions,
       };
@@ -129,10 +129,10 @@ const RegisterStartup = () => {
 
           setStartupInfo(getStartupInfo(data));
         } else {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -141,7 +141,7 @@ const RegisterStartup = () => {
     }
   }, []);
 
-  const [selectedTab, setSelectedTab] = useState('basicDetails'); // Set the initial selected tab
+  const [selectedTab, setSelectedTab] = useState("basicDetails"); // Set the initial selected tab
 
   const navigate = useNavigate();
 
@@ -165,9 +165,9 @@ const RegisterStartup = () => {
 
     const startupDetails = {
       id: startupInfo.basicDetails.id,
-      name: startupInfo.basicDetails.name || '',
-      dpiit_number: startupInfo.basicDetails.dpiitNumber || '',
-      industry: startupInfo.basicDetails.industrySegment || '',
+      name: startupInfo.basicDetails.name || "",
+      dpiit_number: startupInfo.basicDetails.dpiitNumber || "",
+      industry: startupInfo.basicDetails.industrySegment || "",
       referral_code:
         startupInfo.basicDetails.referralCode || generateRandomCode(10),
       incubator_id: incubatorId,
@@ -199,20 +199,20 @@ const RegisterStartup = () => {
     const data = getModifiedData(false);
 
     try {
-      const response = await makeRequest.post('api/auth/startup-register', {
+      const response = await makeRequest.post("api/auth/startup-register", {
         ...data,
       });
 
       if (response.status === 200) {
         const data = response.data;
       } else {
-        console.error('Error fetching data:', response.statusText);
+        console.error("Error fetching data:", response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
 
-    navigate('/');
+    navigate("/");
   };
 
   // Function to handle "Draft and Exit" button click
@@ -227,18 +227,18 @@ const RegisterStartup = () => {
       if (response.status === 200) {
         const data = response.data;
       } else {
-        console.error('Error fetching data:', response.statusText);
+        console.error("Error fetching data:", response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
 
-    navigate('/');
+    navigate("/");
   };
 
   // Function to handle "Cancel" button click
   const handleCancel = () => {
-    navigate('/');
+    navigate("/");
   };
 
   // Function to handle "Next" button click
@@ -284,7 +284,7 @@ const RegisterStartup = () => {
   // Conditionally render the selected tab
   const renderTabContent = () => {
     switch (selectedTab) {
-      case 'basicDetails':
+      case "basicDetails":
         return (
           <BasicDetails
             startupInfo={startupInfo}
@@ -295,7 +295,7 @@ const RegisterStartup = () => {
             disableDraft={disableSave}
           />
         );
-      case 'referralLink':
+      case "referralLink":
         return (
           <ReferralCode
             startupInfo={startupInfo}
@@ -306,7 +306,7 @@ const RegisterStartup = () => {
             disableDraft={disableSave}
           />
         );
-      case 'documentUpload':
+      case "documentUpload":
         return (
           <DocumentUpload
             uploadedDocuments={startupInfo.documentUpload.uploadedDocuments}
@@ -320,7 +320,7 @@ const RegisterStartup = () => {
             disableDraft={disableSave}
           />
         );
-      case 'questionnaire':
+      case "questionnaire":
         return (
           <DetailedQuestionnaire
             questionnaireData={startupInfo.questionnaire}
@@ -342,17 +342,17 @@ const RegisterStartup = () => {
     <div className={classes.startupRegistrationTabs}>
       <div className={classes.tabContainer}>
         <Button
-          name={'< Back'}
+          name={"< Back"}
           onClick={() => {
-            navigate('/');
+            navigate("/");
           }}
           customStyles={{
             width: 100,
             fontSize: 16,
-            color: 'black',
-            justifyContent: 'left',
-            backgroundColor: '#f0f0f0',
-            padding: '24px 16px',
+            color: "black",
+            justifyContent: "left",
+            backgroundColor: "#f0f0f0",
+            padding: "24px 16px",
           }}
         />
         <div className={classes.tabMenu}>
@@ -360,7 +360,7 @@ const RegisterStartup = () => {
             <div
               key={tab.key}
               className={`${classes.tab} ${
-                selectedTab === tab.key ? classes.activeTab : ''
+                selectedTab === tab.key ? classes.activeTab : ""
               }`}
               onClick={() => handleTabClick(tab.key)}
             >

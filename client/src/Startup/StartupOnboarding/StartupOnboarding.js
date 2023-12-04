@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { makeRequest } from '../../axios';
-import classes from './StartupOnboarding.module.css';
-import BasicDetails from './BasicDetails';
-import DocumentsUpload from './DocumentsUpload';
-import Questionnaire from './Questionnaire';
-import _ from 'lodash';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { makeRequest } from "../../axios";
+import classes from "./StartupOnboarding.module.css";
+import BasicDetails from "./BasicDetails";
+import DocumentsUpload from "./DocumentsUpload";
+import Questionnaire from "./Questionnaire";
+import _ from "lodash";
 
 const tabs = [
-  { label: 'Basic Details', key: 'basicDetails' },
-  { label: 'Document Submission', key: 'documentUpload' },
-  { label: 'Complete Questionnaire', key: 'questionnaire' },
+  { label: "Basic Details", key: "basicDetails" },
+  { label: "Document Submission", key: "documentUpload" },
+  { label: "Complete Questionnaire", key: "questionnaire" },
 ];
 
 const StartupOnboarding = () => {
   const { startup_id } = useParams();
-  const [selectedTab, setSelectedTab] = useState('basicDetails');
-  const [startupInfo, setStartupInfo] = useState('');
+  const [selectedTab, setSelectedTab] = useState("basicDetails");
+  const [startupInfo, setStartupInfo] = useState("");
 
   const navigate = useNavigate();
 
@@ -35,10 +35,10 @@ const StartupOnboarding = () => {
           return existingDoc
             ? existingDoc
             : {
-                format: '',
+                format: "",
                 name: item,
-                size: '',
-                url: '',
+                size: "",
+                url: "",
               };
         }),
       },
@@ -57,8 +57,8 @@ const StartupOnboarding = () => {
 
           if (
             !_.includes(
-              ['PENDING', 'REJECTED'],
-              _.get(data, 'basicDetails.status', 'PENDING')
+              ["PENDING", "REJECTED"],
+              _.get(data, "basicDetails.status", "PENDING")
             )
           ) {
             navigate(`/startup/${startup_id}/home`);
@@ -66,10 +66,10 @@ const StartupOnboarding = () => {
 
           setStartupInfo(getUpdatedData(data));
         } else {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -86,11 +86,11 @@ const StartupOnboarding = () => {
   const getModifiedData = () => {
     const startupDetails = {
       startup_id: startupInfo.basicDetails.id,
-      name: startupInfo.basicDetails.name || '',
-      logo: startupInfo.basicDetails.logo || '',
-      dpiit_number: startupInfo.basicDetails.dpiitNumber || '',
-      industry: startupInfo.basicDetails.industrySegment || '',
-      status: 'SUBMITTED',
+      name: startupInfo.basicDetails.name || "",
+      logo: startupInfo.basicDetails.logo || "",
+      dpiit_number: startupInfo.basicDetails.dpiitNumber || "",
+      industry: startupInfo.basicDetails.industrySegment || "",
+      status: "SUBMITTED",
       requestedDocuments: _.map(
         startupInfo.documentUpload.updatedRequestedDocuments,
         (item) => {
@@ -112,7 +112,7 @@ const StartupOnboarding = () => {
   const handleSave = async () => {
     const data = getModifiedData(false);
     try {
-      const response = await makeRequest.post('startup/update-startup', {
+      const response = await makeRequest.post("startup/update-startup", {
         ...data,
       });
 
@@ -122,15 +122,15 @@ const StartupOnboarding = () => {
         if (startup_id) {
           navigate(`/startup/${startup_id}/home`);
         } else {
-          navigate('/');
+          navigate("/");
         }
       } else {
-        console.error('Error fetching data:', response.statusText);
-        navigate('/');
+        console.error("Error fetching data:", response.statusText);
+        navigate("/");
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      navigate('/');
+      console.error("Error fetching data:", error);
+      navigate("/");
     }
   };
 
@@ -164,7 +164,7 @@ const StartupOnboarding = () => {
 
   const renderTabContent = () => {
     switch (selectedTab) {
-      case 'basicDetails':
+      case "basicDetails":
         return (
           <BasicDetails
             setStartupInfo={setStartupInfo}
@@ -172,7 +172,7 @@ const StartupOnboarding = () => {
             startupInfo={startupInfo}
           />
         );
-      case 'documentUpload':
+      case "documentUpload":
         return (
           <DocumentsUpload
             startupInfo={startupInfo}
@@ -181,7 +181,7 @@ const StartupOnboarding = () => {
             onBack={handleBack}
           />
         );
-      case 'questionnaire':
+      case "questionnaire":
         return (
           <Questionnaire
             startupInfo={startupInfo}
@@ -191,6 +191,9 @@ const StartupOnboarding = () => {
             disableSave={disableSave}
           />
         );
+
+      default:
+        return null;
     }
   };
 
@@ -201,7 +204,7 @@ const StartupOnboarding = () => {
           <div
             key={tab.key}
             className={`${classes.tab} ${
-              selectedTab === tab.key ? classes.activeTab : ''
+              selectedTab === tab.key ? classes.activeTab : ""
             }`}
             onClick={() => handleTabClick(tab.key)}
           >

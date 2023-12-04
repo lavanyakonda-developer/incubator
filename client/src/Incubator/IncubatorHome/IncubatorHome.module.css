@@ -125,6 +125,7 @@ ul {
 .startupNameLogo {
   display: flex;
   gap: 8px;
+  align-items: center;
 }
 
 .imageContainer {
@@ -189,4 +190,15 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.unreadCount {
+  width: "20px";
+  height: "20px";
+  border-radius: "50%";
+  background-color: "#6d48ff";
+  color: "white";
+  display: "flex";
+  align-items: "center";
+  justify-content: "center";
 }

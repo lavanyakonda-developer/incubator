@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
 import classes from "./IncubatorHome.module.css"; // Import your CSS file
 import _ from "lodash";
-import { makeRequest, API } from "../../axios";
-import { Button } from "../../CommonComponents";
+import { makeRequest, API, socketAPI } from "../../axios";
+import { Button, Chat } from "../../CommonComponents";
 import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
 import moment from "moment";
 import { FaCheckCircle, FaTimesCircle, FaComment } from "react-icons/fa";
+import io from "socket.io-client";
+import { isAuthenticated } from "../../auth/helper";
+
+const socket = io.connect(socketAPI);
 
 const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
@@ -23,9 +27,19 @@ const buttonStyle = {
 
 const IncubatorHome = (props) => {
   const { incubator_id: incubatorId } = useParams();
+
+  const { user } = isAuthenticated();
+
+  const { email } = user;
+
   const [selectedTab, setSelectedTab] = useState("homeDashboard");
+  const [room, setRoom] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [startups, setStartups] = useState([]);
+  const [showChat, setShowChat] = useState(false);
+  const [allMessages, setAllMessages] = useState({});
+  const [messageList, setMessageList] = useState([]);
+  const [comp, setComp] = useState(null);
 
   const [incubatorDetails, setIncubatorDetails] = useState({
     id: incubatorId,
@@ -64,6 +78,42 @@ const IncubatorHome = (props) => {
     }
   }, [incubatorId]);
 
+  const fetchChats = async () => {
+    try {
+      const response = await makeRequest.post(`chat/incubator-chats`, {
+        incubator_id: incubatorId,
+        email,
+      });
+
+      if (response.status === 200) {
+        const data = response.data;
+
+        setAllMessages(data);
+      } else {
+        console.error("Error fetching data:", response.statusText);
+      }
+    } catch (error) {
+      navigate("/");
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTab == "communicationTab") {
+      fetchChats();
+
+      _.forEach(startups, (startup) => {
+        socket.emit("join_room", `${incubatorId}-${startup.id}`);
+      });
+    }
+  }, [selectedTab, showChat]);
+
+  useEffect(() => {
+    socket.on("receive_message", () => {
+      fetchChats();
+    });
+  }, [socket]);
+
   const handleTabClick = (tabName) => {
     setSearchTerm("");
     setSelectedTab(tabName);
@@ -82,7 +132,8 @@ const IncubatorHome = (props) => {
   );
 
   const approvedStartups = _.filter(startups, (item) => {
-    return item.status == "APPROVED";
+    // return item.status == "APPROVED";
+    return true;
   });
 
   const filteredApprovedStartups = _.filter(approvedStartups, (item) =>
@@ -129,8 +180,10 @@ const IncubatorHome = (props) => {
   };
 
   const goToStartupChat = ({ id }) => {
-    console.log("id>>>>>>>>>>>>>", id);
-    return null;
+    setMessageList(_.uniqBy(_.get(allMessages, `${id}.chats`, []), "id"));
+    setRoom(`${incubatorId}-${id}`);
+
+    setShowChat(true);
   };
 
   const getRightComponent = () => {
@@ -225,7 +278,28 @@ const IncubatorHome = (props) => {
                               />
                             )}
                           </td>
-                          <td style={{ textAlign: "center" }}>
+                          <td
+                            style={{ textAlign: "center" }}
+                            onClick={() => {
+                              setSelectedTab("communicationTab");
+                              goToStartupChat({
+                                id: startup.id,
+                              });
+                              setComp(
+                                <div className={classes.startupNameLogo}>
+                                  <div className={classes.imageContainer}>
+                                    <img
+                                      className={classes.startupLogo}
+                                      src={startupLogo}
+                                    />
+                                  </div>
+                                  <div className={classes.startupName}>
+                                    {startup.name}
+                                  </div>
+                                </div>
+                              );
+                            }}
+                          >
                             <FaComment />
                           </td>
                         </tr>
@@ -241,49 +315,85 @@ const IncubatorHome = (props) => {
       case "communicationTab":
         return (
           <div className={classes.rightColumn}>
-            <div className={classes.tableContainer}>
-              <div className={classes.tableHeader}>
-                <input
-                  type="text"
-                  className={classes.searchBar}
-                  placeholder="Search startups"
-                  value={searchTerm}
-                  onChange={handleSearch}
-                />
-              </div>
-              <div className={classes.startupsCount}>{`${_.size(
-                approvedStartups
-              )} Approved Startups`}</div>
-              <div className={classes.startupsList}>
-                {_.map(filteredApprovedStartups, (startup) => {
-                  const startupLogoName = _.last(_.split(startup.logo, "/"));
-                  // Set the href attribute to the document's URL
-                  const startupLogo = !_.isEmpty(startupLogoName)
-                    ? `${API}/uploads/${startupLogoName}`
-                    : "";
-                  return (
-                    <div className={classes.startupNameLogo}>
-                      <div className={classes.imageContainer}>
-                        <img
-                          className={classes.startupLogo}
-                          src={startupLogo}
-                        />
+            {!showChat ? (
+              <div className={classes.tableContainer}>
+                <div className={classes.tableHeader}>
+                  <input
+                    type="text"
+                    className={classes.searchBar}
+                    placeholder="Search startups"
+                    value={searchTerm}
+                    onChange={handleSearch}
+                  />
+                </div>
+                <div className={classes.startupsCount}>{`${_.size(
+                  approvedStartups
+                )} Approved Startups`}</div>
+                <div className={classes.startupsList}>
+                  {_.map(filteredApprovedStartups, (startup) => {
+                    const startupLogoName = _.last(_.split(startup.logo, "/"));
+                    // Set the href attribute to the document's URL
+                    const startupLogo = !_.isEmpty(startupLogoName)
+                      ? `${API}/uploads/${startupLogoName}`
+                      : "";
+
+                    return (
+                      <div className={classes.startupNameLogo}>
+                        <div className={classes.imageContainer}>
+                          <img
+                            className={classes.startupLogo}
+                            src={startupLogo}
+                          />
+                        </div>
+                        <div
+                          className={classes.startupName}
+                          onClick={() => {
+                            goToStartupChat({
+                              id: startup.id,
+                            });
+                            setComp(
+                              <div className={classes.startupNameLogo}>
+                                <div className={classes.imageContainer}>
+                                  <img
+                                    className={classes.startupLogo}
+                                    src={startupLogo}
+                                  />
+                                </div>
+                                <div className={classes.startupName}>
+                                  {startup.name}
+                                </div>
+                              </div>
+                            );
+                          }}
+                        >
+                          {startup.name}
+                        </div>
+                        {_.get(allMessages, `${startup.id}.unreadCount`, 0) >
+                          0 && (
+                          <div className={classes.unreadCount}>
+                            {_.get(allMessages, `${startup.id}.unreadCount`, 0)}
+                          </div>
+                        )}
                       </div>
-                      <div
-                        className={classes.startupName}
-                        onClick={() =>
-                          goToStartupChat({
-                            id: startup.id,
-                          })
-                        }
-                      >
-                        {startup.name}
-                      </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              <Chat
+                socket={socket}
+                room={room}
+                email={email}
+                setShowChat={setShowChat}
+                showBack={true}
+                messageList={messageList}
+                setMessageList={setMessageList}
+                comp={comp}
+                incubator_id={_.split(room, "-")?.[0]}
+                startup_id={_.split(room, "-")?.[1]}
+                fetchChats={fetchChats}
+              />
+            )}
           </div>
         );
       default:

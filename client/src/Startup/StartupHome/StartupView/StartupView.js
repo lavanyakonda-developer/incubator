@@ -1,84 +1,94 @@
-import React, { useState, useEffect } from 'react';
-import { logout } from '../../../auth/helper';
-import classes from './StartupView.module.css';
-import { makeRequest, API } from '../../../axios';
-import _ from 'lodash';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../../../CommonComponents';
-import { startupProfileQuestions } from '../../../Incubator/RegisterStartup/helper.js';
+import React, { useState, useEffect } from "react";
+import { logout, isAuthenticated } from "../../../auth/helper";
+import classes from "./StartupView.module.css";
+import { makeRequest, API, socketAPI } from "../../../axios";
+import _ from "lodash";
+import { useNavigate, useParams } from "react-router-dom";
+import { Button, Chat } from "../../../CommonComponents";
+import { startupProfileQuestions } from "../../../Incubator/RegisterStartup/helper.js";
 import {
   renderQuestions,
   DocumentsContainer,
-} from '../../../Incubator/StartupHomeView/helper.js';
-import SupplementaryDocuments from './SupplementaryDocuments';
-import BusinessUpdates from './BusinessUpdates';
-import Kpi from './Kpi';
-import Mie from './Mie';
+} from "../../../Incubator/StartupHomeView/helper.js";
+import SupplementaryDocuments from "./SupplementaryDocuments";
+import BusinessUpdates from "./BusinessUpdates";
+import Kpi from "./Kpi";
+import Mie from "./Mie";
+import io from "socket.io-client";
+const socket = io.connect(socketAPI);
 
 const tabs = [
   //{ label: 'Home', key: 'homeDashboard' },
   {
-    label: 'Startup Profile',
-    key: 'startupProfile',
-    sections: ['startupIdentifier'],
+    label: "Startup Profile",
+    key: "startupProfile",
+    sections: ["startupIdentifier"],
     subTabs: [
       {
-        key: 'companyDetails',
-        label: 'Company Details',
-        sections: ['startupIdentifier'],
+        key: "companyDetails",
+        label: "Company Details",
+        sections: ["startupIdentifier"],
       },
       {
-        key: 'founderDetails',
-        label: 'Founder Details',
-        sections: ['founderDetails'],
+        key: "founderDetails",
+        label: "Founder Details",
+        sections: ["founderDetails"],
       },
       {
-        key: 'pitchAndDigital',
-        label: 'Elevator Pitch and Digital Presence',
-        sections: ['digitalPresence', 'pitchYourStartup'],
+        key: "pitchAndDigital",
+        label: "Elevator Pitch and Digital Presence",
+        sections: ["digitalPresence", "pitchYourStartup"],
       },
       {
-        key: 'characteristics',
-        label: 'Characteristics',
-        sections: ['startupCharacteristics'],
+        key: "characteristics",
+        label: "Characteristics",
+        sections: ["startupCharacteristics"],
       },
       {
-        key: 'funding',
-        label: 'Funding',
-        sections: ['fundDeploymentPlan', 'fundingDetails'],
+        key: "funding",
+        label: "Funding",
+        sections: ["fundDeploymentPlan", "fundingDetails"],
       },
       {
-        key: 'others',
-        label: 'Others',
-        sections: ['intellectualProperty', 'achievements', 'customQuestions'],
+        key: "others",
+        label: "Others",
+        sections: ["intellectualProperty", "achievements", "customQuestions"],
       },
     ],
   },
   {
-    label: 'Documents',
-    key: 'documentRepository',
+    label: "Documents",
+    key: "documentRepository",
     subTabs: [
-      { key: 'onboarding', label: 'Onboarding documents' },
-      { key: 'supplementary', label: 'Supplementary documents' },
+      { key: "onboarding", label: "Onboarding documents" },
+      { key: "supplementary", label: "Supplementary documents" },
     ],
   },
   {
-    label: 'Reporting Tab',
-    key: 'reportingTab',
+    label: "Reporting Tab",
+    key: "reportingTab",
     subTabs: [
-      { key: 'businessUpdates', label: 'Business updates' },
-      { key: 'kpi', label: 'Key performance indicators' },
-      { key: 'mie', label: 'Mandatory Information exchange' },
+      { key: "businessUpdates", label: "Business updates" },
+      { key: "kpi", label: "Key performance indicators" },
+      { key: "mie", label: "Mandatory Information exchange" },
     ],
   },
-  //   { label: 'Communication Tab', key: 'communicationTab' },
+  {
+    label: "Communication Tab",
+    key: "communicationTab",
+  },
 ];
 
 const StartupView = () => {
   const { startup_id } = useParams();
-  const [selectedTab, setSelectedTab] = useState('companyDetails');
+  const [selectedTab, setSelectedTab] = useState("companyDetails");
   const [startupInfo, setStartupInfo] = useState({});
+
+  const [unreadCount, setUnReadCount] = useState(0);
+  const [messageList, setMessageList] = useState([]);
   const navigate = useNavigate();
+  const { user } = isAuthenticated();
+  const { email, incubator_id } = user;
 
   const { basicDetails } = startupInfo || {};
 
@@ -94,6 +104,14 @@ const StartupView = () => {
     }
   };
 
+  const room = `${incubator_id}-${startup_id}`;
+
+  const joinRoom = () => {
+    if (email !== "" && room !== "") {
+      socket.emit("join_room", room);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -106,45 +124,79 @@ const StartupView = () => {
 
           setStartupInfo(data);
         } else {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
     if (startup_id) {
       fetchData();
+      joinRoom();
     }
   }, [startup_id]);
 
-  const startupLogoName = _.last(_.split(_.get(basicDetails, 'logo', ''), '/'));
+  const fetchChats = async () => {
+    try {
+      const response = await makeRequest.post(`chat/startup-chats`, {
+        incubator_id,
+        email,
+        startup_id,
+      });
+
+      if (response.status === 200) {
+        const data = response.data;
+        setMessageList(_.uniqBy(data?.chats), "id");
+        setUnReadCount(_.get(data, "unreadCount", 0));
+      } else {
+        console.error("Error fetching data:", response.statusText);
+      }
+    } catch (error) {
+      navigate("/");
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedTab == "communicationTab") {
+      fetchChats();
+    }
+  }, [selectedTab]);
+
+  useEffect(() => {
+    socket.on("receive_message", () => {
+      fetchChats();
+    });
+  }, [socket]);
+
+  const startupLogoName = _.last(_.split(_.get(basicDetails, "logo", ""), "/"));
   // Set the href attribute to the document's URL
   const startupLogo = !_.isEmpty(startupLogoName)
     ? `${API}/uploads/${startupLogoName}`
-    : '';
+    : "";
 
   const userLogout = () => {
     logout();
-    navigate('/home-page');
+    navigate("/home-page");
   };
 
   const getRightComponent = () => {
     switch (selectedTab) {
-      case 'companyDetails':
-      case 'founderDetails':
-      case 'pitchAndDigital':
-      case 'characteristics':
-      case 'funding':
-      case 'others': {
+      case "companyDetails":
+      case "founderDetails":
+      case "pitchAndDigital":
+      case "characteristics":
+      case "funding":
+      case "others": {
         const subTabs = _.get(
-          _.find(tabs, { key: 'startupProfile' }),
-          'subTabs',
+          _.find(tabs, { key: "startupProfile" }),
+          "subTabs",
           []
         );
         const sections = _.get(
           _.find(subTabs, { key: selectedTab }),
-          'sections',
+          "sections",
           []
         );
         return (
@@ -163,17 +215,17 @@ const StartupView = () => {
           </div>
         );
       }
-      case 'documentRepository':
-      case 'onboarding': {
+      case "documentRepository":
+      case "onboarding": {
         return (
           <>
             <h3>Onboarding Documents</h3>
             <DocumentsContainer
               documents={[
-                ..._.get(startupInfo, 'documentUpload.uploadedDocuments', []),
+                ..._.get(startupInfo, "documentUpload.uploadedDocuments", []),
                 ..._.get(
                   startupInfo,
-                  'documentUpload.requestedDocumentsList',
+                  "documentUpload.requestedDocumentsList",
                   []
                 ),
               ]}
@@ -181,19 +233,34 @@ const StartupView = () => {
           </>
         );
       }
-      case 'supplementary': {
+      case "supplementary": {
         return <SupplementaryDocuments />;
       }
 
-      case 'businessUpdates': {
+      case "businessUpdates": {
         return <BusinessUpdates />;
       }
 
-      case 'kpi':
+      case "kpi":
         return <Kpi />;
 
-      case 'mie':
+      case "mie":
         return <Mie />;
+
+      case "communicationTab": {
+        return (
+          <Chat
+            socket={socket}
+            room={room}
+            email={email}
+            messageList={messageList}
+            setMessageList={setMessageList}
+            incubator_id={_.split(room, "-")?.[0]}
+            startup_id={_.split(room, "-")?.[1]}
+            fetchChats={fetchChats}
+          />
+        );
+      }
 
       default:
         return null;
@@ -204,8 +271,8 @@ const StartupView = () => {
     <div className={classes.container}>
       <div className={classes.leftContainer}>
         <div className={classes.startupDetails}>
-          <img className={classes.logo} src={startupLogo} />
-          <div className={classes.name}>{_.get(basicDetails, 'name', '')}</div>
+          <img className={classes.logo} src={startupLogo} alt={"logo"} />
+          <div className={classes.name}>{_.get(basicDetails, "name", "")}</div>
         </div>
 
         <div className={classes.tabMenu}>
@@ -218,18 +285,18 @@ const StartupView = () => {
                 <>
                   <div
                     className={`${classes.tab} ${
-                      selectedTab === tab.key ? classes.activeTab : ''
+                      selectedTab === tab.key ? classes.activeTab : ""
                     }`}
                     onClick={() => handleTabClick(tab.key)}
                     key={tab.key}
                   >
-                    {tab.label}
+                    {`${tab.label}`}
                   </div>
                   {_.map(tab.subTabs, (task) => {
                     return (
                       <div
                         className={`${classes.tab} ${
-                          selectedTab === task.key ? classes.activeTab : ''
+                          selectedTab === task.key ? classes.activeTab : ""
                         }`}
                         style={{ paddingLeft: 24 }}
                         onClick={() => handleTabClick(task.key)}
@@ -245,26 +312,32 @@ const StartupView = () => {
             return (
               <div
                 className={`${classes.tab} ${
-                  selectedTab === tab.key ? classes.activeTab : ''
+                  selectedTab === tab.key ? classes.activeTab : ""
                 }`}
                 onClick={() => handleTabClick(tab.key)}
                 key={tab.key}
               >
-                {tab.label}
+                {`${tab.label} ${
+                  unreadCount > 0 &&
+                  tab.key == "communicationTab" &&
+                  selectedTab != "communicationTab"
+                    ? `- ${unreadCount}`
+                    : ""
+                }`}
               </div>
             );
           })}
         </div>
         <div className={classes.logout}>
           <Button
-            name={'Logout'}
+            name={"Logout"}
             onClick={userLogout}
             customStyles={{
               width: 100,
               fontSize: 16,
-              color: 'black',
-              justifyContent: 'left',
-              backgroundColor: '#f0f0f0',
+              color: "black",
+              justifyContent: "left",
+              backgroundColor: "#f0f0f0",
             }}
           />
         </div>

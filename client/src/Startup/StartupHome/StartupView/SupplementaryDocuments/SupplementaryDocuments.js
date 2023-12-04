@@ -1,16 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { makeRequest } from '../../../../axios';
-import classes from './SupplementaryDocuments.module.css';
-import _ from 'lodash';
-import { useNavigate, useParams } from 'react-router-dom';
-import { Button } from '../../../../CommonComponents';
-import { DocumentsContainer } from '../../../../Incubator/StartupHomeView/helper';
+import React, { useState, useEffect, useRef } from "react";
+import { makeRequest } from "../../../../axios";
+import classes from "./SupplementaryDocuments.module.css";
+import _ from "lodash";
+import { useParams } from "react-router-dom";
+import { Button } from "../../../../CommonComponents";
+import { DocumentsContainer } from "../../../../Incubator/StartupHomeView/helper";
 
 // TODO : Placeholder image URLs for doc and pdf
 const placeholderDocImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 const placeholderPdfImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
 const SupplementaryDocuments = () => {
   const { incubator_id: incubatorId, startup_id: startupId } = useParams();
@@ -20,10 +20,10 @@ const SupplementaryDocuments = () => {
   const [showSizeExceededModal, setShowSizeExceededModal] = useState(false); // Add state for size exceeded modal
   const [documentInfo, setDocumentInfo] = useState({
     selectedFile: null,
-    name: '',
-    size: '',
-    format: '',
-    url: '',
+    name: "",
+    size: "",
+    format: "",
+    url: "",
   });
 
   const fileInputRef = useRef(null);
@@ -33,9 +33,9 @@ const SupplementaryDocuments = () => {
     setShowUploadModal(false);
     setDocumentInfo({
       selectedFile: null,
-      name: '',
-      size: '',
-      format: '',
+      name: "",
+      size: "",
+      format: "",
       isSignatureRequired: false,
     });
   };
@@ -60,10 +60,10 @@ const SupplementaryDocuments = () => {
           setPendingDocuments(data.pendingDocuments);
           setApprovedDocuments(data.approvedDocuments);
         } else {
-          console.error('Error fetching data:', response.statusText);
+          console.error("Error fetching data:", response.statusText);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -91,10 +91,10 @@ const SupplementaryDocuments = () => {
       if (response.status === 200) {
         setPendingDocuments([...pendingDocuments, documentInfo]);
       } else {
-        console.error('Error fetching data:', response.statusText);
+        console.error("Error fetching data:", response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
 
     closeModal();
@@ -102,14 +102,14 @@ const SupplementaryDocuments = () => {
 
   const uploadFile = async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await makeRequest.post('/incubator/upload', formData);
+    const response = await makeRequest.post("/incubator/upload", formData);
 
     if (response.status === 200) {
       return response.data.fileUrl;
     } else {
-      console.error('Error fetching data:', response.statusText);
+      console.error("Error fetching data:", response.statusText);
     }
   };
 
@@ -118,7 +118,7 @@ const SupplementaryDocuments = () => {
 
     if (file.size > 1024 * 1024) {
       setShowSizeExceededModal(true); // Show the size exceeded modal
-      e.target.value = ''; // Clear the file input
+      e.target.value = ""; // Clear the file input
       return;
     }
     if (file) {
@@ -152,10 +152,10 @@ const SupplementaryDocuments = () => {
         setPendingDocuments(data.pendingDocuments);
         setApprovedDocuments(data.approvedDocuments);
       } else {
-        console.error('Error fetching data:', response.statusText);
+        console.error("Error fetching data:", response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -169,11 +169,11 @@ const SupplementaryDocuments = () => {
               <label className={classes.uploadLabel}>
                 <span className={classes.chooseFileText}>Choose File</span>
                 <input
-                  type='file'
+                  type="file"
                   ref={fileInputRef}
                   onChange={handleFileChange}
-                  accept='.pdf,.doc,.docx'
-                  style={{ display: 'none' }}
+                  accept=".pdf,.doc,.docx"
+                  style={{ display: "none" }}
                 />
               </label>
             </div>
@@ -198,13 +198,13 @@ const SupplementaryDocuments = () => {
                 <div className={classes.preview}>
                   <img
                     src={
-                      documentInfo.format === 'application/pdf'
+                      documentInfo.format === "application/pdf"
                         ? placeholderPdfImage
                         : placeholderDocImage
                     }
-                    alt='Document Preview'
-                    width='100'
-                    height='100'
+                    alt="Document Preview"
+                    width="100"
+                    height="100"
                   />
                 </div>
                 <div className={classes.details}>
@@ -215,19 +215,19 @@ const SupplementaryDocuments = () => {
                     <strong>Document Size:</strong> {documentInfo.size}
                   </div>
                   <div className={classes.detail}>
-                    <strong>Document Format:</strong>{' '}
-                    {documentInfo.name.split('.').pop()}
+                    <strong>Document Format:</strong>{" "}
+                    {documentInfo.name.split(".").pop()}
                   </div>
                 </div>
               </div>
 
               <div className={classes.buttons}>
                 <Button
-                  name={'Cancel'}
+                  name={"Cancel"}
                   onClick={closeModal}
-                  customStyles={{ backgroundColor: '#ff6d6d' }}
+                  customStyles={{ backgroundColor: "#ff6d6d" }}
                 />
-                <Button name={'Upload'} onClick={uploadDocumentMutation} />
+                <Button name={"Upload"} onClick={uploadDocumentMutation} />
               </div>
             </div>
           </div>
@@ -242,13 +242,13 @@ const SupplementaryDocuments = () => {
                 <div className={classes.preview}>
                   <img
                     src={
-                      documentInfo.format === 'application/pdf'
+                      documentInfo.format === "application/pdf"
                         ? placeholderPdfImage
                         : placeholderDocImage
                     }
-                    alt='Document Preview'
-                    width='100'
-                    height='100'
+                    alt="Document Preview"
+                    width="100"
+                    height="100"
                   />
                 </div>
                 <div className={classes.details}>
@@ -262,9 +262,9 @@ const SupplementaryDocuments = () => {
               </div>
               <div className={classes.buttons}>
                 <Button
-                  name={'Cancel'}
+                  name={"Cancel"}
                   onClick={closeSizeExceededModal}
-                  customStyles={{ backgroundColor: '#ff6d6d' }}
+                  customStyles={{ backgroundColor: "#ff6d6d" }}
                 />
               </div>
             </div>

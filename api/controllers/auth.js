@@ -1,8 +1,8 @@
-import { db } from '../connect.js';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import util from 'util';
-import _ from 'lodash';
+import { db } from "../connect.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import util from "util";
+import _ from "lodash";
 
 const query = util.promisify(db.query).bind(db);
 
@@ -12,7 +12,7 @@ export const incubatorRegister = (req, res) => {
   const phone_number = req.body.phone_number;
 
   const checkExistingUserQuery =
-    'SELECT * FROM incubator_founders WHERE email = ? OR phone_number = ?';
+    "SELECT * FROM incubator_founders WHERE email = ? OR phone_number = ?";
 
   db.query(
     checkExistingUserQuery,
@@ -23,7 +23,7 @@ export const incubatorRegister = (req, res) => {
       }
 
       if (existingUser.length) {
-        return res.status(409).json('User already exists!');
+        return res.status(409).json("User already exists!");
       }
 
       // Hash the password
@@ -34,7 +34,7 @@ export const incubatorRegister = (req, res) => {
       const incubator_logo = req.body.incubator_logo;
 
       const checkExistingIncubatorQuery =
-        'SELECT * FROM incubators WHERE name = ?';
+        "SELECT * FROM incubators WHERE name = ?";
 
       db.query(
         checkExistingIncubatorQuery,
@@ -47,7 +47,7 @@ export const incubatorRegister = (req, res) => {
           if (!existingIncubator.length) {
             // Incubator doesn't exist, so insert it
             const insertIncubatorQuery =
-              'INSERT INTO incubators (name, logo) VALUES (?, ?)';
+              "INSERT INTO incubators (name, logo) VALUES (?, ?)";
 
             db.query(
               insertIncubatorQuery,
@@ -84,7 +84,7 @@ export const incubatorRegister = (req, res) => {
                     email,
                     phone_number,
                     name: req.body.name,
-                    role: 'incubator_founder',
+                    role: "incubator_founder",
                   };
 
                   return res.status(200).json(newUser);
@@ -119,7 +119,7 @@ export const incubatorRegister = (req, res) => {
                 email,
                 phone_number,
                 name: req.body.name,
-                role: 'incubator_founder',
+                role: "incubator_founder",
               };
 
               return res.status(200).json(newUser);
@@ -132,7 +132,7 @@ export const incubatorRegister = (req, res) => {
 };
 
 export const incubatorLogin = (req, res) => {
-  const q = 'SELECT * FROM incubator_founders WHERE email = ?';
+  const q = "SELECT * FROM incubator_founders WHERE email = ?";
 
   db.query(q, [req.body.email], async (err, data) => {
     if (err) return res.status(500).json(err);
@@ -140,7 +140,7 @@ export const incubatorLogin = (req, res) => {
       return res
         .status(404)
         .json(
-          'No Incubator founder is found with the email you have provided. Please reach out to our team'
+          "No Incubator founder is found with the email you have provided. Please reach out to our team"
         );
 
     const checkPassword = bcrypt.compareSync(
@@ -149,11 +149,11 @@ export const incubatorLogin = (req, res) => {
     );
 
     if (!checkPassword)
-      return res.status(400).json('Wrong password or username!');
+      return res.status(400).json("Wrong password or username!");
 
     // Fetch the list of startups associated with the incubator
     const startupQuery =
-      'SELECT startup_id FROM incubator_startup WHERE incubator_id = ?';
+      "SELECT startup_id FROM incubator_startup WHERE incubator_id = ?";
     db.query(startupQuery, [data[0].incubator_id], (err, startupData) => {
       if (err) return res.status(500).json(err);
 
@@ -171,7 +171,7 @@ export const incubatorLogin = (req, res) => {
 
       const { password, ...others } = data[0];
 
-      res.cookie('accessToken', token, {
+      res.cookie("accessToken", token, {
         httpOnly: true,
         expire: new Date() + 9999,
       });
@@ -182,15 +182,15 @@ export const incubatorLogin = (req, res) => {
 };
 
 export const startupLogin = (req, res) => {
-  const q = 'SELECT * FROM startup_founders WHERE email = ?';
+  const q = "SELECT * FROM startup_founders WHERE email = ?";
 
-  db.query(q, [req.body.email], (err, data) => {
+  db.query(q, [req.body.email], async (err, data) => {
     if (err) return res.status(500).json(err);
     if (data.length === 0)
       return res
         .status(404)
         .json(
-          'No Incubator founder is found with the email you have provided. Please reach out to our team'
+          "No Startup founder is found with the email you have provided. Please reach out to our team"
         );
 
     const checkPassword = bcrypt.compareSync(
@@ -199,35 +199,55 @@ export const startupLogin = (req, res) => {
     );
 
     if (!checkPassword)
-      return res.status(400).json('Wrong password or username!');
+      return res.status(400).json("Wrong password or username!");
 
-    const token = jwt.sign(
-      {
-        id: data[0].id,
-        role: data[0].role,
-        startup_id: data[0].startup_id,
-      },
-      process.env.SECRET
+    // Fetch incubator_id based on startup_id
+    const fetchIncubatorQuery =
+      "SELECT incubator_id FROM incubator_startup WHERE startup_id = ?";
+    db.query(
+      fetchIncubatorQuery,
+      [data[0].startup_id],
+      (err, incubatorData) => {
+        if (err) return res.status(500).json(err);
+
+        const token = jwt.sign(
+          {
+            id: data[0].id,
+            role: data[0].role,
+            startup_id: data[0].startup_id,
+            incubator_id:
+              incubatorData.length > 0 ? incubatorData[0].incubator_id : null, // Get incubator_id or null
+          },
+          process.env.SECRET
+        );
+
+        const { password, ...others } = data[0];
+
+        res.cookie("accessToken", token, {
+          httpOnly: true,
+          expire: new Date() + 9999,
+        });
+
+        return res.json({
+          token,
+          user: {
+            ...others,
+            incubator_id:
+              incubatorData.length > 0 ? incubatorData[0].incubator_id : null,
+          },
+        });
+      }
     );
-
-    const { password, ...others } = data[0];
-
-    res.cookie('accessToken', token, {
-      httpOnly: true,
-      expire: new Date() + 9999,
-    });
-
-    return res.json({ token, user: { ...others } });
   });
 };
 
 export const logout = (req, res) => {
-  res.clearCookie('accessToken', {
+  res.clearCookie("accessToken", {
     secure: true,
-    sameSite: 'none',
+    sameSite: "none",
   });
   res.json({
-    message: 'User logged out successfully',
+    message: "User logged out successfully",
   });
 };
 
@@ -248,7 +268,7 @@ export const startupRegister = async (req, res) => {
 
   try {
     // Checking if the startup already exists
-    const checkStartupQuery = 'SELECT * FROM startups WHERE id = ?';
+    const checkStartupQuery = "SELECT * FROM startups WHERE id = ?";
 
     const [startupData] = await query(checkStartupQuery, [startupId]);
 
@@ -256,7 +276,7 @@ export const startupRegister = async (req, res) => {
       // If the startup already exists, update its details
       //No need to change any status here
       const updateStartupQuery =
-        'UPDATE startups SET dpiit_number = ?, industry = ?, referral_code = ?, name = ? WHERE id = ?';
+        "UPDATE startups SET dpiit_number = ?, industry = ?, referral_code = ?, name = ? WHERE id = ?";
 
       await query(updateStartupQuery, [
         dpiit_number,
@@ -266,11 +286,11 @@ export const startupRegister = async (req, res) => {
         startupId,
       ]);
 
-      const startup_id = _.get(startupData, 'id', startupId);
+      const startup_id = _.get(startupData, "id", startupId);
 
       // Fetch existing founders
       const fetchFoundersQuery =
-        'SELECT * FROM startup_founders WHERE startup_id = ?';
+        "SELECT * FROM startup_founders WHERE startup_id = ?";
 
       const results = await query(fetchFoundersQuery, [startup_id]);
 
@@ -289,7 +309,7 @@ export const startupRegister = async (req, res) => {
           const { name, email, phone_number, designation } = founder;
 
           const updateFounderQuery =
-            'UPDATE startup_founders SET name = ?,email = ? , phone_number = ?, designation = ? WHERE id = ?';
+            "UPDATE startup_founders SET name = ?,email = ? , phone_number = ?, designation = ? WHERE id = ?";
 
           await query(updateFounderQuery, [
             name,
@@ -301,13 +321,13 @@ export const startupRegister = async (req, res) => {
         } else {
           // Founder does not exist, create a new founder
           const { name, email, phone_number, designation } = founder;
-          const role = 'startup_founder';
+          const role = "startup_founder";
 
           const salt = bcrypt.genSaltSync(10);
-          const hashedPassword = bcrypt.hashSync('default_password', salt); // You can set a default password
+          const hashedPassword = bcrypt.hashSync("default_password", salt); // You can set a default password
 
           const createFounderQuery =
-            'INSERT INTO startup_founders (`email`, `password`, `phone_number`, `role`, `designation`, `startup_id`, `name`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+            "INSERT INTO startup_founders (`email`, `password`, `phone_number`, `role`, `designation`, `startup_id`, `name`) VALUES (?, ?, ?, ?, ?, ?, ?)";
           const values = [
             email,
             hashedPassword,
@@ -334,14 +354,14 @@ export const startupRegister = async (req, res) => {
       );
 
       for (const founderToDelete of foundersToDelete) {
-        const deleteFounderQuery = 'DELETE FROM startup_founders WHERE id = ?';
+        const deleteFounderQuery = "DELETE FROM startup_founders WHERE id = ?";
         await query(deleteFounderQuery, [founderToDelete.id]);
       }
 
       //>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.......................................>>>>>>>>>>>>>>>>>>>>>>>>>.
       // Fetch existing documents
       const fetchDocumentsQuery =
-        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?';
+        "SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?";
 
       const existingDocumentsResults = await query(fetchDocumentsQuery, [
         startup_id,
@@ -373,7 +393,7 @@ export const startupRegister = async (req, res) => {
             } = document;
 
             const updateDocumentQuery =
-              'UPDATE startup_documents SET document_size = ?, document_format = ?, is_signature_required = ?, document_url = ? WHERE id = ?';
+              "UPDATE startup_documents SET document_size = ?, document_format = ?, is_signature_required = ?, document_url = ? WHERE id = ?";
 
             await query(updateDocumentQuery, [
               document_size,
@@ -393,7 +413,7 @@ export const startupRegister = async (req, res) => {
             } = document;
 
             const createDocumentQuery =
-              'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+              "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             const values = [
               startup_id,
               document_name,
@@ -419,7 +439,7 @@ export const startupRegister = async (req, res) => {
             if (!docExistsInUploads) {
               // Soft delete the document by updating is_deleted
               const softDeleteDocumentQuery =
-                'UPDATE startup_documents SET is_deleted = ? WHERE id = ?';
+                "UPDATE startup_documents SET is_deleted = ? WHERE id = ?";
 
               await query(softDeleteDocumentQuery, [true, existingDoc.id]);
             }
@@ -429,7 +449,7 @@ export const startupRegister = async (req, res) => {
 
       // Fetch existing requested documents
       const fetchRequestedDocumentsQuery =
-        'SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?';
+        "SELECT * FROM startup_documents WHERE startup_id = ? AND is_requested = ? AND is_onboarding = ?";
 
       const existingRequestedDocumentsResults = await query(
         fetchRequestedDocumentsQuery,
@@ -456,13 +476,13 @@ export const startupRegister = async (req, res) => {
             if (!existingRequestedDocument) {
               // Requested document does not exist, create a new requested document
               const createRequestedDocumentQuery =
-                'INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)';
+                "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)";
               const values = [
                 startup_id,
                 documentName,
-                '',
-                '',
-                '',
+                "",
+                "",
+                "",
                 false,
                 true,
                 false,
@@ -483,7 +503,7 @@ export const startupRegister = async (req, res) => {
               if (!docExistsInUploads) {
                 // Soft delete the document by updating is_deleted
                 const softDeleteDocumentQuery =
-                  'UPDATE startup_documents SET is_deleted = ? WHERE id = ?';
+                  "UPDATE startup_documents SET is_deleted = ? WHERE id = ?";
 
                 await query(softDeleteDocumentQuery, [true, existingDoc.id]);
               }
@@ -496,7 +516,7 @@ export const startupRegister = async (req, res) => {
 
       // Fetch existing questionnaire responses
       const fetchQuestionnaireQuery =
-        'SELECT * FROM questionnaire WHERE startup_id = ?';
+        "SELECT * FROM questionnaire WHERE startup_id = ?";
 
       const existingQuestionsResults = await query(fetchQuestionnaireQuery, [
         startup_id,
@@ -529,7 +549,7 @@ export const startupRegister = async (req, res) => {
             if (existingQuestion) {
               // Question with the same UID exists, update details
               const updateQuestionQuery =
-                'UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?';
+                "UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?";
 
               await query(updateQuestionQuery, [
                 question_text,
@@ -558,7 +578,7 @@ export const startupRegister = async (req, res) => {
                     if (existingSubQuestion) {
                       // Subquestion with the same UID exists, update details
                       const updateSubQuestionQuery =
-                        'UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?';
+                        "UPDATE questionnaire SET question = ?, answer_type = ?, meta_data = ? WHERE id = ?";
 
                       await query(updateSubQuestionQuery, [
                         sub_question_text,
@@ -569,7 +589,7 @@ export const startupRegister = async (req, res) => {
                     } else {
                       // Subquestion does not exist, create a new subquestion
                       const createSubQuestionQuery =
-                        'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                        "INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)";
                       const subQuestionValues = [
                         startup_id,
                         sub_question_text,
@@ -589,7 +609,7 @@ export const startupRegister = async (req, res) => {
             } else {
               // Question does not exist, create a new question
               const createQuestionQuery =
-                'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                "INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)";
               const values = [
                 startup_id,
                 question_text,
@@ -615,7 +635,7 @@ export const startupRegister = async (req, res) => {
 
                     // Create a new subquestion
                     const createSubQuestionQuery =
-                      'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                      "INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)";
                     const subQuestionValues = [
                       startup_id,
                       sub_question_text,
@@ -655,18 +675,18 @@ export const startupRegister = async (req, res) => {
       // Send success response
       return res
         .status(200)
-        .json('Startup and associated data have been updated.');
+        .json("Startup and associated data have been updated.");
     } else {
       // If the startup doesn't exist, create it
       const createStartupQuery =
-        'INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`, `status`) VALUES (?, ?, ?, ?, ?)';
+        "INSERT INTO startups (`name`, `dpiit_number`, `industry`, `referral_code`, `status`) VALUES (?, ?, ?, ?, ?)";
 
       const result = await query(createStartupQuery, [
         startup_name,
         dpiit_number,
         industry,
         referral_code,
-        'PENDING',
+        "PENDING",
       ]);
 
       const startup_id = result.insertId;
@@ -674,13 +694,13 @@ export const startupRegister = async (req, res) => {
       // Create founders for the startup
       const founderInsertPromises = _.map(founders, async (founder) => {
         const { name, email, phone_number, designation } = founder;
-        const role = 'startup_founder';
+        const role = "startup_founder";
 
         const salt = bcrypt.genSaltSync(10);
-        const hashedPassword = bcrypt.hashSync('default_password', salt); // You can set a default password
+        const hashedPassword = bcrypt.hashSync("default_password", salt); // You can set a default password
 
         const createFounderQuery =
-          'INSERT INTO startup_founders (`email`, `password`, `phone_number`, `role`, `designation`, `startup_id`, `name`) VALUES (?, ?, ?, ?, ?, ?, ?)';
+          "INSERT INTO startup_founders (`email`, `password`, `phone_number`, `role`, `designation`, `startup_id`, `name`) VALUES (?, ?, ?, ?, ?, ?, ?)";
         const values = [
           email,
           hashedPassword,
@@ -707,7 +727,7 @@ export const startupRegister = async (req, res) => {
           } = document;
 
           const createDocumentQuery =
-            'INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
           const values = [
             startup_id,
             document_name,
@@ -733,13 +753,13 @@ export const startupRegister = async (req, res) => {
           if (documentName) {
             // Only insert non-empty document names
             const createRequestedDocumentQuery =
-              'INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?,?)';
+              "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?,?)";
             const values = [
               startup_id,
               documentName,
-              '',
-              '',
-              '',
+              "",
+              "",
+              "",
               false,
               true,
               false,
@@ -765,7 +785,7 @@ export const startupRegister = async (req, res) => {
           } = question;
 
           const createQuestionQuery =
-            'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+            "INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)";
           const values = [
             startup_id,
             question_text,
@@ -789,7 +809,7 @@ export const startupRegister = async (req, res) => {
                 } = subQuestion;
 
                 const createSubQuestionQuery =
-                  'INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)';
+                  "INSERT INTO questionnaire (`startup_id`, `question`, `answer_type`, `question_uid`, `meta_data`, `answer`) VALUES (?, ?, ?, ?, ?, ?)";
                 const subValues = [
                   startup_id,
                   sub_question_text,
@@ -819,7 +839,7 @@ export const startupRegister = async (req, res) => {
 
       // Add mapping for incubator_id and startup_id in incubator_startup
       const createMappingQuery =
-        'INSERT INTO incubator_startup (`incubator_id`, `startup_id`, `is_draft`) VALUES (?, ?, ?)';
+        "INSERT INTO incubator_startup (`incubator_id`, `startup_id`, `is_draft`) VALUES (?, ?, ?)";
       const mappingValues = [incubator_id, startup_id, is_draft];
 
       await query(createMappingQuery, mappingValues);
@@ -827,10 +847,10 @@ export const startupRegister = async (req, res) => {
       // Send success response
       return res
         .status(200)
-        .json('Startup and associated data have been created.');
+        .json("Startup and associated data have been created.");
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     return res.status(500).json(error);
   }
 };
@@ -840,31 +860,31 @@ export const startupFounderRegister = (req, res) => {
 
   // Check if a startup with the provided name and referral_code exists
   const findStartupQuery =
-    'SELECT sf.id, sf.role, s.id as startup_id, s.referral_code, sf.password FROM startups s INNER JOIN startup_founders sf ON s.id = sf.startup_id WHERE sf.email = ? AND s.referral_code = ?';
+    "SELECT sf.id, sf.role, s.id as startup_id, s.referral_code, sf.password FROM startups s INNER JOIN startup_founders sf ON s.id = sf.startup_id WHERE sf.email = ? AND s.referral_code = ?";
   db.query(findStartupQuery, [email, referral_code], (err, startupData) => {
     if (err) return res.status(500).json(err);
 
     // If no startup found, return an error
     if (startupData.length === 0) {
-      return res.status(404).json('Invalid user');
+      return res.status(404).json("Invalid user");
     }
 
     const startup = startupData[0];
 
     //To eliminate duplicate updating! once it's not default, that means it user already updated
     const checkPassword = bcrypt.compareSync(
-      'default_password',
+      "default_password",
       startup.password
     );
     if (!checkPassword) {
-      return res.status(400).json('Founder has been registered already!');
+      return res.status(400).json("Founder has been registered already!");
     }
 
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(password, salt);
 
     const updatePasswordQuery =
-      'UPDATE startup_founders SET password = ? WHERE id = ?';
+      "UPDATE startup_founders SET password = ? WHERE id = ?";
     db.query(
       updatePasswordQuery,
       [hashedPassword, startup.id],
@@ -882,7 +902,7 @@ export const startupFounderRegister = (req, res) => {
       process.env.SECRET
     );
 
-    res.cookie('accessToken', token, {
+    res.cookie("accessToken", token, {
       httpOnly: true,
       expire: new Date() + 9999,
     });
