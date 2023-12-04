@@ -1,11 +1,31 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { makeRequest } from "../../axios";
+import { makeRequest, socketAPI } from "../../axios";
 import classes from "./StartupOnboarding.module.css";
 import BasicDetails from "./BasicDetails";
 import DocumentsUpload from "./DocumentsUpload";
 import Questionnaire from "./Questionnaire";
 import _ from "lodash";
+import { isAuthenticated } from "../../auth/helper";
+import moment from "moment";
+
+import io from "socket.io-client";
+const socket = io.connect(socketAPI);
+
+const getRandomNumber = () => {
+  const min = 0;
+  const max = 100;
+  // Check if inclusive (default) or exclusive
+  const inclusive = max !== max - 1;
+
+  if (inclusive) {
+    // Generate random number between min and max (inclusive)
+    return Math.random() * (max - min + 1) + min;
+  } else {
+    // Generate random number between min and max (exclusive)
+    return Math.random() * (max - min) + min;
+  }
+};
 
 const tabs = [
   { label: "Basic Details", key: "basicDetails" },
@@ -15,6 +35,8 @@ const tabs = [
 
 const StartupOnboarding = () => {
   const { startup_id } = useParams();
+  const { user } = isAuthenticated();
+  const { email, incubator_id } = user;
   const [selectedTab, setSelectedTab] = useState("basicDetails");
   const [startupInfo, setStartupInfo] = useState("");
 
@@ -75,6 +97,7 @@ const StartupOnboarding = () => {
 
     if (startup_id) {
       fetchData();
+      socket.emit("join_room", `${incubator_id}-${startup_id}`);
     }
   }, [startup_id]);
 
@@ -118,12 +141,30 @@ const StartupOnboarding = () => {
 
       if (response.status === 200) {
         const data = response.data;
-        const { startup_id } = data;
-        if (startup_id) {
-          navigate(`/startup/${startup_id}/home`);
+        const { startup_id: startupId } = data;
+
+        if (startupId) {
+          navigate(`/startup/${startupId}/home`);
         } else {
           navigate("/");
         }
+
+        const notificationData = {
+          id: getRandomNumber(),
+          room: `${incubator_id}-${startup_id}`,
+          time: moment().format("YYYY-MM-DD HH:mm:ss"),
+          sender: "startup",
+          incubator_id,
+          startup_id,
+          text: "has successfully submitted the details.",
+          redirect_type: "GO_TO_STARTUP",
+        };
+
+        await socket.emit("send_notification", notificationData);
+        await makeRequest.post(
+          "notification/add-notification",
+          notificationData
+        );
       } else {
         console.error("Error fetching data:", response.statusText);
         navigate("/");

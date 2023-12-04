@@ -202,3 +202,8 @@ ul {
   align-items: "center";
   justify-content: "center";
 }
+
+.buttonContainer {
+  display: flex;
+  gap: 20px;
+}

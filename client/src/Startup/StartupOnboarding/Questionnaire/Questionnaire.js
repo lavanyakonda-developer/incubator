@@ -407,7 +407,6 @@ const Questionnaire = ({
         <div className={classes.buttonContainer}>
           <Button name={"Back"} onClick={onBack} />
 
-          {/* TODO : Add tooltip when disabled. */}
           <Button name={"Save"} onClick={onSave} disabled={disableSave} />
         </div>
       </div>

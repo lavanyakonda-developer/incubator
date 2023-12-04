@@ -479,12 +479,32 @@ CREATE TABLE `chats` (
 );
 
 
-CREATE TABLE `chat_timestamps` (
+CREATE TABLE `all_timestamps` (
 	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
 	`incubator_id` INT UNSIGNED NOT NULL,
     `startup_id` INT UNSIGNED NOT NULL,
 	`email` VARCHAR(255) NOT NULL,
 	`time` TIMESTAMP,
+	`type` VARCHAR(255) NOT NULL,
 	 FOREIGN KEY (`incubator_id`) REFERENCES `incubators`(`id`),
      FOREIGN KEY (`startup_id`) REFERENCES `startups`(`id`)
+);
+
+
+CREATE TABLE `notifications` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`incubator_id` INT UNSIGNED NOT NULL,
+    `startup_id` INT UNSIGNED NOT NULL,
+	`sender` VARCHAR(255) NOT NULL,
+	`time` TIMESTAMP,
+	`text` VARCHAR(255) NOT NULL,
+  `redirect_type` VARCHAR(255) NOT NULL,
+	 FOREIGN KEY (`incubator_id`) REFERENCES `incubators`(`id`),
+     FOREIGN KEY (`startup_id`) REFERENCES `startups`(`id`)
+);
+
+CREATE TABLE `notif_timestamps` (
+	`id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`email` VARCHAR(255) NOT NULL,
+	`time` TIMESTAMP
 );

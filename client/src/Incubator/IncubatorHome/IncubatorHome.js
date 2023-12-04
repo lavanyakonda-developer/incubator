@@ -2,12 +2,17 @@ import React, { useState, useEffect } from "react";
 import classes from "./IncubatorHome.module.css"; // Import your CSS file
 import _ from "lodash";
 import { makeRequest, API, socketAPI } from "../../axios";
-import { Button, Chat } from "../../CommonComponents";
+import { Button, Chat, NotificationPanel } from "../../CommonComponents";
 import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
 import moment from "moment";
-import { FaCheckCircle, FaTimesCircle, FaComment } from "react-icons/fa";
+import {
+  FaCheckCircle,
+  FaTimesCircle,
+  FaComment,
+  FaBell,
+} from "react-icons/fa";
 import io from "socket.io-client";
 import { isAuthenticated } from "../../auth/helper";
 
@@ -15,8 +20,6 @@ const socket = io.connect(socketAPI);
 
 const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
-  // { label: 'Document Repository', key: 'documentRepository' },
-  // { label: 'Onboarding Hub', key: 'onboardingHub' },
   { label: "Communication Tab", key: "communicationTab" },
 ];
 
@@ -40,6 +43,8 @@ const IncubatorHome = (props) => {
   const [allMessages, setAllMessages] = useState({});
   const [messageList, setMessageList] = useState([]);
   const [comp, setComp] = useState(null);
+  const [notifications, setNotifications] = useState({});
+  const [showUnReadCount, setShowUnReadCount] = useState(false);
 
   const [incubatorDetails, setIncubatorDetails] = useState({
     id: incubatorId,
@@ -47,7 +52,42 @@ const IncubatorHome = (props) => {
     logo: "",
   });
 
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const openPanel = () => {
+    setIsPanelOpen(true);
+  };
+
+  const closePanel = () => {
+    setIsPanelOpen(false);
+  };
+
   const navigate = useNavigate();
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await makeRequest.post(
+        `notification/get-incubator-notifications`,
+        {
+          incubator_id: incubatorId,
+          email,
+          sender: "startup",
+        }
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+
+        setNotifications(_.uniqBy(data?.notifications, "id"));
+        setShowUnReadCount(data?.showUnReadCount);
+      } else {
+        console.error("Error fetching data:", response.statusText);
+      }
+    } catch (error) {
+      navigate("/");
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,6 +115,7 @@ const IncubatorHome = (props) => {
 
     if (incubatorId) {
       fetchData();
+      fetchNotifications();
     }
   }, [incubatorId]);
 
@@ -99,18 +140,24 @@ const IncubatorHome = (props) => {
   };
 
   useEffect(() => {
+    _.forEach(startups, (startup) => {
+      socket.emit("join_room", `${incubatorId}-${startup.id}`);
+    });
+  }, [startups]);
+
+  useEffect(() => {
     if (selectedTab == "communicationTab") {
       fetchChats();
-
-      _.forEach(startups, (startup) => {
-        socket.emit("join_room", `${incubatorId}-${startup.id}`);
-      });
     }
   }, [selectedTab, showChat]);
 
   useEffect(() => {
     socket.on("receive_message", () => {
       fetchChats();
+    });
+
+    socket.on("receive_notification", (data) => {
+      fetchNotifications();
     });
   }, [socket]);
 
@@ -161,7 +208,7 @@ const IncubatorHome = (props) => {
     }
   };
 
-  const handleStartupClick = ({ status, isDraft, id }) => {
+  const handleStartupClick = ({ status, isDraft, id, tab = null }) => {
     if (isDraft) {
       navigate(`/incubator/${incubatorId}/home/register-startup/${id}`);
       return;
@@ -170,13 +217,25 @@ const IncubatorHome = (props) => {
         case "PENDING":
         case "SUBMITTED":
         case "APPROVED":
-        case "REJECTED":
-          navigate(`/incubator/${incubatorId}/home/startup-home/${id}`);
+        case "REJECTED": {
+          if (tab) {
+            navigate(
+              `/incubator/${incubatorId}/home/startup-home/${id}?tab=${tab}`
+            );
+          } else {
+            navigate(`/incubator/${incubatorId}/home/startup-home/${id}`);
+          }
+        }
 
         default:
           return;
       }
     }
+  };
+
+  const onClickStartup = ({ startup_id, tab }) => {
+    const { status, isDraft, id } = _.find(startups, { id: startup_id });
+    handleStartupClick({ status, isDraft, id, tab });
   };
 
   const goToStartupChat = ({ id }) => {
@@ -192,6 +251,7 @@ const IncubatorHome = (props) => {
         return (
           <div className={classes.rightColumn}>
             <div className={classes.tableContainer}>
+              <div></div>
               <div className={classes.tableHeader}>
                 <input
                   type="text"
@@ -200,12 +260,42 @@ const IncubatorHome = (props) => {
                   value={searchTerm}
                   onChange={handleSearch}
                 />
-                <Button
-                  shouldRedirect={true}
-                  redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
-                  name={"Add Startup"}
-                  customStyles={buttonStyle}
-                />
+                <div className={classes.buttonContainer}>
+                  <Button
+                    shouldRedirect={true}
+                    redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
+                    name={"Raise a request"}
+                    customStyles={buttonStyle}
+                  />
+                  <Button
+                    shouldRedirect={true}
+                    redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
+                    name={"Add Startup"}
+                    customStyles={buttonStyle}
+                  />
+                  <div onClick={openPanel}>
+                    <FaBell
+                      style={{
+                        fontSize: 32,
+                        height: 36,
+                      }}
+                      onClick={openPanel}
+                    />
+
+                    {showUnReadCount && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          background: "red",
+                          color: "white",
+                          borderRadius: "50%",
+                          padding: "4px",
+                          marginLeft: "-6px",
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
               <div className={classes.startupsCount}>{`${_.size(
                 startups
@@ -309,6 +399,16 @@ const IncubatorHome = (props) => {
                 </table>
               </div>
             </div>
+            {isPanelOpen && (
+              <NotificationPanel
+                isOpen={isPanelOpen}
+                onClose={closePanel}
+                email={email}
+                notifications={notifications}
+                fetchNotifications={fetchNotifications}
+                onClickStartup={onClickStartup}
+              />
+            )}
           </div>
         );
 

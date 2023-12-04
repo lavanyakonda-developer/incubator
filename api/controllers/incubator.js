@@ -98,7 +98,7 @@ const enhanceStartupsWithQuestionnaireDataAndKPI = (startups, callback) => {
                 stateOfStartup: enhancedData,
                 color: !isKPIAdded
                   ? currentDay < 16
-                    ? "yellow"
+                    ? "orange"
                     : "red"
                   : "green",
               });

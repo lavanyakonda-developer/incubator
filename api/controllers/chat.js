@@ -34,11 +34,11 @@ export const incubatorChats = async (req, res) => {
       return acc;
     }, {});
 
-    // Fetch the last_seen time from chat_timestamps table
+    // Fetch the last_seen time from all_timestamps table
     const lastSeenQuery = `
       SELECT time
-      FROM chat_timestamps
-      WHERE incubator_id = ? AND startup_id = ? AND email = ?
+      FROM all_timestamps
+      WHERE incubator_id = ? AND startup_id = ? AND email = ? AND type = ?
       LIMIT 1;
     `;
 
@@ -51,6 +51,7 @@ export const incubatorChats = async (req, res) => {
         incubator_id,
         startupId,
         email,
+        "CHAT",
       ]);
 
       if (lastSeenResult.length > 0) {
@@ -97,11 +98,11 @@ export const startupChats = async (req, res) => {
       return res.status(500).json(chatsErr);
     }
 
-    // Fetch the last_seen time from chat_timestamps table
+    // Fetch the last_seen time from all_timestamps table
     const lastSeenQuery = `
       SELECT time
-      FROM chat_timestamps
-      WHERE incubator_id = ? AND startup_id = ? AND email = ?
+      FROM all_timestamps
+      WHERE incubator_id = ? AND startup_id = ? AND email = ? AND type = ?
       LIMIT 1;
     `;
 
@@ -109,6 +110,7 @@ export const startupChats = async (req, res) => {
       incubator_id,
       startup_id,
       email,
+      "CHAT",
     ]);
 
     // Calculate unreadCount based on last_seen
@@ -162,26 +164,27 @@ export const addChat = async (req, res) => {
 
 export const addTime = async (req, res) => {
   try {
-    const { incubator_id, startup_id, email, time } = req.body;
+    const { incubator_id, startup_id, email, time, type = "CHAT" } = req.body;
 
     // Check if a row with the given incubator_id, startup_id, and email already exists
     const checkExistingRowQuery = `
-      SELECT id FROM chat_timestamps
-      WHERE incubator_id = ? AND startup_id = ? AND email = ?
+      SELECT id FROM all_timestamps
+      WHERE incubator_id = ? AND startup_id = ? AND email = ? AND type = ?
     `;
 
     const [existingRow] = await query(checkExistingRowQuery, [
       incubator_id,
       startup_id,
       email,
+      type,
     ]);
 
     if (existingRow) {
       // Row exists, update the timestamp
       const updateTimestampQuery = `
-        UPDATE chat_timestamps
+        UPDATE all_timestamps
         SET time = ?
-        WHERE incubator_id = ? AND startup_id = ? AND email = ?
+        WHERE incubator_id = ? AND startup_id = ? AND email = ? AND type = ?
       `;
 
       await db.query(updateTimestampQuery, [
@@ -189,12 +192,13 @@ export const addTime = async (req, res) => {
         incubator_id,
         startup_id,
         email,
+        type,
       ]);
     } else {
       // Row does not exist, insert a new row with the timestamp
       const insertTimestampQuery = `
-        INSERT INTO chat_timestamps (incubator_id, startup_id, email, time)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO all_timestamps (incubator_id, startup_id, email, time, type)
+        VALUES (?, ?, ?, ?, ?)
       `;
 
       await db.query(insertTimestampQuery, [
@@ -202,6 +206,7 @@ export const addTime = async (req, res) => {
         startup_id,
         email,
         time,
+        type,
       ]);
     }
 

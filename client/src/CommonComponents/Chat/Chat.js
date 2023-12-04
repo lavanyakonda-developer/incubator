@@ -68,6 +68,7 @@ const Chat = (props) => {
         startup_id,
         email,
         time: moment().format("YYYY-MM-DD HH:mm:ss"),
+        type: "CHAT",
       });
 
       if (response.status === 200) {

@@ -18,6 +18,7 @@ import authRoutes from "./routes/auth.js";
 import incubatorRoutes from "./routes/incubator.js";
 import startupRoutes from "./routes/startup.js";
 import chatRoutes from "./routes/chat.js";
+import notificationRoutes from "./routes/notification.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/auth", authRoutes);
 app.use("/incubator", incubatorRoutes);
 app.use("/startup", startupRoutes);
 app.use("/chat", chatRoutes);
+app.use("/notification", notificationRoutes);
 
 //Starting a server
 app.listen(port, () => {
@@ -63,12 +65,18 @@ io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
   socket.on("join_room", (data) => {
-    socket.join(data);
-    console.log(`User with ID>>>>>: ${socket.id} joined room: ${data}`);
+    if (!socket.rooms.has(data)) {
+      socket.join(data);
+      console.log(`User with ID>>>>>: ${socket.id} joined room: ${data}`);
+    }
   });
 
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
+  });
+
+  socket.on("send_notification", (data) => {
+    socket.to(data.room).emit("receive_notification", data);
   });
 
   socket.on("disconnect", () => {

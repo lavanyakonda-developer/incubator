@@ -1,0 +1,63 @@
+.notificationPanel {
+  position: fixed;
+  top: 0;
+  right: -400px; /* Start off-screen */
+  width: 400px;
+  height: 100%;
+  background-color: white;
+  z-index: 9999;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.notificationPanelOpen {
+  right: 0; /* Slide in from the right */
+  position: fixed;
+  top: 0;
+  width: 400px;
+  height: 100%;
+  background-color: white;
+  z-index: 9999;
+  transition: right 0.3s ease-in-out;
+  box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.5);
+}
+
+.notificationContentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.notificationBox {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #333333; /* Re-apply the border for all except the last child */
+  }
+}
+
+.imageContainer {
+  background-color: bisque;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: 40px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.logo {
+  border-radius: 50%;
+  max-height: 100%;
+  background-color: bisque;
+}
+
+.text {
+  font-size: 14;
+}

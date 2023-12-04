@@ -3,7 +3,7 @@ import { logout, isAuthenticated } from "../../../auth/helper";
 import classes from "./StartupView.module.css";
 import { makeRequest, API, socketAPI } from "../../../axios";
 import _ from "lodash";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Button, Chat } from "../../../CommonComponents";
 import { startupProfileQuestions } from "../../../Incubator/RegisterStartup/helper.js";
 import {
@@ -81,7 +81,11 @@ const tabs = [
 
 const StartupView = () => {
   const { startup_id } = useParams();
-  const [selectedTab, setSelectedTab] = useState("companyDetails");
+  const [searchParams] = useSearchParams();
+
+  const [selectedTab, setSelectedTab] = useState(
+    searchParams.get("tab") || "companyDetails"
+  );
   const [startupInfo, setStartupInfo] = useState({});
 
   const [unreadCount, setUnReadCount] = useState(0);
@@ -234,7 +238,13 @@ const StartupView = () => {
         );
       }
       case "supplementary": {
-        return <SupplementaryDocuments />;
+        return (
+          <SupplementaryDocuments
+            socket={socket}
+            incubator_id={incubator_id}
+            startup_id={startup_id}
+          />
+        );
       }
 
       case "businessUpdates": {
@@ -298,7 +308,7 @@ const StartupView = () => {
                         className={`${classes.tab} ${
                           selectedTab === task.key ? classes.activeTab : ""
                         }`}
-                        style={{ paddingLeft: 24 }}
+                        style={{ paddingLeft: 36 }}
                         onClick={() => handleTabClick(task.key)}
                         key={task.key}
                       >

@@ -5,6 +5,22 @@ import _ from "lodash";
 import { useParams } from "react-router-dom";
 import { Button } from "../../../../CommonComponents";
 import { DocumentsContainer } from "../../../../Incubator/StartupHomeView/helper";
+import moment from "moment";
+
+const getRandomNumber = () => {
+  const min = 0;
+  const max = 100;
+  // Check if inclusive (default) or exclusive
+  const inclusive = max !== max - 1;
+
+  if (inclusive) {
+    // Generate random number between min and max (inclusive)
+    return Math.random() * (max - min + 1) + min;
+  } else {
+    // Generate random number between min and max (exclusive)
+    return Math.random() * (max - min) + min;
+  }
+};
 
 // TODO : Placeholder image URLs for doc and pdf
 const placeholderDocImage =
@@ -12,7 +28,7 @@ const placeholderDocImage =
 const placeholderPdfImage =
   "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
-const SupplementaryDocuments = () => {
+const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
   const { incubator_id: incubatorId, startup_id: startupId } = useParams();
   const [pendingDocuments, setPendingDocuments] = useState([]);
   const [approvedDocuments, setApprovedDocuments] = useState([]);
@@ -90,6 +106,23 @@ const SupplementaryDocuments = () => {
 
       if (response.status === 200) {
         setPendingDocuments([...pendingDocuments, documentInfo]);
+
+        const notificationData = {
+          id: getRandomNumber(),
+          room: `${incubator_id}-${startup_id}`,
+          time: moment().format("YYYY-MM-DD HH:mm:ss"),
+          sender: "startup",
+          incubator_id,
+          startup_id,
+          text: "has added a supplementary document.",
+          redirect_type: "GO_TO_SUPPLEMENTARY_DOCS",
+        };
+
+        await socket.emit("send_notification", notificationData);
+        await makeRequest.post(
+          "notification/add-notification",
+          notificationData
+        );
       } else {
         console.error("Error fetching data:", response.statusText);
       }
