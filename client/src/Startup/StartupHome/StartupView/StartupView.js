@@ -297,7 +297,7 @@ const StartupView = () => {
       }
 
       case "kpi":
-        return <Kpi />;
+        return <Kpi user={user} />;
 
       case "mie":
         return <Mie />;

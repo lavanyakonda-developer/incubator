@@ -132,6 +132,7 @@ const getTableData = ({
   months,
   metricValues,
   selectedMetric,
+  changedValues,
 }) => {
   const selectedTimePeriodData = _.find(
     timePeriods,
@@ -163,13 +164,38 @@ const getTableData = ({
           item.metric_uid == selectedMetric
       );
 
-      const currentValue = _.get(metricValue, "value", 0);
+      const currentValue = _.get(
+        _.find(
+          changedValues,
+          (item) =>
+            item.month_id == monthId &&
+            item.time_period == quarterId &&
+            item.metric_uid == selectedMetric
+        )
+          ? _.find(
+              changedValues,
+              (item) =>
+                item.month_id == monthId &&
+                item.time_period == quarterId &&
+                item.metric_uid == selectedMetric
+            )
+          : _.find(
+              metricValues,
+              (item) =>
+                item.month_id == monthId &&
+                item.time_period == quarterId &&
+                item.metric_uid == selectedMetric
+            ),
+        "value",
+        0
+      );
+
       tableValues.push({
         id: `${quarterId}-${monthId}-value`,
         value: currentValue,
         time_period: quarterId,
         month_id: monthId,
-        metric_uid: metricValue?.metric_uid,
+        metric_uid: _.get(metricValue, "metric_uid", selectedMetric),
       });
 
       const prevMonthId = monthId == 1 ? 12 : monthId - 1;
@@ -194,12 +220,26 @@ const getTableData = ({
           : quarterId;
 
       const prevMetricValue = _.find(
-        metricValues,
+        changedValues,
         (item) =>
           item.month_id == prevMonthId &&
           item.time_period == prevQuarterId &&
           item.metric_uid == selectedMetric
-      );
+      )
+        ? _.find(
+            changedValues,
+            (item) =>
+              item.month_id == prevMonthId &&
+              item.time_period == prevQuarterId &&
+              item.metric_uid == selectedMetric
+          )
+        : _.find(
+            metricValues,
+            (item) =>
+              item.month_id == prevMonthId &&
+              item.time_period == prevQuarterId &&
+              item.metric_uid == selectedMetric
+          );
 
       const prevValue = _.get(prevMetricValue, "value", 0);
 
@@ -249,7 +289,7 @@ const getTableData = ({
   };
 };
 
-const Kpi = () => {
+const Kpi = ({ user }) => {
   const [timePeriods, setTimePeriods] = useState([]);
   const [allQuarters, setAllQuarters] = useState([]);
   const [metrics, setMetrics] = useState([]);
@@ -257,11 +297,13 @@ const Kpi = () => {
   const [selectedMetric, setSelectedMetric] = useState("");
   const [months, setMonths] = useState([]);
   const [allValues, setAllValues] = useState([]);
-  const [metricValues, setMetricValues] = useState([]);
   const [showLogsModal, setShowLogsModal] = useState(false);
 
   const { startup_id, incubator_id: incubatorId } = useParams();
   const isIncubatorFounder = !_.isEmpty(incubatorId);
+
+  const [changedValues, setChangedValues] = useState([]);
+  const [tableData, setTableData] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -334,10 +376,100 @@ const Kpi = () => {
     fetchData();
   }, []);
 
-  const onSave = () => {};
+  const fetchSavedData = async () => {
+    try {
+      const metricValuesResponse = await makeRequest.post(
+        `startup/get-metric-values`,
+        {
+          startup_id,
+        }
+      );
 
-  const handleValueChange = (e, id) => {
-    console.log("******** e, id", e.target.value, id);
+      if (metricValuesResponse.status === 200) {
+        const metricValuesData = metricValuesResponse.data;
+
+        setAllValues(_.get(metricValuesData, "metricValues", []));
+
+        const updatedData = getTableData({
+          timePeriods,
+          selectedTimePeriod,
+          selectedMetric,
+          allQuarters,
+          months,
+          metricValues: _.get(metricValuesData, "metricValues", []),
+          changedValues,
+        });
+
+        setTableData(updatedData);
+      } else {
+        console.error("Error fetching data:");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const onSave = async () => {
+    try {
+      await makeRequest.post(`startup/update-metric-values`, {
+        startup_id,
+        values: changedValues,
+        user,
+      });
+
+      await fetchSavedData();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleValueChange = ({ e, value }) => {
+    const { time_period, month_id, metric_uid, id } = value;
+
+    const index = _.findIndex(changedValues, (value) => {
+      return (
+        value.time_period == time_period &&
+        value.month_id == month_id &&
+        value.metric_uid == metric_uid
+      );
+    });
+
+    if (index > -1) {
+      changedValues[index].value = e.target.value;
+
+      setChangedValues(changedValues);
+
+      const updatedData = getTableData({
+        timePeriods,
+        selectedTimePeriod,
+        selectedMetric,
+        allQuarters,
+        months,
+        metricValues: allValues,
+        changedValues,
+      });
+
+      setTableData(updatedData);
+    } else {
+      changedValues.push({
+        ...value,
+        value: e.target.value,
+      });
+
+      setChangedValues(changedValues);
+
+      const updatedData = getTableData({
+        timePeriods,
+        selectedTimePeriod,
+        selectedMetric,
+        allQuarters,
+        months,
+        metricValues: allValues,
+        changedValues,
+      });
+
+      setTableData(updatedData);
+    }
   };
 
   const onClickLogButton = () => {
@@ -348,14 +480,31 @@ const Kpi = () => {
     setShowLogsModal(false);
   };
 
-  const { tableHeaders, tableValues, tablePercentages, logs } = getTableData({
+  useEffect(() => {
+    const updatedData = getTableData({
+      timePeriods,
+      selectedTimePeriod,
+      selectedMetric,
+      allQuarters,
+      months,
+      metricValues: allValues,
+      changedValues,
+    });
+
+    setTableData(updatedData);
+  }, [
+    selectedTimePeriod,
+    selectedMetric,
     timePeriods,
     selectedTimePeriod,
     selectedMetric,
     allQuarters,
     months,
-    metricValues: allValues,
-  });
+    allValues,
+    changedValues,
+  ]);
+
+  const { tableHeaders, tableValues, tablePercentages, logs } = tableData;
 
   return (
     <div className={classes.container}>
@@ -431,18 +580,21 @@ const Kpi = () => {
                 {_.map(tableValues, (value) => {
                   return (
                     <td key={value.id} className={classes.cellValue}>
-                      {/* {isIncubatorFounder ? (
+                      {isIncubatorFounder ? (
                         value?.value
                       ) : (
                         <input
-                          type='number'
-                          step='0.01' // Specify the step for decimal places (e.g., 2 decimal places)
+                          type="number"
                           value={value.value}
-                          onChange={(e) => handleValueChange(e, value.id)}
-                          style={{ width: '95%', height: 24 }}
+                          onChange={(e) =>
+                            handleValueChange({
+                              e,
+                              value,
+                            })
+                          }
+                          style={{ width: "95%", height: 24 }}
                         />
-                      )} */}
-                      {value?.value}
+                      )}
                     </td>
                   );
                 })}
@@ -468,6 +620,7 @@ const Kpi = () => {
           <div className={classes.modal}>
             <div className={classes.modalContent}>
               <div className={classes.modalTopContent}>{"Changed Logs"}</div>
+              <span>Note : Logs are reflected only after saved</span>
               <div
                 className={classes.signature}
                 style={_.isEmpty(logs) ? { justifyContent: "center" } : {}}
