@@ -5,31 +5,6 @@ import _ from "lodash";
 import { API, makeRequest } from "../../axios";
 import moment from "moment";
 
-// const Notifications = [
-//   {
-//     text: "Has submitted the details",
-//     name: "CyberGuard Solutions",
-//     logo: "http://localhost:8000//uploads/45678u.png",
-//     isRead: true,
-//     startup_id: 9,
-//     redirect_type: "GO_TO_STARTUP",
-//   },
-//   {
-//     text: "Has submitted the details",
-//     name: "CyberGuard Solutions",
-//     logo: "http://localhost:8000//uploads/45678u.png",
-//     isRead: false,
-//     startup_id: 14,
-//     redirect_type: "GO_TO_SUPPLEMENTARY_DOCS",
-//   },
-//   {
-//     text: "Has submitted the details",
-//     name: "CyberGuard Solutions",
-//     logo: "http://localhost:8000//uploads/45678u.png",
-//     isRead: true,
-//   },
-// ];
-
 const NotificationPanel = (props) => {
   const {
     isOpen,

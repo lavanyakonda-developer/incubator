@@ -671,11 +671,16 @@ const IncubatorHome = (props) => {
     navigate("/home-page");
   };
 
+  const incubatorLogoName = _.last(_.split(incubatorDetails.logo, "/"));
+  const incubatorLogo = !_.isEmpty(incubatorLogoName)
+    ? `${API}/uploads/${incubatorLogoName}`
+    : "";
+
   return (
     <div className={classes.incubatorHome}>
       <div className={classes.leftColumn}>
         <div className={classes.incubatorDetails}>
-          <img className={classes.incubatorLogo} src={incubatorDetails.logo} />
+          <img className={classes.incubatorLogo} src={incubatorLogo} />
           <div className={classes.incubatorName}>{incubatorDetails.name}</div>
         </div>
 
