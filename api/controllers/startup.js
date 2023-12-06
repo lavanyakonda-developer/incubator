@@ -576,7 +576,7 @@ export const updateMetricValues = async (req, res) => {
             "INSERT INTO metric_value_changes (`metric_value_id`, `old_value`, `new_value`, `change_date`, `changed_by`) VALUES (?, ?, ?, ?, ?)";
           await query(insertChangeLogQuery, [
             insertId,
-            "",
+            0,
             metric_value, // Store the new value
             new Date(), // Current date and time
             user.email,
