@@ -18,6 +18,21 @@ import { isAuthenticated } from "../../auth/helper";
 
 const socket = io.connect(socketAPI);
 
+const getRandomNumber = () => {
+  const min = 0;
+  const max = 100;
+  // Check if inclusive (default) or exclusive
+  const inclusive = max !== max - 1;
+
+  if (inclusive) {
+    // Generate random number between min and max (inclusive)
+    return Math.random() * (max - min + 1) + min;
+  } else {
+    // Generate random number between min and max (exclusive)
+    return Math.random() * (max - min) + min;
+  }
+};
+
 const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
   { label: "Communication Tab", key: "communicationTab" },
@@ -45,14 +60,27 @@ const IncubatorHome = (props) => {
   const [comp, setComp] = useState(null);
   const [notifications, setNotifications] = useState({});
   const [showUnReadCount, setShowUnReadCount] = useState(false);
-
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [customRequestReminder, setCustomRequestReminder] =
+    useState("Custom Request");
+  const [selectedStartups, setSelectedStartups] = useState([]);
   const [incubatorDetails, setIncubatorDetails] = useState({
     id: incubatorId,
     name: "",
     logo: "",
   });
-
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const handleStartupChange = (e) => {
+    const value = _.toNumber(e.target.value);
+    if (selectedStartups.includes(value)) {
+      setSelectedStartups(
+        selectedStartups.filter((startup) => startup !== value)
+      );
+    } else {
+      setSelectedStartups([...selectedStartups, value]);
+    }
+  };
 
   const openPanel = () => {
     setIsPanelOpen(true);
@@ -161,6 +189,59 @@ const IncubatorHome = (props) => {
     });
   }, [socket]);
 
+  const getTextFromKey = ({ key }) => {
+    switch (key) {
+      case "REPORTING_ACTIVITY_REMINDER":
+        return `has sent you a Reporting activity reminder`;
+      case "COMPLIANCE_ACTIVITY_REMINDER":
+        return `has sent you a Compliance activity reminder`;
+      case "CUSTOM_REMINDER":
+        return `added ${customRequestReminder}`;
+    }
+  };
+
+  // Send notifications on raising request
+  const sendNotifications = async ({ key }) => {
+    try {
+      _.forEach(selectedStartups, async (selectedStartup) => {
+        const notificationData = {
+          id: getRandomNumber(),
+          room: `${incubatorId}-${selectedStartup}`,
+          time: moment().format("YYYY-MM-DD HH:mm:ss"),
+          sender: "incubator",
+          incubator_id: incubatorId,
+          startup_id: selectedStartup,
+          text: getTextFromKey({ key }),
+          redirect_type: key,
+        };
+
+        await socket.emit("send_notification", notificationData);
+      });
+
+      const notificationsData = {
+        incubator_id: incubatorId,
+        sender: "incubator",
+        text: getTextFromKey({ key }),
+        redirect_type: key,
+        startupIds: selectedStartups,
+      };
+
+      const response = await makeRequest.post(
+        "notification/add-notifications",
+        {
+          ...notificationsData,
+        }
+      );
+
+      if (response.status === 200) {
+      } else {
+        console.error("Error fetching data:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
   const handleTabClick = (tabName) => {
     setSearchTerm("");
     setSelectedTab(tabName);
@@ -262,10 +343,11 @@ const IncubatorHome = (props) => {
                 />
                 <div className={classes.buttonContainer}>
                   <Button
-                    shouldRedirect={true}
-                    redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
                     name={"Raise a request"}
                     customStyles={buttonStyle}
+                    onClick={() => {
+                      setShowRequestModal(true);
+                    }}
                   />
                   <Button
                     shouldRedirect={true}
@@ -408,6 +490,89 @@ const IncubatorHome = (props) => {
                 fetchNotifications={fetchNotifications}
                 onClickStartup={onClickStartup}
               />
+            )}
+            {showRequestModal && (
+              <div className={classes.modalBackground}>
+                <div className={classes.modal}>
+                  <div className={classes.modalHeader}>
+                    <h3 style={{ marginTop: 0, marginBottom: 0 }}>
+                      Raise a request
+                    </h3>
+                    <FaTimesCircle
+                      onClick={() => {
+                        setSelectedStartups([]);
+                        setCustomRequestReminder("Custom Request");
+                        setShowRequestModal(false);
+                      }}
+                    />
+                  </div>
+
+                  <h4>Select Startups to send a request :</h4>
+                  <div className={classes.checkboxes}>
+                    {_.map(startups, (option) => {
+                      return (
+                        <label key={option.id}>
+                          <input
+                            type="checkbox"
+                            value={option.id}
+                            onChange={handleStartupChange}
+                            checked={_.includes(selectedStartups, option.id)}
+                          />
+                          {option.name}
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <div className={classes.modalContent}>
+                    <div className={classes.modalTopContent}>
+                      <span>Reporting activity reminder</span>
+                      <Button
+                        name={"Send request"}
+                        disabled={_.isEmpty(selectedStartups)}
+                        onClick={() => {
+                          sendNotifications({
+                            key: "REPORTING_ACTIVITY_REMINDER",
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className={classes.modalTopContent}>
+                      <span>Compliance activity reminder</span>
+                      <Button
+                        name={"Send request"}
+                        disabled={_.isEmpty(selectedStartups)}
+                        onClick={() => {
+                          sendNotifications({
+                            key: "COMPLIANCE_ACTIVITY_REMINDER",
+                          });
+                        }}
+                      />
+                    </div>
+                    <div className={classes.modalTopContent}>
+                      <span style={{ width: "60%" }}>
+                        <input
+                          type="text"
+                          value={customRequestReminder}
+                          onChange={(event) => {
+                            setCustomRequestReminder(event.target.value);
+                          }}
+                          style={{
+                            fontSize: 14,
+                            paddingLeft: 4,
+                          }}
+                        />
+                      </span>
+                      <Button
+                        name={"Send request"}
+                        disabled={_.isEmpty(selectedStartups)}
+                        onClick={() => {
+                          sendNotifications({ key: "CUSTOM_REMINDER" });
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         );

@@ -1,16 +1,16 @@
-import React, { useState, useRef } from 'react';
-import classes from './DocumentUpload.module.css'; // Import your CSS file
-import { Button } from '../../../CommonComponents';
-import _ from 'lodash';
-import { FaDownload, FaTrash } from 'react-icons/fa'; // Import download and delete icons
-import { saveAs } from 'file-saver';
-import { makeRequest, API } from '../../../axios';
+import React, { useState, useRef } from "react";
+import classes from "./DocumentUpload.module.css"; // Import your CSS file
+import { Button } from "../../../CommonComponents";
+import _ from "lodash";
+import { FaDownload, FaTrash } from "react-icons/fa"; // Import download and delete icons
+import { saveAs } from "file-saver";
+import { makeRequest, API } from "../../../axios";
 
 // TODO : Placeholder image URLs for doc and pdf
 const placeholderDocImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 const placeholderPdfImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
 const DocumentUpload = ({
   uploadedDocuments,
@@ -45,11 +45,11 @@ const DocumentUpload = ({
 
   const [documentInfo, setDocumentInfo] = useState({
     selectedFile: null,
-    name: '',
-    size: '',
-    format: '',
+    name: "",
+    size: "",
+    format: "",
     isSignatureRequired: false,
-    url: '',
+    url: "",
   });
   const [showUploadModal, setShowUploadModal] = useState(false); // Add state to control the modal
   const [showSizeExceededModal, setShowSizeExceededModal] = useState(false); // Add state for size exceeded modal
@@ -58,14 +58,14 @@ const DocumentUpload = ({
 
   const uploadFile = async (file) => {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
 
-    const response = await makeRequest.post('/incubator/upload', formData);
+    const response = await makeRequest.post("/incubator/upload", formData);
 
     if (response.status === 200) {
       return response.data.fileUrl;
     } else {
-      console.error('Error fetching data:', response.statusText);
+      console.error("Error fetching data:", response.statusText);
     }
   };
 
@@ -74,7 +74,7 @@ const DocumentUpload = ({
 
     if (file.size > 1024 * 1024) {
       setShowSizeExceededModal(true); // Show the size exceeded modal
-      e.target.value = ''; // Clear the file input
+      e.target.value = ""; // Clear the file input
       return;
     }
     if (file) {
@@ -99,15 +99,15 @@ const DocumentUpload = ({
       // Clear form fields
       setDocumentInfo({
         selectedFile: null,
-        name: '',
-        size: '',
-        format: '',
+        name: "",
+        size: "",
+        format: "",
         isSignatureRequired: false,
-        url: '',
+        url: "",
       });
       // Reset file input field
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
       // Show the modal after uploading
       setShowUploadModal(false);
@@ -125,9 +125,9 @@ const DocumentUpload = ({
     setShowUploadModal(false);
     setDocumentInfo({
       selectedFile: null,
-      name: '',
-      size: '',
-      format: '',
+      name: "",
+      size: "",
+      format: "",
       isSignatureRequired: false,
     });
   };
@@ -161,25 +161,25 @@ const DocumentUpload = ({
         // Initiate the download using FileSaver.js or browser's native download
         saveAs(blob, filename);
       } else {
-        console.error('Failed to create Blob from file data.');
+        console.error("Failed to create Blob from file data.");
       }
     } else if (documentData && documentData.url) {
       // Create an anchor element
-      const downloadLink = document.createElement('a');
+      const downloadLink = document.createElement("a");
 
-      const fileName = _.last(_.split(documentData.url, '/'));
+      const fileName = _.last(_.split(documentData.url, "/"));
       // Set the href attribute to the document's URL
       downloadLink.href = `${API}/uploads/${fileName}`;
 
       // Specify the download attribute to suggest a filename (optional)
-      downloadLink.setAttribute('download', documentData.name);
+      downloadLink.setAttribute("download", documentData.name);
       // Set the target attribute to "_blank" to open the link in a new tab/window
-      downloadLink.setAttribute('target', '_blank');
+      downloadLink.setAttribute("target", "_blank");
 
       // Simulate a click on the anchor element to initiate the download
       downloadLink.click();
     } else {
-      console.error('Invalid document data or missing file.');
+      console.error("Invalid document data or missing file.");
     }
   };
 
@@ -193,11 +193,11 @@ const DocumentUpload = ({
             <label className={classes.uploadLabel}>
               <span className={classes.chooseFileText}>Choose File</span>
               <input
-                type='file'
+                type="file"
                 ref={fileInputRef}
                 onChange={handleFileChange}
-                accept='.pdf,.doc,.docx'
-                style={{ display: 'none' }}
+                accept=".pdf,.doc,.docx"
+                style={{ display: "none" }}
               />
             </label>
           </div>
@@ -207,12 +207,12 @@ const DocumentUpload = ({
               {_.map(requestedDocuments, (document, index) => (
                 <li key={index}>
                   <input
-                    type='text'
+                    type="text"
                     value={document}
                     onChange={(e) =>
                       handleRequestedDocumentChange(index, e.target.value)
                     }
-                    style={{ maxWidth: '90%' }}
+                    style={{ maxWidth: "90%" }}
                   />
                 </li>
               ))}
@@ -228,13 +228,13 @@ const DocumentUpload = ({
                   <div className={classes.preview}>
                     <img
                       src={
-                        documentInfo.format === 'application/pdf'
+                        documentInfo.format === "application/pdf"
                           ? placeholderPdfImage
                           : placeholderDocImage
                       }
-                      alt='Document Preview'
-                      width='100'
-                      height='100'
+                      alt="Document Preview"
+                      width="100"
+                      height="100"
                     />
                   </div>
                   <div className={classes.details}>
@@ -245,15 +245,15 @@ const DocumentUpload = ({
                       <strong>Document Size:</strong> {documentInfo.size}
                     </div>
                     <div className={classes.detail}>
-                      <strong>Document Format:</strong>{' '}
-                      {documentInfo.name.split('.').pop()}
+                      <strong>Document Format:</strong>{" "}
+                      {documentInfo.name.split(".").pop()}
                     </div>
                   </div>
                 </div>
                 <div className={classes.signature}>
                   <input
-                    type='checkbox'
-                    id='signatureRequired'
+                    type="checkbox"
+                    id="signatureRequired"
                     checked={documentInfo.isSignatureRequired}
                     onChange={() =>
                       setDocumentInfo({
@@ -264,17 +264,17 @@ const DocumentUpload = ({
                     width={16}
                     height={16}
                   />
-                  <label htmlFor='signatureRequired'>
+                  <label htmlFor="signatureRequired">
                     Does the document require a signature?
                   </label>
                 </div>
                 <div className={classes.buttons}>
                   <Button
-                    name={'Cancel'}
+                    name={"Cancel"}
                     onClick={closeModal}
-                    customStyles={{ backgroundColor: '#ff6d6d' }}
+                    customStyles={{ backgroundColor: "#ff6d6d" }}
                   />
-                  <Button name={'Upload'} onClick={handleUpload} />
+                  <Button name={"Upload"} onClick={handleUpload} />
                 </div>
               </div>
             </div>
@@ -289,13 +289,13 @@ const DocumentUpload = ({
                   <div className={classes.preview}>
                     <img
                       src={
-                        documentInfo.format === 'application/pdf'
+                        documentInfo.format === "application/pdf"
                           ? placeholderPdfImage
                           : placeholderDocImage
                       }
-                      alt='Document Preview'
-                      width='100'
-                      height='100'
+                      alt="Document Preview"
+                      width="100"
+                      height="100"
                     />
                   </div>
                   <div className={classes.details}>
@@ -309,9 +309,9 @@ const DocumentUpload = ({
                 </div>
                 <div className={classes.buttons}>
                   <Button
-                    name={'Cancel'}
+                    name={"Cancel"}
                     onClick={closeSizeExceededModal}
-                    customStyles={{ backgroundColor: '#ff6d6d' }}
+                    customStyles={{ backgroundColor: "#ff6d6d" }}
                   />
                 </div>
               </div>
@@ -326,13 +326,13 @@ const DocumentUpload = ({
                 <div className={classes.cardPreview}>
                   <img
                     src={
-                      documentInfo.format === 'application/pdf'
+                      documentInfo.format === "application/pdf"
                         ? placeholderPdfImage
                         : placeholderDocImage
                     }
                     alt={`Document ${index + 1}`}
-                    width='40'
-                    height='60'
+                    width="40"
+                    height="60"
                   />
                 </div>
                 <div className={classes.cardActions}>
@@ -353,8 +353,8 @@ const DocumentUpload = ({
                     <strong>Size:</strong> {document.size}
                   </div>
                   <div>
-                    <strong>Signature Required:</strong>{' '}
-                    {document.isSignatureRequired ? 'Yes' : 'No'}
+                    <strong>Signature Required:</strong>{" "}
+                    {document.isSignatureRequired ? "Yes" : "No"}
                   </div>
                 </div>
               </div>
@@ -364,22 +364,22 @@ const DocumentUpload = ({
         <div className={classes.buttonContainer}>
           <div className={classes.buttonContainer}>
             <Button
-              name={'Draft and Exit'}
+              name={"Draft and Exit"}
               onClick={onDraftExit}
               disabled={disableDraft}
-              customStyles={{ backgroundColor: '#ccc' }}
+              customStyles={{ backgroundColor: "#ccc" }}
             />
             <Button
-              name={'Cancel'}
+              name={"Cancel"}
               onClick={onCancel}
-              customStyles={{ backgroundColor: '#ff6d6d' }}
+              customStyles={{ backgroundColor: "#ff6d6d" }}
             />
             <Button
-              name={'Back'}
+              name={"Back"}
               onClick={onBack}
-              customStyles={{ backgroundColor: '#ff6d6d' }}
+              customStyles={{ backgroundColor: "#ff6d6d" }}
             />
-            <Button name={'Next'} onClick={onNext} />
+            <Button name={"Next"} onClick={onNext} />
           </div>
         </div>
       </div>

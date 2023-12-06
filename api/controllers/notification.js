@@ -84,7 +84,7 @@ export const allIncubatorNotifications = async (req, res) => {
 };
 
 export const allStartupNotifications = async (req, res) => {
-  const { sender, startup_id, email } = req.body;
+  const { sender, startup_id, email, incubator_id } = req.body;
 
   try {
     const notificationsQuery = `
@@ -115,36 +115,34 @@ export const allStartupNotifications = async (req, res) => {
     const notifTimestamp =
       notifTimestampResult.length > 0 ? notifTimestampResult[0].time : "NA";
 
-    const formattedNotifications = await Promise.all(
-      _.map(notifications, async (notif) => {
-        const incubatorQuery = `
-            SELECT id, logo, name
-            FROM incubators
-            WHERE id = ? 
-          `;
+    const incubatorQuery = `
+      SELECT id, logo, name
+      FROM incubators
+      WHERE id = ? 
+    `;
 
-        const incubator = await query(incubatorQuery, [notif.incubator_id]);
+    const incubator = await query(incubatorQuery, [incubator_id]);
 
-        let name = "";
-        let logo = "";
+    let name = "";
+    let logo = "";
 
-        if (startup.length > 0) {
-          name = incubator[0].name;
-          logo = incubator[0].logo;
-        }
+    if (incubator.length > 0) {
+      name = incubator[0].name;
+      logo = incubator[0].logo;
+    }
 
-        return {
-          startup_id: startup_id,
-          incubator_id: notif.incubator_id,
-          isRead: notifTimestamp > notif.time,
-          logo,
-          name,
-          id: notif.id,
-          text: notif.text,
-          redirect_type: notif.redirect_type,
-        };
-      })
-    );
+    const formattedNotifications = _.map(notifications, (notif) => {
+      return {
+        startup_id: startup_id,
+        incubator_id: notif.incubator_id,
+        isRead: notifTimestamp > notif.time,
+        logo,
+        name,
+        id: notif.id,
+        text: notif.text,
+        redirect_type: notif.redirect_type,
+      };
+    });
 
     const response = {
       notifications: formattedNotifications,
@@ -180,6 +178,44 @@ export const addNotification = async (req, res) => {
     return res.status(200).json({ message: "Notification added successfully" });
   } catch (error) {
     console.error("Error adding notification:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const addNotifications = async (req, res) => {
+  try {
+    const { incubator_id, sender, text, redirect_type, startupIds } = req.body;
+
+    // Create an array to store promises for each notification insertion
+    const insertionPromises = [];
+
+    // Loop through each startup_id and create an insertion promise
+    startupIds.forEach((startup_id) => {
+      const insertNotificationQuery = `
+        INSERT INTO notifications (incubator_id, startup_id, sender, text, redirect_type)
+        VALUES (?, ?, ?, ?, ?)
+      `;
+
+      // Execute the query with provided values and push the promise into the array
+      insertionPromises.push(
+        db.query(insertNotificationQuery, [
+          incubator_id,
+          startup_id,
+          sender,
+          text,
+          redirect_type,
+        ])
+      );
+    });
+
+    // Wait for all insertion promises to complete
+    await Promise.all(insertionPromises);
+
+    return res
+      .status(200)
+      .json({ message: "Notifications added successfully" });
+  } catch (error) {
+    console.error("Error adding notifications:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

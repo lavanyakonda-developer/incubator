@@ -4,12 +4,13 @@ import classes from "./StartupView.module.css";
 import { makeRequest, API, socketAPI } from "../../../axios";
 import _ from "lodash";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Button, Chat } from "../../../CommonComponents";
+import { Button, Chat, NotificationPanel } from "../../../CommonComponents";
 import { startupProfileQuestions } from "../../../Incubator/RegisterStartup/helper.js";
 import {
   renderQuestions,
   DocumentsContainer,
 } from "../../../Incubator/StartupHomeView/helper.js";
+import { FaBell } from "react-icons/fa";
 import SupplementaryDocuments from "./SupplementaryDocuments";
 import BusinessUpdates from "./BusinessUpdates";
 import Kpi from "./Kpi";
@@ -18,7 +19,7 @@ import io from "socket.io-client";
 const socket = io.connect(socketAPI);
 
 const tabs = [
-  //{ label: 'Home', key: 'homeDashboard' },
+  { label: "Home", key: "homeDashboard", visibleRole: "startup_founder" },
   {
     label: "Startup Profile",
     key: "startupProfile",
@@ -76,25 +77,38 @@ const tabs = [
   {
     label: "Communication Tab",
     key: "communicationTab",
+    visibleRole: "startup_founder",
   },
 ];
 
 const StartupView = () => {
   const { startup_id } = useParams();
   const [searchParams] = useSearchParams();
+  const { user } = isAuthenticated();
+  const { email, incubator_id, role } = user;
 
   const [selectedTab, setSelectedTab] = useState(
-    searchParams.get("tab") || "companyDetails"
+    searchParams.get("tab") || role == "startup_founder"
+      ? "homeDashboard"
+      : "companyDetails"
   );
   const [startupInfo, setStartupInfo] = useState({});
-
+  const [notifications, setNotifications] = useState({});
   const [unreadCount, setUnReadCount] = useState(0);
   const [messageList, setMessageList] = useState([]);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [showUnReadCount, setShowUnReadCount] = useState(false);
   const navigate = useNavigate();
-  const { user } = isAuthenticated();
-  const { email, incubator_id } = user;
 
   const { basicDetails } = startupInfo || {};
+
+  const openPanel = () => {
+    setIsPanelOpen(true);
+  };
+
+  const closePanel = () => {
+    setIsPanelOpen(false);
+  };
 
   const handleTabClick = (tabName) => {
     const tab = _.find(tabs, { key: tabName });
@@ -113,6 +127,32 @@ const StartupView = () => {
   const joinRoom = () => {
     if (email !== "" && room !== "") {
       socket.emit("join_room", room);
+    }
+  };
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await makeRequest.post(
+        `notification/get-startup-notifications`,
+        {
+          startup_id,
+          email,
+          sender: "incubator",
+          incubator_id,
+        }
+      );
+
+      if (response.status === 200) {
+        const data = response.data;
+
+        setNotifications(_.uniqBy(data?.notifications, "id"));
+        setShowUnReadCount(data?.showUnReadCount);
+      } else {
+        console.error("Error fetching data:", response.statusText);
+      }
+    } catch (error) {
+      navigate("/");
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -138,6 +178,7 @@ const StartupView = () => {
     if (startup_id) {
       fetchData();
       joinRoom();
+      fetchNotifications();
     }
   }, [startup_id]);
 
@@ -171,6 +212,10 @@ const StartupView = () => {
   useEffect(() => {
     socket.on("receive_message", () => {
       fetchChats();
+    });
+
+    socket.on("receive_notification", (data) => {
+      fetchNotifications();
     });
   }, [socket]);
 
@@ -272,6 +317,36 @@ const StartupView = () => {
         );
       }
 
+      case "homeDashboard": {
+        return (
+          <div className={classes.header}>
+            <h2>Home</h2>
+            <div onClick={openPanel}>
+              <FaBell
+                style={{
+                  fontSize: 32,
+                  height: 36,
+                }}
+                onClick={openPanel}
+              />
+
+              {showUnReadCount && (
+                <span
+                  style={{
+                    position: "absolute",
+                    background: "red",
+                    color: "white",
+                    borderRadius: "50%",
+                    padding: "4px",
+                    marginLeft: "-6px",
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        );
+      }
+
       default:
         return null;
     }
@@ -320,21 +395,26 @@ const StartupView = () => {
               );
             }
             return (
-              <div
-                className={`${classes.tab} ${
-                  selectedTab === tab.key ? classes.activeTab : ""
-                }`}
-                onClick={() => handleTabClick(tab.key)}
-                key={tab.key}
-              >
-                {`${tab.label} ${
-                  unreadCount > 0 &&
-                  tab.key == "communicationTab" &&
-                  selectedTab != "communicationTab"
-                    ? `- ${unreadCount}`
-                    : ""
-                }`}
-              </div>
+              <>
+                {_.isEmpty(tab.visibleRole) ||
+                (!_.isEmpty(tab.visibleRole) && role == tab?.visibleRole) ? (
+                  <div
+                    className={`${classes.tab} ${
+                      selectedTab === tab.key ? classes.activeTab : ""
+                    }`}
+                    onClick={() => handleTabClick(tab.key)}
+                    key={tab.key}
+                  >
+                    {`${tab.label} ${
+                      unreadCount > 0 &&
+                      tab.key == "communicationTab" &&
+                      selectedTab != "communicationTab"
+                        ? `- ${unreadCount}`
+                        : ""
+                    }`}
+                  </div>
+                ) : null}{" "}
+              </>
             );
           })}
         </div>
@@ -353,6 +433,16 @@ const StartupView = () => {
         </div>
       </div>
       <div className={classes.rightContainer}>{getRightComponent()}</div>
+      {isPanelOpen && (
+        <NotificationPanel
+          isOpen={isPanelOpen}
+          onClose={closePanel}
+          email={email}
+          notifications={notifications}
+          fetchNotifications={fetchNotifications}
+          // onClickStartup={onClickStartup}
+        />
+      )}
     </div>
   );
 };
