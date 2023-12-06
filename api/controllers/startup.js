@@ -233,15 +233,20 @@ export const getStartupSuppDocs = async (req, res) => {
   const { startup_id: startupId } = req.body;
   // Fetch existing requested documents
   const fetchPendingDocuments =
-    "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND is_approved = false";
+    "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
 
   const fetchApprovedDocuments =
-    "SELECT * FROM startup_documents WHERE startup_id = ? AND  is_onboarding = false AND is_approved = true";
+    "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
 
-  const [pendingDocumentsData, approvedDocumentsData] = await Promise.all([
-    query(fetchPendingDocuments, [startupId]),
-    query(fetchApprovedDocuments, [startupId]),
-  ]);
+  const fetchRejectedDocuments =
+    "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
+
+  const [pendingDocumentsData, approvedDocumentsData, rejectedDocumentsData] =
+    await Promise.all([
+      query(fetchPendingDocuments, [startupId, "PENDING"]),
+      query(fetchApprovedDocuments, [startupId, "APPROVED"]),
+      query(fetchRejectedDocuments, [startupId, "REJECTED"]),
+    ]);
 
   const pendingDocuments = _.map(pendingDocumentsData, (document) => ({
     id: document?.id,
@@ -261,31 +266,46 @@ export const getStartupSuppDocs = async (req, res) => {
     url: document?.document_url,
   }));
 
+  const rejectedDocuments = _.map(rejectedDocumentsData, (document) => ({
+    id: document?.id,
+    name: document?.document_name,
+    size: document?.document_size,
+    format: document?.document_format,
+    isSignatureRequired: document?.is_signature_required,
+    url: document?.document_url,
+  }));
+
   return res.json({
     pendingDocuments,
     approvedDocuments,
+    rejectedDocuments,
   });
 };
 
 export const updateDocumentApproval = async (req, res) => {
-  const { documentId, startup_id } = req.body;
+  const { documentId, startup_id: startupId, status = "APPROVED" } = req.body;
 
   try {
     const updateStartupQuery =
-      "UPDATE startup_documents SET is_approved = true WHERE id = ?";
+      "UPDATE startup_documents SET status = ? WHERE id = ?";
 
-    await query(updateStartupQuery, [documentId]);
+    await query(updateStartupQuery, [status, documentId]);
 
     const fetchPendingDocuments =
-      "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND is_approved = false";
+      "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
 
     const fetchApprovedDocuments =
-      "SELECT * FROM startup_documents WHERE startup_id = ? AND  is_onboarding = false AND is_approved = true";
+      "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
 
-    const [pendingDocumentsData, approvedDocumentsData] = await Promise.all([
-      query(fetchPendingDocuments, [startup_id]),
-      query(fetchApprovedDocuments, [startup_id]),
-    ]);
+    const fetchRejectedDocuments =
+      "SELECT * FROM startup_documents WHERE startup_id = ? AND is_onboarding = false AND status = ?";
+
+    const [pendingDocumentsData, approvedDocumentsData, rejectedDocumentsData] =
+      await Promise.all([
+        query(fetchPendingDocuments, [startupId, "PENDING"]),
+        query(fetchApprovedDocuments, [startupId, "APPROVED"]),
+        query(fetchRejectedDocuments, [startupId, "REJECTED"]),
+      ]);
 
     const pendingDocuments = _.map(pendingDocumentsData, (document) => ({
       id: document?.id,
@@ -305,9 +325,19 @@ export const updateDocumentApproval = async (req, res) => {
       url: document?.document_url,
     }));
 
+    const rejectedDocuments = _.map(rejectedDocumentsData, (document) => ({
+      id: document?.id,
+      name: document?.document_name,
+      size: document?.document_size,
+      format: document?.document_format,
+      isSignatureRequired: document?.is_signature_required,
+      url: document?.document_url,
+    }));
+
     return res.json({
       pendingDocuments,
       approvedDocuments,
+      rejectedDocuments,
     });
   } catch (error) {
     return res.send({ message: error });
@@ -322,7 +352,7 @@ export const addSupplementaryDocument = async (req, res) => {
       document;
 
     const createDocumentQuery =
-      "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+      "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     const values = [
       startup_id,
       document_name,
@@ -334,6 +364,7 @@ export const addSupplementaryDocument = async (req, res) => {
       false,
       false,
       false,
+      "PENDING",
     ];
 
     await query(createDocumentQuery, values);

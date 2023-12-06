@@ -413,7 +413,7 @@ export const startupRegister = async (req, res) => {
             } = document;
 
             const createDocumentQuery =
-              "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+              "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             const values = [
               startup_id,
               document_name,
@@ -425,6 +425,7 @@ export const startupRegister = async (req, res) => {
               false, // Set is_deleted to false by default
               false, // Set is_approved to false by default
               true,
+              "PENDING",
             ];
 
             await query(createDocumentQuery, values);
@@ -476,7 +477,7 @@ export const startupRegister = async (req, res) => {
             if (!existingRequestedDocument) {
               // Requested document does not exist, create a new requested document
               const createRequestedDocumentQuery =
-                "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+                "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`, `is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?, ?)";
               const values = [
                 startup_id,
                 documentName,
@@ -488,6 +489,7 @@ export const startupRegister = async (req, res) => {
                 false,
                 false,
                 true,
+                "PENDING",
               ];
 
               await query(createRequestedDocumentQuery, values);
@@ -727,7 +729,7 @@ export const startupRegister = async (req, res) => {
           } = document;
 
           const createDocumentQuery =
-            "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            "INSERT INTO startup_documents (`startup_id`, `document_name`, `document_size`, `document_format`, `is_signature_required`, `document_url`, `is_deleted`, `is_approved`, `is_requested`, `is_onboarding`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
           const values = [
             startup_id,
             document_name,
@@ -739,6 +741,7 @@ export const startupRegister = async (req, res) => {
             false, // Set is_deleted to false by default
             false, // Set is_approved to false by default'
             true,
+            "PENDING",
           ];
 
           await query(createDocumentQuery, values);
@@ -753,7 +756,7 @@ export const startupRegister = async (req, res) => {
           if (documentName) {
             // Only insert non-empty document names
             const createRequestedDocumentQuery =
-              "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?,?)";
+              "INSERT INTO startup_documents (`startup_id`, `document_name`,`document_size`,`document_url`, `document_format`,`is_signature_required`, `is_requested`, `is_deleted`, `is_approved`, `is_onboarding`, `status`) VALUES (?, ?, ?,?, ?, ?, ?, ?, ?,?, ?)";
             const values = [
               startup_id,
               documentName,
@@ -765,6 +768,7 @@ export const startupRegister = async (req, res) => {
               false,
               false,
               true,
+              "PENDING",
             ];
 
             await query(createRequestedDocumentQuery, values);

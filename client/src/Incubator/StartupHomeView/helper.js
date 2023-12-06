@@ -1,33 +1,33 @@
-import _ from 'lodash';
-import classes from './StartupHomeView.module.css';
-import { FaDownload } from 'react-icons/fa';
-import { API } from '../../axios';
-import { Button } from '../../CommonComponents';
+import _ from "lodash";
+import classes from "./StartupHomeView.module.css";
+import { FaDownload } from "react-icons/fa";
+import { API } from "../../axios";
+import { Button } from "../../CommonComponents";
 
 const placeholderDocImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 const placeholderPdfImage =
-  'https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg';
+  "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
 export const handleDownload = (documentData) => {
   if (documentData && documentData.url) {
     // Create an anchor element
-    const downloadLink = document.createElement('a');
+    const downloadLink = document.createElement("a");
 
-    const fileName = _.last(_.split(documentData.url, '/'));
+    const fileName = _.last(_.split(documentData.url, "/"));
     // Set the href attribute to the document's URL
 
     downloadLink.href = `${API}/uploads/${fileName}`;
 
     // Specify the download attribute to suggest a filename (optional)
-    downloadLink.setAttribute('download', documentData.name);
+    downloadLink.setAttribute("download", documentData.name);
     // Set the target attribute to "_blank" to open the link in a new tab/window
-    downloadLink.setAttribute('target', '_blank');
+    downloadLink.setAttribute("target", "_blank");
 
     // Simulate a click on the anchor element to initiate the download
     downloadLink.click();
   } else {
-    console.error('Invalid document data or missing file.');
+    console.error("Invalid document data or missing file.");
   }
 };
 
@@ -35,10 +35,10 @@ export const DocumentsContainer = ({
   documents,
   skipDetails = false,
   showApproveButton = false,
-  onClickApprove,
+  onClickButton,
 }) => {
   if (!documents || _.isEmpty(documents)) {
-    return 'No documents uploaded';
+    return "No documents uploaded";
   }
   return (
     <div className={classes.previewDocumentsContainer}>
@@ -47,13 +47,13 @@ export const DocumentsContainer = ({
           <div className={classes.cardPreview}>
             <img
               src={
-                document?.format === 'application/pdf'
+                document?.format === "application/pdf"
                   ? placeholderPdfImage
                   : placeholderDocImage
               }
               alt={`Document ${index + 1}`}
-              width='40'
-              height='60'
+              width="40"
+              height="60"
             />
           </div>
           <div className={classes.cardActions}>
@@ -74,15 +74,26 @@ export const DocumentsContainer = ({
             )}
             {!skipDetails && (
               <div>
-                <strong>Signature Required:</strong>{' '}
-                {document?.isSignatureRequired ? 'Yes' : 'No'}
+                <strong>Signature Required:</strong>{" "}
+                {document?.isSignatureRequired ? "Yes" : "No"}
               </div>
             )}
             {showApproveButton && (
-              <Button
-                name={'Approve'}
-                onClick={() => onClickApprove(document?.id)}
-              />
+              <div style={{ display: "flex", gap: 8 }}>
+                <Button
+                  name={"Approve"}
+                  onClick={() =>
+                    onClickButton({ id: document?.id, status: "APPROVED" })
+                  }
+                />
+                <Button
+                  name={"Reject"}
+                  onClick={() =>
+                    onClickButton({ id: document?.id, status: "REJECTED" })
+                  }
+                  customStyles={{ backgroundColor: "#ff6d6d" }}
+                />
+              </div>
             )}
           </div>
         </div>
@@ -93,64 +104,64 @@ export const DocumentsContainer = ({
 
 export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
   switch (question?.answer_type) {
-    case 'number':
-    case 'date':
-    case 'text':
+    case "number":
+    case "date":
+    case "text":
       return (
         _.find(startupInfo?.questionnaire, {
           uid: question.uid,
-        })?.answer || 'Not answered'
+        })?.answer || "Not answered"
       );
 
-    case 'startup_logo':
-    case 'video':
-    case 'files':
-    case 'file':
-    case 'images': {
+    case "startup_logo":
+    case "video":
+    case "files":
+    case "file":
+    case "images": {
       return (
         <DocumentsContainer documents={question?.answer} skipDetails={true} />
       );
     }
 
-    case 'dropdown':
+    case "dropdown":
       return _.get(
         _.find(metaData, {
           key: _.find(startupInfo?.questionnaire, {
             uid: question.uid,
           })?.answer,
         }),
-        'label',
-        'Not answered'
+        "label",
+        "Not answered"
       );
 
-    case 'basicInfoField':
+    case "basicInfoField":
       return _.get(
         startupInfo?.basicDetails,
         `${question.field_name}`,
-        'Not answered'
+        "Not answered"
       );
 
-    case 'founderDetails':
+    case "founderDetails":
       return (
         <>
           <div className={classes.questionContainer}>
             <div className={classes.question}>{`Founder Name:`}</div>
-            <span>{_.get(startupInfo, 'basicDetails.founderName')}</span>
+            <span>{_.get(startupInfo, "basicDetails.founderName")}</span>
           </div>
           <div className={classes.questionContainer}>
             <div className={classes.question}>{`Founder Role:`}</div>
-            <span>{_.get(startupInfo, 'basicDetails.founderRole')}</span>
+            <span>{_.get(startupInfo, "basicDetails.founderRole")}</span>
           </div>
           <div className={classes.questionContainer}>
             <div className={classes.question}>{`Founder Email:`}</div>
-            <span>{_.get(startupInfo, 'basicDetails.founderEmail')}</span>
+            <span>{_.get(startupInfo, "basicDetails.founderEmail")}</span>
           </div>
           <div className={classes.questionContainer}>
             <div className={classes.question}>{`Founder Mobile:`}</div>
-            <span>{_.get(startupInfo, 'basicDetails.founderMobile')}</span>
+            <span>{_.get(startupInfo, "basicDetails.founderMobile")}</span>
           </div>
           {_.map(
-            _.get(startupInfo, 'basicDetails.coFounders'),
+            _.get(startupInfo, "basicDetails.coFounders"),
             (founder, index) => {
               return (
                 <>
@@ -158,25 +169,25 @@ export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
                     <div className={classes.question}>{`Co-Founder(${
                       index + 1
                     }) Name:`}</div>
-                    <span>{_.get(founder, 'name')}</span>
+                    <span>{_.get(founder, "name")}</span>
                   </div>
                   <div className={classes.questionContainer}>
                     <div className={classes.question}>{`Co-Founder(${
                       index + 1
                     }) Role:`}</div>
-                    <span>{_.get(founder, 'designation')}</span>
+                    <span>{_.get(founder, "designation")}</span>
                   </div>
                   <div className={classes.questionContainer}>
                     <div className={classes.question}>{`Co-Founder(${
                       index + 1
                     }) Email:`}</div>
-                    <span>{_.get(founder, 'email')}</span>
+                    <span>{_.get(founder, "email")}</span>
                   </div>
                   <div className={classes.questionContainer}>
                     <div className={classes.question}>{`Co-Founder(${
                       index + 1
                     }) Mobile:`}</div>
-                    <span>{_.get(founder, 'phone_number')}</span>
+                    <span>{_.get(founder, "phone_number")}</span>
                   </div>
                 </>
               );

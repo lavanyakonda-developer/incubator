@@ -32,6 +32,7 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
   const { incubator_id: incubatorId, startup_id: startupId } = useParams();
   const [pendingDocuments, setPendingDocuments] = useState([]);
   const [approvedDocuments, setApprovedDocuments] = useState([]);
+  const [rejectedDocuments, setRejectedDocuments] = useState([]);
   const [showUploadModal, setShowUploadModal] = useState(false); // Add state to control the modal
   const [showSizeExceededModal, setShowSizeExceededModal] = useState(false); // Add state for size exceeded modal
   const [documentInfo, setDocumentInfo] = useState({
@@ -75,6 +76,7 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
 
           setPendingDocuments(data.pendingDocuments);
           setApprovedDocuments(data.approvedDocuments);
+          setRejectedDocuments(data.rejectedDocuments);
         } else {
           console.error("Error fetching data:", response.statusText);
         }
@@ -169,21 +171,25 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
     }
   };
 
-  const onClickApprove = async (id) => {
+  const onClickButton = async ({ id, status }) => {
     try {
       const response = await makeRequest.post(
         `startup/update-documents-approved`,
         {
           startup_id: startupId,
           documentId: id,
+          status,
         }
       );
 
       if (response.status === 200) {
         const data = response.data;
 
+        console.log(">>>>>>>>>.", data);
+
         setPendingDocuments(data.pendingDocuments);
         setApprovedDocuments(data.approvedDocuments);
+        setRejectedDocuments(data.rejectedDocuments);
       } else {
         console.error("Error fetching data:", response.statusText);
       }
@@ -215,12 +221,17 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
         <DocumentsContainer
           documents={pendingDocuments}
           showApproveButton={!_.isEmpty(incubatorId)}
-          onClickApprove={onClickApprove}
+          onClickButton={onClickButton}
         />
       </div>
       <div className={classes.documentsContainer}>
         <h3>Approved Documents</h3>
         <DocumentsContainer documents={approvedDocuments} />
+      </div>
+
+      <div className={classes.documentsContainer}>
+        <h3>Rejected Documents</h3>
+        <DocumentsContainer documents={rejectedDocuments} />
       </div>
 
       {showUploadModal && documentInfo.selectedFile && (
