@@ -87,10 +87,14 @@ const StartupView = () => {
   const { user } = isAuthenticated();
   const { email, incubator_id, role } = user;
 
+  // const [selectedTab, setSelectedTab] = useState(
+  //   searchParams.get("tab") || role == "startup_founder"
+  //     ? "homeDashboard"
+  //     : "companyDetails"
+  // );
+
   const [selectedTab, setSelectedTab] = useState(
-    searchParams.get("tab") || role == "startup_founder"
-      ? "homeDashboard"
-      : "companyDetails"
+    searchParams.get("tab") || "companyDetails"
   );
   const [startupInfo, setStartupInfo] = useState({});
   const [notifications, setNotifications] = useState({});
@@ -225,8 +229,8 @@ const StartupView = () => {
     ? `${API}/uploads/${startupLogoName}`
     : "";
 
-  const userLogout = () => {
-    logout();
+  const userLogout = async () => {
+    await logout();
     navigate("/home-page");
   };
 

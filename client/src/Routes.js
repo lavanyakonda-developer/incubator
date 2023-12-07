@@ -1,39 +1,40 @@
-import React from 'react';
+import React from "react";
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
   useParams,
-} from 'react-router-dom';
-import App from './App';
+} from "react-router-dom";
+import App from "./App";
 import {
   IncubatorLogin,
   IncubatorHome,
   RegisterStartup,
   StartupHomeView,
-} from './Incubator';
+} from "./Incubator";
 import {
   StartupLogin,
   StartupFounderRegister,
   StartupOnboarding,
   StartupHome,
-} from './Startup';
-import { isAuthenticated } from './auth/helper';
-import AccessControlWrapper from './AccessControlWrapper';
-import _ from 'lodash';
+} from "./Startup";
+import { isAuthenticated } from "./auth/helper";
+import AccessControlWrapper from "./AccessControlWrapper";
+import _ from "lodash";
 
 const AppRoutes = () => {
   const { user, token } = isAuthenticated();
-  const isIncubatorFounder = _.isEqual(user?.role, 'incubator_founder');
-  const isStartupFounder = _.isEqual(user?.role, 'startup_founder');
+
+  const isIncubatorFounder = _.isEqual(user?.role, "incubator_founder");
+  const isStartupFounder = _.isEqual(user?.role, "startup_founder");
 
   return (
     <BrowserRouter>
       <Routes>
         {/* Incubator Routes */}
         <Route
-          path='/incubator/:incubator_id/home'
+          path="/incubator/:incubator_id/home"
           element={
             <AccessControlWrapper>
               <IncubatorHome incubatorId={user?.incubator_id} />
@@ -42,7 +43,7 @@ const AppRoutes = () => {
         />
 
         <Route
-          path='/incubator-login'
+          path="/incubator-login"
           element={
             token &&
             ((user?.incubator_id && isIncubatorFounder) ||
@@ -82,7 +83,7 @@ const AppRoutes = () => {
         {/* Startup Routes */}
 
         <Route
-          path='/startup-login'
+          path="/startup-login"
           element={
             token &&
             ((user?.incubator_id && isIncubatorFounder) ||
@@ -102,7 +103,7 @@ const AppRoutes = () => {
         />
 
         <Route
-          path='/startup-founder-registration'
+          path="/startup-founder-registration"
           element={
             token &&
             ((user?.incubator_id && isIncubatorFounder) ||
@@ -122,7 +123,7 @@ const AppRoutes = () => {
         />
 
         <Route
-          path='/startup/:startup_id/startup-onboarding'
+          path="/startup/:startup_id/startup-onboarding"
           element={
             <AccessControlWrapper>
               <StartupOnboarding />
@@ -130,7 +131,7 @@ const AppRoutes = () => {
           }
         />
         <Route
-          path='/startup/:startup_id/home'
+          path="/startup/:startup_id/home"
           element={
             <AccessControlWrapper>
               <StartupHome />
@@ -139,9 +140,30 @@ const AppRoutes = () => {
         />
 
         {/* Home page */}
-        <Route path='/home-page' element={<App />} />
+        {/* <Route path="/home-page" element={<App />} /> */}
+
         <Route
-          path='/'
+          path="/home-page"
+          element={
+            token &&
+            ((user?.incubator_id && isIncubatorFounder) ||
+              (user?.startup_id && isStartupFounder)) ? (
+              <Navigate
+                replace={true}
+                to={
+                  isIncubatorFounder
+                    ? `/incubator/${user?.incubator_id}/home`
+                    : `/startup/${user?.startup_id}/home`
+                }
+              />
+            ) : (
+              <App />
+            )
+          }
+        />
+
+        <Route
+          path="/"
           element={
             <Navigate
               replace={true}
@@ -150,12 +172,12 @@ const AppRoutes = () => {
                   ? `/incubator/${user?.incubator_id}/home`
                   : token && user?.startup_id && isStartupFounder
                   ? `/startup/${user?.startup_id}/home`
-                  : '/home-page'
+                  : "/home-page"
               }
             />
           }
         />
-        <Route path='/*' element={<Navigate to='/' replace={true} />} />
+        <Route path="/*" element={<Navigate to="/" replace={true} />} />
       </Routes>
     </BrowserRouter>
   );

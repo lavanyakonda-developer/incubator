@@ -47,6 +47,7 @@ const IncubatorHome = (props) => {
   const { incubator_id: incubatorId } = useParams();
 
   const { user } = isAuthenticated();
+  const navigate = useNavigate();
 
   const { email } = user;
 
@@ -89,8 +90,6 @@ const IncubatorHome = (props) => {
   const closePanel = () => {
     setIsPanelOpen(false);
   };
-
-  const navigate = useNavigate();
 
   const fetchNotifications = async () => {
     try {
@@ -666,8 +665,8 @@ const IncubatorHome = (props) => {
     }
   };
 
-  const userLogout = () => {
-    logout();
+  const userLogout = async () => {
+    await logout();
     navigate("/home-page");
   };
 

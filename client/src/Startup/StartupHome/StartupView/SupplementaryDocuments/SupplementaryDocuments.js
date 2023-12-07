@@ -185,8 +185,6 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
       if (response.status === 200) {
         const data = response.data;
 
-        console.log(">>>>>>>>>.", data);
-
         setPendingDocuments(data.pendingDocuments);
         setApprovedDocuments(data.approvedDocuments);
         setRejectedDocuments(data.rejectedDocuments);
@@ -206,7 +204,7 @@ const SupplementaryDocuments = ({ socket, incubator_id, startup_id }) => {
           {_.isEmpty(incubatorId) && (
             <div className={classes.chooseButtonContainer}>
               <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Choose File</span>
+                <span className={classes.chooseFileText}>Upload File</span>
                 <input
                   type="file"
                   ref={fileInputRef}

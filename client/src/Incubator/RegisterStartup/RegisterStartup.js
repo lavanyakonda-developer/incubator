@@ -11,6 +11,7 @@ import _ from "lodash";
 import { questions } from "./helper";
 import { makeRequest } from "../../axios";
 import { Button } from "../../CommonComponents";
+import { isAuthenticated } from "../../auth/helper";
 
 const tabs = [
   { label: "Basic Info", key: "basicDetails" },
@@ -33,6 +34,23 @@ const generateRandomCode = (length) => {
 
 const RegisterStartup = () => {
   const { incubator_id: incubatorId } = useParams();
+
+  const navigate = useNavigate();
+
+  const goHome = () => {
+    const { token, user } = isAuthenticated();
+    const isIncubatorFounder = _.isEqual(user?.role, "incubator_founder");
+    const isStartupFounder = _.isEqual(user?.role, "startup_founder");
+
+    const route =
+      token && user?.incubator_id && isIncubatorFounder
+        ? `/incubator/${user?.incubator_id}/home`
+        : token && user?.startup_id && isStartupFounder
+        ? `/startup/${user?.startup_id}/home`
+        : "/home-page";
+
+    navigate(route);
+  };
 
   const [draftStartup, setDraftStartup] = useState(null);
 
@@ -143,8 +161,6 @@ const RegisterStartup = () => {
 
   const [selectedTab, setSelectedTab] = useState("basicDetails"); // Set the initial selected tab
 
-  const navigate = useNavigate();
-
   // Function to switch tabs
   const handleTabClick = (tabKey) => {
     setSelectedTab(tabKey);
@@ -212,7 +228,7 @@ const RegisterStartup = () => {
       console.error("Error fetching data:", error);
     }
 
-    navigate("/");
+    goHome();
   };
 
   // Function to handle "Draft and Exit" button click
@@ -233,12 +249,12 @@ const RegisterStartup = () => {
       console.error("Error fetching data:", error);
     }
 
-    navigate("/");
+    goHome();
   };
 
   // Function to handle "Cancel" button click
   const handleCancel = () => {
-    navigate("/");
+    goHome();
   };
 
   // Function to handle "Next" button click
@@ -344,7 +360,7 @@ const RegisterStartup = () => {
         <Button
           name={"< Back"}
           onClick={() => {
-            navigate("/");
+            goHome();
           }}
           customStyles={{
             width: 100,
