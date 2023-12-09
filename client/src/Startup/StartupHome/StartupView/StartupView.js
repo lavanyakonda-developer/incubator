@@ -230,8 +230,8 @@ const StartupView = () => {
     : "";
 
   const userLogout = async () => {
-    await logout();
     navigate("/home-page");
+    await logout();
   };
 
   const getRightComponent = () => {

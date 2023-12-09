@@ -27,6 +27,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 8px 16px;
+  position: sticky;
+  top: 0;
+  background-color: white;
 }
 
 .notificationBox {
@@ -60,4 +63,11 @@
 .text {
   font-size: 16px;
   width: 100%;
+}
+
+.notificationContent {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  height: 100%;
 }
