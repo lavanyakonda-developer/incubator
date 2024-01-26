@@ -19,6 +19,7 @@ import incubatorRoutes from "./routes/incubator.js";
 import startupRoutes from "./routes/startup.js";
 import chatRoutes from "./routes/chat.js";
 import notificationRoutes from "./routes/notification.js";
+import googleRoutes from "./routes/google.js";
 
 const app = express();
 
@@ -29,7 +30,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "http://localhost:8000/"],
   credentials: true, // Allow credentials (cookies)
 };
 
@@ -45,6 +46,7 @@ app.use("/incubator", incubatorRoutes);
 app.use("/startup", startupRoutes);
 app.use("/chat", chatRoutes);
 app.use("/notification", notificationRoutes);
+app.use("/google", googleRoutes);
 
 //Starting a server
 app.listen(port, () => {

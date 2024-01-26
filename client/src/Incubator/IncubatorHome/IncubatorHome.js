@@ -36,6 +36,7 @@ const getRandomNumber = () => {
 const tabs = [
   { label: "Home Dashboard", key: "homeDashboard" },
   { label: "Communication Tab", key: "communicationTab" },
+  { label: "Calendar", key: "calendarTab" },
 ];
 
 const buttonStyle = {
@@ -660,6 +661,9 @@ const IncubatorHome = (props) => {
             )}
           </div>
         );
+
+      case "calendarTab":
+        return;
       default:
         return <div className={classes.rightColumn} />;
     }
