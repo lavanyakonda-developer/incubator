@@ -91,7 +91,7 @@ const StartupView = () => {
   const { startup_id } = useParams();
   const [searchParams] = useSearchParams();
   const { user } = isAuthenticated();
-  const { email, incubator_id, role, id: userId } = user;
+  const { email, incubator_id, role, id: userId } = user || {};
   const [selectedTab, setSelectedTab] = useState(
     searchParams.get("tab") || role == "startup_founder"
       ? "homeDashboard"

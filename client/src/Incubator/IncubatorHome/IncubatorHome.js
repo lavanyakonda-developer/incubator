@@ -55,8 +55,6 @@ const IncubatorHome = (props) => {
   const { user } = isAuthenticated();
   const navigate = useNavigate();
 
-  const { email, id, role } = user;
-
   const [selectedTab, setSelectedTab] = useState("homeDashboard");
   const [room, setRoom] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,6 +75,14 @@ const IncubatorHome = (props) => {
     logo: "",
   });
   const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/home-page");
+    }
+  }, [user]);
+
+  const { email, id, role } = user || {};
 
   const handleStartupChange = (e) => {
     const value = _.toNumber(e.target.value);
@@ -685,8 +691,8 @@ const IncubatorHome = (props) => {
   };
 
   const userLogout = async () => {
-    await logout();
     navigate("/home-page");
+    await logout();
   };
 
   const incubatorLogoName = _.last(_.split(incubatorDetails.logo, "/"));
