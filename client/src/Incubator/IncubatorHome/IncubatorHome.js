@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import classes from "./IncubatorHome.module.css"; // Import your CSS file
 import _ from "lodash";
 import { makeRequest, API, socketAPI } from "../../axios";
-import { Button, Chat, NotificationPanel } from "../../CommonComponents";
+import {
+  Button,
+  Chat,
+  NotificationPanel,
+  Calendar,
+} from "../../CommonComponents";
 import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
@@ -50,7 +55,7 @@ const IncubatorHome = (props) => {
   const { user } = isAuthenticated();
   const navigate = useNavigate();
 
-  const { email } = user;
+  const { email, id, role } = user;
 
   const [selectedTab, setSelectedTab] = useState("homeDashboard");
   const [room, setRoom] = useState("");
@@ -663,7 +668,17 @@ const IncubatorHome = (props) => {
         );
 
       case "calendarTab":
-        return;
+        return (
+          <Calendar
+            userId={id}
+            role={role}
+            style={{
+              padding: "20px 20px 0px 20px",
+              flex: "3 1",
+              overflowY: "auto",
+            }}
+          />
+        );
       default:
         return <div className={classes.rightColumn} />;
     }
