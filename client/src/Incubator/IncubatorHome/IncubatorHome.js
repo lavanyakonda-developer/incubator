@@ -186,7 +186,8 @@ const IncubatorHome = (props) => {
   }, [startups]);
 
   useEffect(() => {
-    if (selectedTab == "communicationTab") {
+    //Fetching on home because we have to show red dot when there's unread messages
+    if (selectedTab == "communicationTab" || selectedTab == "homeDashboard") {
       fetchChats();
     }
   }, [selectedTab, showChat]);
@@ -490,6 +491,22 @@ const IncubatorHome = (props) => {
                             }}
                           >
                             <FaComment />
+                            {_.get(
+                              allMessages,
+                              `${startup.id}.unreadCount`,
+                              0
+                            ) > 0 && (
+                              <span
+                                style={{
+                                  position: "absolute",
+                                  background: "red",
+                                  color: "white",
+                                  borderRadius: "50%",
+                                  padding: "4px",
+                                  marginLeft: "-6px",
+                                }}
+                              />
+                            )}
                           </td>
                         </tr>
                       );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import classes from "./BasicDetails.module.css";
 import _ from "lodash";
 import { Button } from "../../../CommonComponents";
@@ -13,6 +13,8 @@ const isValidEmail = (email) => {
 
   return true;
 };
+
+const dippRegex = /^DIPP\d{1,10}$/;
 
 const BasicDetails = ({
   startupInfo,
@@ -47,6 +49,10 @@ const BasicDetails = ({
   // Function to handle input changes in the basic details section
   const handleBasicDetailsChange = (field, value) => {
     if (field === "founderMobile" && !/^\d+$/.test(value)) {
+      return;
+    }
+
+    if (field === "dpiitNumber" && value.length > 10) {
       return;
     }
 
@@ -126,6 +132,11 @@ const BasicDetails = ({
             }
             placeholder="Enter DPIIT number"
           />
+          {!_.isEmpty(startupDetails.dpiitNumber) &&
+            (!dippRegex.test(startupDetails.dpiitNumber) ||
+              _.size(startupDetails.dpiitNumber) != 10) && (
+              <p style={{ color: "red" }}> Invalid Number</p>
+            )}
         </div>
         <div className={classes.inputContainer}>
           <label>Industry Segment*</label>
