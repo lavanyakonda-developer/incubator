@@ -1,7 +1,18 @@
-import React, { useState } from 'react';
-import classes from './BasicDetails.module.css';
-import _ from 'lodash';
-import { Button } from '../../../CommonComponents';
+import React, { useState } from "react";
+import classes from "./BasicDetails.module.css";
+import _ from "lodash";
+import { Button } from "../../../CommonComponents";
+
+const isValidEmail = (email) => {
+  // Regular expression for validating email addresses
+  const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+
+  return true;
+};
 
 const BasicDetails = ({
   startupInfo,
@@ -18,7 +29,7 @@ const BasicDetails = ({
   const handleAddCoFounder = () => {
     setCoFounders(
       _.concat(coFounders, [
-        { name: '', designation: '', phone_number: '', email: '' },
+        { name: "", designation: "", phone_number: "", email: "" },
       ])
     );
 
@@ -27,7 +38,7 @@ const BasicDetails = ({
       basicDetails: {
         ...startupInfo.basicDetails,
         coFounders: _.concat(coFounders, [
-          { name: '', designation: '', phone_number: '', email: '' },
+          { name: "", designation: "", phone_number: "", email: "" },
         ]),
       },
     });
@@ -35,7 +46,7 @@ const BasicDetails = ({
 
   // Function to handle input changes in the basic details section
   const handleBasicDetailsChange = (field, value) => {
-    if (field === 'founderMobile' && !/^\d+$/.test(value)) {
+    if (field === "founderMobile" && !/^\d+$/.test(value)) {
       return;
     }
 
@@ -52,7 +63,7 @@ const BasicDetails = ({
   const handleCoFounderChange = (index, field, value) => {
     const updatedCoFounders = [...coFounders];
 
-    if (field === 'phone_number' && !/^\d+$/.test(value)) {
+    if (field === "phone_number" && !/^\d+$/.test(value)) {
       return;
     }
 
@@ -86,7 +97,7 @@ const BasicDetails = ({
   const disableCofounders = () => {
     return (
       _.isEmpty(startupDetails.founderName) ||
-      _.isEmpty(startupDetails.founderEmail) ||
+      !isValidEmail(startupDetails.founderEmail) ||
       _.isEmpty(startupDetails.founderMobile) ||
       _.isEmpty(startupDetails.founderRole) ||
       _.size(coFounders) === 2
@@ -99,41 +110,41 @@ const BasicDetails = ({
         <div className={classes.inputContainer}>
           <label>Name of the incubatee startup*</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails.name}
-            onChange={(e) => handleBasicDetailsChange('name', e.target.value)}
-            placeholder='Enter startup name'
+            onChange={(e) => handleBasicDetailsChange("name", e.target.value)}
+            placeholder="Enter startup name"
           />
         </div>
         <div className={classes.inputContainer}>
           <label>DPIIT Number*</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails.dpiitNumber}
             onChange={(e) =>
-              handleBasicDetailsChange('dpiitNumber', e.target.value)
+              handleBasicDetailsChange("dpiitNumber", e.target.value)
             }
-            placeholder='Enter DPIIT number'
+            placeholder="Enter DPIIT number"
           />
         </div>
         <div className={classes.inputContainer}>
           <label>Industry Segment*</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails.industrySegment}
             onChange={(e) =>
-              handleBasicDetailsChange('industrySegment', e.target.value)
+              handleBasicDetailsChange("industrySegment", e.target.value)
             }
-            placeholder='Enter industry segment'
+            placeholder="Enter industry segment"
           />
         </div>
         <div className={classes.inputContainer}>
           <label>Name of Founder*</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails.founderName}
             onChange={(e) =>
-              handleBasicDetailsChange('founderName', e.target.value)
+              handleBasicDetailsChange("founderName", e.target.value)
             }
             placeholder="Enter founder's name"
           />
@@ -141,10 +152,10 @@ const BasicDetails = ({
         <div className={classes.inputContainer}>
           <label>Role of Founder*</label>
           <input
-            type='text'
+            type="text"
             value={startupDetails.founderRole}
             onChange={(e) =>
-              handleBasicDetailsChange('founderRole', e.target.value)
+              handleBasicDetailsChange("founderRole", e.target.value)
             }
             placeholder="Enter founder's role"
           />
@@ -152,10 +163,10 @@ const BasicDetails = ({
         <div className={classes.inputContainer}>
           <label>Email of Founder*</label>
           <input
-            type='email'
+            type="email"
             value={startupDetails.founderEmail}
             onChange={(e) =>
-              handleBasicDetailsChange('founderEmail', e.target.value)
+              handleBasicDetailsChange("founderEmail", e.target.value)
             }
             placeholder="Enter founder's email"
           />
@@ -163,24 +174,24 @@ const BasicDetails = ({
         <div className={classes.inputContainer}>
           <label>Mobile Number of Founder*</label>
           <input
-            type='tel'
+            type="tel"
             value={startupDetails.founderMobile}
             onChange={(e) =>
-              handleBasicDetailsChange('founderMobile', e.target.value)
+              handleBasicDetailsChange("founderMobile", e.target.value)
             }
             placeholder="Enter founder's phone number"
           />
         </div>
         <div className={classes.coFounderContainer}>
           {_.map(coFounders, (coFounder, index) => (
-            <div key={index} className='co-founder'>
+            <div key={index} className="co-founder">
               <div className={classes.inputContainer}>
                 <label>Name of Co-Founder</label>
                 <input
-                  type='text'
+                  type="text"
                   value={coFounder.name}
                   onChange={(e) =>
-                    handleCoFounderChange(index, 'name', e.target.value)
+                    handleCoFounderChange(index, "name", e.target.value)
                   }
                   placeholder="Enter Co-Founder's phone number"
                 />
@@ -188,10 +199,10 @@ const BasicDetails = ({
               <div className={classes.inputContainer}>
                 <label>Role of Co-Founder</label>
                 <input
-                  type='text'
+                  type="text"
                   value={coFounder.designation}
                   onChange={(e) =>
-                    handleCoFounderChange(index, 'designation', e.target.value)
+                    handleCoFounderChange(index, "designation", e.target.value)
                   }
                   placeholder="Enter Co-Founder's role"
                 />
@@ -199,10 +210,10 @@ const BasicDetails = ({
               <div className={classes.inputContainer}>
                 <label>Email of Co-Founder</label>
                 <input
-                  type='email'
+                  type="email"
                   value={coFounder.email}
                   onChange={(e) =>
-                    handleCoFounderChange(index, 'email', e.target.value)
+                    handleCoFounderChange(index, "email", e.target.value)
                   }
                   placeholder="Enter Co-Founder's email"
                 />
@@ -210,10 +221,10 @@ const BasicDetails = ({
               <div className={classes.inputContainer}>
                 <label>Mobile Number of Co-Founder</label>
                 <input
-                  type='tel'
+                  type="tel"
                   value={coFounder.phone_number}
                   onChange={(e) =>
-                    handleCoFounderChange(index, 'phone_number', e.target.value)
+                    handleCoFounderChange(index, "phone_number", e.target.value)
                   }
                   placeholder="Enter Co-Founder's phone number"
                 />
@@ -222,7 +233,7 @@ const BasicDetails = ({
           ))}
           <div className={classes.addCoFounderContainer}>
             <Button
-              name={'Add Another Co-Founder'}
+              name={"Add Another Co-Founder"}
               onClick={handleAddCoFounder}
               disabled={disableCofounders()}
             />
@@ -230,17 +241,17 @@ const BasicDetails = ({
         </div>
         <div className={classes.buttonContainer}>
           <Button
-            name={'Draft and Exit'}
+            name={"Draft and Exit"}
             onClick={onDraftExit}
-            customStyles={{ backgroundColor: '#ccc' }}
+            customStyles={{ backgroundColor: "#ccc" }}
             disabled={disableDraft}
           />
           <Button
-            name={'Cancel'}
+            name={"Cancel"}
             onClick={onCancel}
-            customStyles={{ backgroundColor: '#ff6d6d' }}
+            customStyles={{ backgroundColor: "#ff6d6d" }}
           />
-          <Button name={'Next'} onClick={onClickNext} />
+          <Button name={"Next"} onClick={onClickNext} />
         </div>
       </div>
     </div>

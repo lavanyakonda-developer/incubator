@@ -5,6 +5,17 @@ import classes from "./Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { authenticate } from "../../auth/helper";
 
+const isValidEmail = (email) => {
+  // Regular expression for validating email addresses
+  const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+
+  return true;
+};
+
 const Login = (props) => {
   const { isIncubator = false } = props;
 
@@ -17,7 +28,7 @@ const Login = (props) => {
     e.preventDefault();
 
     // Basic email validation
-    if (!email.includes("@")) {
+    if (!isValidEmail(email)) {
       setMessage("Invalid email format");
       return;
     }

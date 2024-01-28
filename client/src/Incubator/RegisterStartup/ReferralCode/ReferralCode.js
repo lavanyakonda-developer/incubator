@@ -1,9 +1,20 @@
 // ReferralCode.js
 
-import React from 'react';
-import classes from './ReferralCode.module.css'; // Import your CSS file
-import { Button } from '../../../CommonComponents';
-import _ from 'lodash';
+import React from "react";
+import classes from "./ReferralCode.module.css"; // Import your CSS file
+import { Button } from "../../../CommonComponents";
+import _ from "lodash";
+
+const isValidEmail = (email) => {
+  // Regular expression for validating email addresses
+  const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+
+  return true;
+};
 
 const ReferralCode = ({
   startupInfo,
@@ -41,14 +52,14 @@ const ReferralCode = ({
                 return (
                   !_.isEmpty(coFounder.name) ||
                   !_.isEmpty(coFounder.designation) ||
-                  !_.isEmpty(coFounder.email) ||
+                  isValidEmail(coFounder.email) ||
                   !_.isEmpty(coFounder.phone_number)
                 );
               }) && <label>Co-Founders:</label>}
               {_.map(basicDetails?.coFounders, (coFounder, index) => {
                 return !_.isEmpty(coFounder.name) ||
                   !_.isEmpty(coFounder.designation) ||
-                  !_.isEmpty(coFounder.email) ||
+                  isValidEmail(coFounder.email) ||
                   !_.isEmpty(coFounder.phone_number) ? (
                   <>
                     <div className={classes.info}>
@@ -79,23 +90,23 @@ const ReferralCode = ({
         </div>
         <div className={classes.buttonContainer}>
           <Button
-            name={'Draft and Exit'}
+            name={"Draft and Exit"}
             onClick={onDraftExit}
             disabled={disableDraft}
-            customStyles={{ backgroundColor: '#ccc' }}
+            customStyles={{ backgroundColor: "#ccc" }}
           />
           <Button
-            name={'Cancel'}
+            name={"Cancel"}
             onClick={onCancel}
-            customStyles={{ backgroundColor: '#ff6d6d' }}
+            customStyles={{ backgroundColor: "#ff6d6d" }}
           />
           <Button
-            name={'Back'}
+            name={"Back"}
             onClick={onBack}
-            customStyles={{ backgroundColor: '#ff6d6d' }}
+            customStyles={{ backgroundColor: "#ff6d6d" }}
           />
 
-          <Button name={'Next'} onClick={onNext} />
+          <Button name={"Next"} onClick={onNext} />
         </div>
       </div>
     </div>

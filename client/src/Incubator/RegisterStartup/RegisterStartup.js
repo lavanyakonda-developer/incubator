@@ -20,6 +20,17 @@ const tabs = [
   { label: "Detailed Questionnaire", key: "questionnaire" },
 ];
 
+const isValidEmail = (email) => {
+  // Regular expression for validating email addresses
+  const emailRegex = /^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+
+  if (!emailRegex.test(email)) {
+    return false;
+  }
+
+  return true;
+};
+
 const generateRandomCode = (length) => {
   const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   let code = "";
@@ -174,7 +185,7 @@ const RegisterStartup = () => {
           !_.isEmpty(founder.name) &&
           !_.isEmpty(founder.designation) &&
           !_.isEmpty(founder.phone_number) &&
-          !_.isEmpty(founder.email)
+          isValidEmail(founder.email)
         );
       }
     );
@@ -287,12 +298,12 @@ const RegisterStartup = () => {
           (_.isEmpty(item.name) ||
             _.isEmpty(item.designation) ||
             _.isEmpty(item.phone_number) ||
-            _.isEmpty(item.email)) &&
+            !isValidEmail(item.email)) &&
           !(
             _.isEmpty(item.name) &&
             _.isEmpty(item.designation) &&
             _.isEmpty(item.phone_number) &&
-            _.isEmpty(item.email)
+            !isValidEmail(item.email)
           )
         );
       }));
