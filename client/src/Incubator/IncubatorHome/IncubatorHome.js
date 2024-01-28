@@ -440,7 +440,12 @@ const IncubatorHome = (props) => {
                               </div>
                             </div>
                           </td>
-                          <td>{startup.industry}</td>
+                          <td
+                            onClick={() => setSearchTerm(startup.industry)}
+                            style={{ cursor: "pointer" }}
+                          >
+                            {startup.industry}
+                          </td>
                           <td>{startup.stateOfStartup}</td>
                           <td>
                             {getStatus({

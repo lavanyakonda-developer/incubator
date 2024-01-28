@@ -102,16 +102,56 @@ export const DocumentsContainer = ({
   );
 };
 
+const TextWithClickableLinks = ({ text }) => {
+  // Regular expression to find URLs in the text
+
+  const urlRegex = /(https?:\/\/[^\s]+)|(www\.[^\s]+)/g;
+
+  // Split the text into an array of text segments and URLs
+  const segments = text.split(urlRegex);
+
+  // Process each segment to create an array of JSX elements
+
+  const elements = _.map(segments, (segment, index) => {
+    // Check if the segment is a URL
+    if (urlRegex.test(segment)) {
+      let href = segment;
+
+      // If the URL doesn't start with 'http://' or 'https://', add 'http://'
+      if (!segment.startsWith("http://") && !segment.startsWith("https://")) {
+        href = `https://${segment}`;
+      }
+
+      return (
+        <a key={index} href={href} target="_blank" rel="noopener noreferrer">
+          {segment}
+        </a>
+      );
+    } else {
+      return <span key={index}>{segment}</span>;
+    }
+  });
+
+  console.log(text, segments, elements);
+
+  return <div>{elements}</div>;
+};
+
 export const renderAnswerBox = ({ startupInfo, question, metaData }) => {
   switch (question?.answer_type) {
     case "number":
     case "date":
-    case "text":
+    case "text": {
       return (
-        _.find(startupInfo?.questionnaire, {
-          uid: question.uid,
-        })?.answer || "Not answered"
+        <TextWithClickableLinks
+          text={
+            _.find(startupInfo?.questionnaire, {
+              uid: question.uid,
+            })?.answer || "Not answered"
+          }
+        />
       );
+    }
 
     case "startup_logo":
     case "video":

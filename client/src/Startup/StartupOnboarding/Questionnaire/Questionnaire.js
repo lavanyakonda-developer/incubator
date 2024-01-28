@@ -121,7 +121,7 @@ const Questionnaire = ({
   const renderAnswerBox = (question, metaData) => {
     switch (question.answer_type) {
       default:
-      case "text":
+      case "text": {
         return (
           <textarea
             style={{ width: "90%" }}
@@ -135,7 +135,7 @@ const Questionnaire = ({
             }
           />
         );
-
+      }
       case "images": {
         return (
           <div className={classes.images}>
