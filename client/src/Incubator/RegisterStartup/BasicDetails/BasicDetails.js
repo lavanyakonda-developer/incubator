@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import classes from "./BasicDetails.module.css";
 import _ from "lodash";
 import { Button } from "../../../CommonComponents";
+import { industryOptions } from "../helper.js";
 
 const isValidEmail = (email) => {
   // Regular expression for validating email addresses
@@ -140,14 +141,21 @@ const BasicDetails = ({
         </div>
         <div className={classes.inputContainer}>
           <label>Industry Segment*</label>
-          <input
-            type="text"
+
+          <select
             value={startupDetails.industrySegment}
             onChange={(e) =>
               handleBasicDetailsChange("industrySegment", e.target.value)
             }
-            placeholder="Enter industry segment"
-          />
+            style={{ height: 32 }}
+          >
+            <option value="">Select industry segment</option>
+            {_.map(industryOptions, (option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
         <div className={classes.inputContainer}>
           <label>Name of Founder*</label>

@@ -1,6 +1,8 @@
 import React from "react";
 import classes from "./BasicDetails.module.css";
 import { Button } from "../../../CommonComponents";
+import _ from "lodash";
+import { industryOptions } from "../../../Incubator/RegisterStartup/helper.js";
 
 const BasicDetails = ({ startupInfo, onNext, setStartupInfo }) => {
   const startupDetails = startupInfo?.basicDetails;
@@ -41,14 +43,20 @@ const BasicDetails = ({ startupInfo, onNext, setStartupInfo }) => {
         </div>
         <div className={classes.inputContainer}>
           <label>Industry Segment</label>
-          <input
-            type="text"
+          <select
             value={startupDetails?.industrySegment}
             onChange={(e) =>
               handleBasicDetailsChange("industrySegment", e.target.value)
             }
-            placeholder="Enter industry segment"
-          />
+            style={{ height: 32 }}
+          >
+            <option value="">Select industry segment</option>
+            {_.map(industryOptions, (option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className={classes.buttonContainer}>

@@ -132,8 +132,6 @@ const TextWithClickableLinks = ({ text }) => {
     }
   });
 
-  console.log(text, segments, elements);
-
   return <div>{elements}</div>;
 };
 

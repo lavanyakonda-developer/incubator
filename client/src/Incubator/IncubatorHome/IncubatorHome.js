@@ -264,26 +264,18 @@ const IncubatorHome = (props) => {
     setSearchTerm(e.target.value);
   };
 
-  const filteredStartups = _.filter(startups, (item) =>
-    !_.isEmpty(searchTerm)
-      ? _.some(_.values(item), (value) =>
-          _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
-        )
-      : true
-  );
+  // const approvedStartups = _.filter(startups, (item) => {
+  //   // return item.status == "APPROVED";
+  //   return true;
+  // });
 
-  const approvedStartups = _.filter(startups, (item) => {
-    // return item.status == "APPROVED";
-    return true;
-  });
-
-  const filteredApprovedStartups = _.filter(approvedStartups, (item) =>
-    !_.isEmpty(searchTerm)
-      ? _.some(_.values(item), (value) =>
-          _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
-        )
-      : true
-  );
+  // const filteredApprovedStartups = _.filter(approvedStartups, (item) =>
+  //   !_.isEmpty(searchTerm)
+  //     ? _.some(_.values(item), (value) =>
+  //         _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
+  //       )
+  //     : true
+  // );
 
   const getStatus = ({ status, isDraft }) => {
     if (isDraft) {
@@ -338,6 +330,23 @@ const IncubatorHome = (props) => {
 
     setShowChat(true);
   };
+
+  const filteredStartups = _.filter(startups, (item) =>
+    !_.isEmpty(searchTerm)
+      ? _.some(_.values(item), (value) =>
+          _.includes(_.lowerCase(value), _.lowerCase(searchTerm))
+        ) ||
+        _.includes(
+          _.lowerCase(
+            getStatus({
+              status: item.status,
+              isDraft: item.is_draft,
+            })
+          ),
+          _.lowerCase(searchTerm)
+        )
+      : true
+  );
 
   const getRightComponent = () => {
     switch (selectedTab) {
@@ -447,8 +456,25 @@ const IncubatorHome = (props) => {
                           >
                             {startup.industry}
                           </td>
-                          <td>{startup.stateOfStartup}</td>
-                          <td>
+                          <td
+                            onClick={() =>
+                              setSearchTerm(startup.stateOfStartup)
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
+                            {startup.stateOfStartup}
+                          </td>
+                          <td
+                            onClick={() =>
+                              setSearchTerm(
+                                getStatus({
+                                  status: startup.status,
+                                  isDraft: startup.is_draft,
+                                })
+                              )
+                            }
+                            style={{ cursor: "pointer" }}
+                          >
                             {getStatus({
                               status: startup.status,
                               isDraft: startup.is_draft,
@@ -626,10 +652,10 @@ const IncubatorHome = (props) => {
                   />
                 </div>
                 <div className={classes.startupsCount}>{`${_.size(
-                  approvedStartups
+                  startups
                 )} Approved Startups`}</div>
                 <div className={classes.startupsList}>
-                  {_.map(filteredApprovedStartups, (startup) => {
+                  {_.map(filteredStartups, (startup) => {
                     const startupLogoName = _.last(_.split(startup.logo, "/"));
                     // Set the href attribute to the document's URL
                     const startupLogo = !_.isEmpty(startupLogoName)
