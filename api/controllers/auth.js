@@ -6,6 +6,35 @@ import _ from "lodash";
 
 const query = util.promisify(db.query).bind(db);
 
+export const passwordChange = (req, res) => {
+  const { userId, role, password } = req.body;
+  const tableName =
+    role === "incubator_founder" ? "incubator_founders" : "startup_founders";
+
+  const q = `SELECT * FROM ${tableName} WHERE id = ?`;
+
+  db.query(q, [userId], async (err, data) => {
+    if (err) return res.status(500).json(err);
+
+    const checkPassword = bcrypt.compareSync(
+      req.body.password,
+      data[0].password
+    );
+
+    if (!checkPassword)
+      return res.status(400).json("You have entered wrong password!");
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(password, salt);
+
+    const updatePasswordQuery = `UPDATE ${tableName} SET password = ? WHERE id = ?`;
+    db.query(updatePasswordQuery, [hashedPassword, userId], (err, result) => {
+      if (err) return res.status(500).json(err);
+      return res.json("Updated Successfully");
+    });
+  });
+};
+
 export const incubatorRegister = (req, res) => {
   // Checking if incubator already exists
   const email = req.body.email;

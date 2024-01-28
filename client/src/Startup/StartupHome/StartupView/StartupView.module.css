@@ -61,6 +61,7 @@
   align-content: flex-end;
   position: absolute;
   bottom: 0;
+  flex-direction: column;
 }
 
 .leftContainer {

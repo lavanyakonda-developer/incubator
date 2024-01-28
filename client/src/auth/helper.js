@@ -15,7 +15,6 @@ export const isAuthenticated = () => {
 
 export const authenticate = (data, next) => {
   if (typeof window !== "undefined") {
-    console.log(">>>>>>>HERE", data);
     localStorage.setItem("jwt", JSON.stringify(data));
   }
 };

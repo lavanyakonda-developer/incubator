@@ -7,6 +7,7 @@ import {
   Chat,
   NotificationPanel,
   Calendar,
+  UpdatePassword,
 } from "../../CommonComponents";
 import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
@@ -685,6 +686,9 @@ const IncubatorHome = (props) => {
             }}
           />
         );
+
+      case "passwordChange":
+        return <UpdatePassword userId={id} role={role} />;
       default:
         return <div className={classes.rightColumn} />;
     }
@@ -693,6 +697,10 @@ const IncubatorHome = (props) => {
   const userLogout = async () => {
     navigate("/home-page");
     await logout();
+  };
+
+  const changePassword = () => {
+    setSelectedTab("passwordChange");
   };
 
   const incubatorLogoName = _.last(_.split(incubatorDetails.logo, "/"));
@@ -725,13 +733,24 @@ const IncubatorHome = (props) => {
         </div>
         <div className={classes.logout}>
           <Button
+            name={"Change Password"}
+            onClick={changePassword}
+            customStyles={{
+              width: 200,
+              fontSize: 16,
+              color: "black",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+            }}
+          />
+          <Button
             name={"Logout"}
             onClick={userLogout}
             customStyles={{
-              width: 100,
+              width: 200,
               fontSize: 16,
               color: "black",
-              justifyContent: "left",
+              justifyContent: "center",
               backgroundColor: "#f0f0f0",
             }}
           />

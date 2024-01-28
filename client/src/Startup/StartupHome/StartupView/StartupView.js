@@ -9,6 +9,7 @@ import {
   Chat,
   NotificationPanel,
   Calendar,
+  UpdatePassword,
 } from "../../../CommonComponents";
 import { startupProfileQuestions } from "../../../Incubator/RegisterStartup/helper.js";
 import {
@@ -237,6 +238,10 @@ const StartupView = () => {
     await logout();
   };
 
+  const changePassword = () => {
+    setSelectedTab("passwordChange");
+  };
+
   const getRightComponent = () => {
     switch (selectedTab) {
       case "companyDetails":
@@ -357,6 +362,9 @@ const StartupView = () => {
         );
       }
 
+      case "passwordChange":
+        return <UpdatePassword userId={userId} role={role} />;
+
       default:
         return null;
     }
@@ -430,13 +438,24 @@ const StartupView = () => {
         </div>
         <div className={classes.logout}>
           <Button
+            name={"Change Password"}
+            onClick={changePassword}
+            customStyles={{
+              width: 200,
+              fontSize: 16,
+              color: "black",
+              justifyContent: "center",
+              backgroundColor: "#f0f0f0",
+            }}
+          />
+          <Button
             name={"Logout"}
             onClick={userLogout}
             customStyles={{
-              width: 100,
+              width: 200,
               fontSize: 16,
               color: "black",
-              justifyContent: "left",
+              justifyContent: "center",
               backgroundColor: "#f0f0f0",
             }}
           />
