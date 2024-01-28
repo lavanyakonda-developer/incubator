@@ -3,8 +3,20 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import util from "util";
 import _ from "lodash";
+import nodemailer from "nodemailer";
 
 const query = util.promisify(db.query).bind(db);
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "incubatorsass@gmail.com",
+    pass: "ggfp swvb zofl nytb",
+  },
+});
 
 export const passwordChange = (req, res) => {
   const { userId, role, password } = req.body;
@@ -294,6 +306,14 @@ export const startupRegister = async (req, res) => {
     requestedDocuments,
     questionnaire,
   } = req.body;
+
+  const link = "http://localhost:3000/startup-founder-registration";
+
+  const emailContent = {
+    from: "incubatorsass@gmail.com", // sender email address
+    subject: "Referral Code", // email subject
+    text: `Your code to register is: ${referral_code}. Please use this link to register - ${link}`, // email body with the code
+  };
 
   try {
     // Checking if the startup already exists
@@ -703,6 +723,21 @@ export const startupRegister = async (req, res) => {
 
       await query(updateMappingQuery, updateValues);
 
+      if (!is_draft) {
+        const emailAddresses = _.map(founders, (founder) => founder.email);
+
+        _.forEach(emailAddresses, (recipient) => {
+          emailContent.to = recipient; // set the recipient's email address
+          transporter.sendMail(emailContent, (error, info) => {
+            if (error) {
+              console.error(`Error sending email to ${recipient}: ${error}`);
+            } else {
+              console.log(`Email sent to ${recipient}: ${info.response}`);
+            }
+          });
+        });
+      }
+
       // Send success response
       return res
         .status(200)
@@ -878,6 +913,22 @@ export const startupRegister = async (req, res) => {
       await query(createMappingQuery, mappingValues);
 
       // Send success response
+
+      if (!is_draft) {
+        const emailAddresses = _.map(founders, (founder) => founder.email);
+
+        _.forEach(emailAddresses, (recipient) => {
+          emailContent.to = recipient; // set the recipient's email address
+          transporter.sendMail(emailContent, (error, info) => {
+            if (error) {
+              console.error(`Error sending email to ${recipient}: ${error}`);
+            } else {
+              console.log(`Email sent to ${recipient}: ${info.response}`);
+            }
+          });
+        });
+      }
+
       return res
         .status(200)
         .json("Startup and associated data have been created.");
