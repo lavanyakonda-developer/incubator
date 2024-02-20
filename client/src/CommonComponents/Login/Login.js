@@ -4,6 +4,16 @@ import { Button } from "../../CommonComponents";
 import classes from "./Login.module.css";
 import { useNavigate } from "react-router-dom";
 import { authenticate } from "../../auth/helper";
+import "@radix-ui/themes/styles.css";
+import * as Label from "@radix-ui/react-label";
+
+const inputStyle = {
+  color: "#1C2024",
+  fontFamily: "Inter",
+  fontSize: 16,
+  fontStyle: "normal",
+  fontWeight: 500,
+};
 
 const isValidEmail = (email) => {
   // Regular expression for validating email addresses
@@ -60,26 +70,57 @@ const Login = (props) => {
   return (
     <div className={classes.container}>
       <div className={classes.loginBox}>
-        <h2>{isIncubator ? "Incubator Login" : "Startup Login"}</h2>
+        <div className={classes.loginHeaders}>
+          <span className={classes.title}>
+            {isIncubator ? "Login as Incubator" : "Login as Startup"}
+          </span>
+          <span className={classes.subTitle}>
+            Welcome back to a organised, powerful, and better way to <br />{" "}
+            track your startups.
+          </span>
+        </div>
         <p className={classes.message}>{message}</p>
         <form className={classes.form}>
           <div className={classes.formGroup}>
+            <Label.Root
+              className="LabelRoot"
+              htmlFor="firstName"
+              style={inputStyle}
+            >
+              Email
+            </Label.Root>
             <input
               type="text"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={{ width: 378, marginTop: 8 }}
             />
           </div>
           <div className={classes.formGroup}>
+            <Label.Root
+              className="LabelRoot"
+              htmlFor="firstName"
+              style={inputStyle}
+            >
+              Password
+            </Label.Root>
             <input
               type="password"
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{ width: 378, marginTop: 8 }}
             />
           </div>
-          <Button name={"Login"} onClick={handleSubmit} />
+
+          <Button
+            size={"3"}
+            variant={"solid"}
+            customStyles={{ backgroundColor: "#1C2024", width: 400 }}
+            name={"Login"}
+            onClick={handleSubmit}
+          />
         </form>
       </div>
     </div>

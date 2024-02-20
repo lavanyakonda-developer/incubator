@@ -21,8 +21,79 @@ import {
 } from "react-icons/fa";
 import io from "socket.io-client";
 import { isAuthenticated } from "../../auth/helper";
+import {
+  RocketIcon,
+  ChatBubbleIcon,
+  CalendarIcon,
+  PersonIcon,
+  ClockIcon,
+  LayersIcon,
+  RowsIcon,
+  PlusCircledIcon,
+  CheckCircledIcon,
+  Cross2Icon,
+  TimerIcon,
+  ChevronRightIcon,
+} from "@radix-ui/react-icons";
+import { Table, Badge } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
+
+const colors = [
+  "tomato",
+  "red",
+  "ruby",
+  "crimson",
+  "pink",
+  "plum",
+  "purple",
+  "violet",
+  "iris",
+  "indigo",
+  "blue",
+  "cyan",
+  "teal",
+  "jade",
+  "green",
+  "grass",
+  "brown",
+  "orange",
+  "sky",
+  "mint",
+  "lime",
+  "yellow",
+  "amber",
+  "gold",
+  "bronze",
+  "gray",
+];
+
+const colorMap = {}; // Object to store mapping of sector names to colors
+
+// Function to generate a consistent color for a sector name
+function getColorForSector(sectorName) {
+  if (colorMap.hasOwnProperty(sectorName)) {
+    // If sector name already has a color assigned, return that color
+    return colorMap[sectorName];
+  } else {
+    // If sector name doesn't have a color assigned yet, assign a color from the available colors
+    const color = colors.shift(); // Remove the first color from the array
+    colorMap[sectorName] = color; // Map the sector name to the color
+    return color;
+  }
+}
 
 const socket = io.connect(socketAPI);
+
+const rowStyle = {
+  height: 44,
+  verticalAlign: "middle",
+};
+
+const columnHeaderStyle = {
+  fontWeight: 500,
+  fontFamily: "Inter",
+  fontSize: 14,
+};
 
 const getRandomNumber = () => {
   const min = 0;
@@ -40,9 +111,15 @@ const getRandomNumber = () => {
 };
 
 const tabs = [
-  { label: "Home Dashboard", key: "homeDashboard" },
-  { label: "Communication Tab", key: "communicationTab" },
-  { label: "Calendar", key: "calendarTab" },
+  { label: "Onboarding", key: "homeDashboard", icon: <RocketIcon /> },
+  { label: "Startups", key: "startups", icon: <LayersIcon /> },
+  {
+    label: "Communication",
+    key: "communicationTab",
+    icon: <ChatBubbleIcon />,
+  },
+  { label: "Calendar", key: "calendarTab", icon: <CalendarIcon /> },
+  { label: "Activity log", key: "activityLog", icon: <RowsIcon /> },
 ];
 
 const buttonStyle = {
@@ -279,7 +356,7 @@ const IncubatorHome = (props) => {
 
   const getStatus = ({ status, isDraft }) => {
     if (isDraft) {
-      return "Drafted by you";
+      return "Onboarding Inprogress";
     } else {
       switch (status) {
         case "PENDING":
@@ -290,6 +367,23 @@ const IncubatorHome = (props) => {
           return "Approved";
         case "REJECTED":
           return "Rejected by you";
+      }
+    }
+  };
+
+  const getStatusIcon = ({ status, isDraft }) => {
+    if (isDraft) {
+      return <RocketIcon color="#256E93" />;
+    } else {
+      switch (status) {
+        case "PENDING":
+          return <TimerIcon color="#FFBA1A" />;
+        case "SUBMITTED":
+          return <TimerIcon color="#FFBA1A" />;
+        case "APPROVED":
+          return <CheckCircledIcon color="#008347D6" />;
+        case "REJECTED":
+          return <Cross2Icon color="#D93D42" />;
       }
     }
   };
@@ -348,209 +442,413 @@ const IncubatorHome = (props) => {
       : true
   );
 
+  const approvedStartups = _.filter(
+    filteredStartups,
+    (startup) => startup.status == "APPROVED"
+  );
+
+  const nonApprovedStartups = _.filter(
+    filteredStartups,
+    (startup) => startup.status != "APPROVED"
+  );
+
   const getRightComponent = () => {
     switch (selectedTab) {
       case "homeDashboard":
         return (
           <div className={classes.rightColumn}>
             <div className={classes.tableContainer}>
-              <div></div>
+              <div className={classes.headingContainer}>
+                <div className={classes.headingTitle}>Onboarding</div>
+                <div className={classes.headingSubTitle}>
+                  Let’s enter some basic details to initiate the onboarding
+                  process of the startup{" "}
+                </div>
+              </div>
+
               <div className={classes.tableHeader}>
                 <input
                   type="text"
                   className={classes.searchBar}
-                  placeholder="Search startups"
+                  placeholder="Search"
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+                <div className={classes.buttonContainer}>
+                  <Button
+                    shouldRedirect={true}
+                    redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
+                    name={"Add a startup"}
+                    iconStart={true}
+                    icon={<PlusCircledIcon width={18} height={18} />}
+                    size={"2"}
+                    variant={"solid"}
+                    customStyles={{
+                      backgroundColor: "#1C2024",
+                      gap: 8,
+                      borderRadius: 4,
+                    }}
+                    textStyle={{ color: "white" }}
+                  />
+                </div>
+              </div>
+
+              <Table.Root size={"3"} variant={"ghost"}>
+                <Table.Header>
+                  <Table.Row style={rowStyle}>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Startup Name
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Sector
+                    </Table.ColumnHeaderCell>
+
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Status
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Date of joining
+                    </Table.ColumnHeaderCell>
+                    {/* MIGHT USE IN FUTURE */}
+                    {/* <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Reporting Hub
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Go to chat
+                    </Table.ColumnHeaderCell> */}
+
+                    <Table.ColumnHeaderCell
+                      style={columnHeaderStyle}
+                    ></Table.ColumnHeaderCell>
+                  </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                  {_.map(nonApprovedStartups, (startup) => {
+                    const startupLogoName = _.last(_.split(startup.logo, "/"));
+                    // Set the href attribute to the document's URL
+                    const startupLogo = !_.isEmpty(startupLogoName)
+                      ? `${API}/uploads/${startupLogoName}`
+                      : "";
+                    return (
+                      <Table.Row style={rowStyle}>
+                        <Table.RowHeaderCell>
+                          <div className={classes.startupNameLogo}>
+                            <div className={classes.imageContainer}>
+                              <img
+                                className={classes.startupLogo}
+                                src={startupLogo}
+                              />
+                            </div>
+                            <div
+                              className={classes.startupName}
+                              onClick={() =>
+                                handleStartupClick({
+                                  status: startup.status,
+                                  isDraft: startup.is_draft,
+                                  id: startup.id,
+                                })
+                              }
+                            >
+                              {startup.name}
+                            </div>
+                          </div>
+                        </Table.RowHeaderCell>
+                        <Table.Cell
+                          onClick={() => setSearchTerm(startup.industry)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <Badge
+                            size={1}
+                            variant={"soft"}
+                            color={getColorForSector(startup.industry)}
+                            style={{ padding: 6, borderRadius: 4 }}
+                          >
+                            {" "}
+                            {startup.industry}
+                          </Badge>
+                        </Table.Cell>
+
+                        <Table.Cell
+                          onClick={() =>
+                            setSearchTerm(
+                              getStatus({
+                                status: startup.status,
+                                isDraft: startup.is_draft,
+                              })
+                            )
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <div className={classes.statusDiv}>
+                            {getStatusIcon({
+                              status: startup.status,
+                              isDraft: startup.is_draft,
+                            })}
+                            {getStatus({
+                              status: startup.status,
+                              isDraft: startup.is_draft,
+                            })}
+                          </div>
+                        </Table.Cell>
+
+                        <Table.Cell>
+                          {moment(startup.created_at).format("Do MMM YYYY")}
+                        </Table.Cell>
+                        {/* MIGHT USE IN FUTURE */}
+                        {/* <Table.Cell>
+                          {startup?.color == "green" ? (
+                            <FaCheckCircle style={{ color: "green" }} />
+                          ) : (
+                            <FaTimesCircle
+                              style={{
+                                color: _.get(startup, "color", "red"),
+                              }}
+                            />
+                          )}
+                        </Table.Cell>
+
+                        <Table.Cell
+                          onClick={() => {
+                            setSelectedTab("communicationTab");
+                            goToStartupChat({
+                              id: startup.id,
+                            });
+                            setComp(
+                              <div className={classes.startupNameLogo}>
+                                <div className={classes.imageContainer}>
+                                  <img
+                                    className={classes.startupLogo}
+                                    src={startupLogo}
+                                  />
+                                </div>
+                                <div className={classes.startupName}>
+                                  {startup.name}
+                                </div>
+                              </div>
+                            );
+                          }}
+                        >
+                          <FaComment />
+                          {_.get(allMessages, `${startup.id}.unreadCount`, 0) >
+                            0 && (
+                            <span
+                              style={{
+                                position: "absolute",
+                                background: "red",
+                                color: "white",
+                                borderRadius: "50%",
+                                padding: "4px",
+                                marginLeft: "-6px",
+                              }}
+                            />
+                          )}
+                        </Table.Cell> */}
+                        <Table.Cell
+                          onClick={() =>
+                            handleStartupClick({
+                              status: startup.status,
+                              isDraft: startup.is_draft,
+                              id: startup.id,
+                            })
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <ChevronRightIcon />
+                        </Table.Cell>
+                      </Table.Row>
+                    );
+                  })}
+                </Table.Body>
+              </Table.Root>
+            </div>
+          </div>
+        );
+
+      case "startups":
+        return (
+          <div className={classes.rightColumn}>
+            <div className={classes.tableContainer}>
+              <div className={classes.headingContainer}>
+                <div className={classes.headingTitle}>Startups</div>
+                <div className={classes.headingSubTitle}>
+                  Track your on-boarded startups using this dashboard
+                </div>
+              </div>
+
+              <div className={classes.tableHeader}>
+                <input
+                  type="text"
+                  className={classes.searchBar}
+                  placeholder="Search"
                   value={searchTerm}
                   onChange={handleSearch}
                 />
                 <div className={classes.buttonContainer}>
                   <Button
                     name={"Raise a request"}
-                    customStyles={buttonStyle}
                     onClick={() => {
                       setShowRequestModal(true);
                     }}
+                    iconStart={true}
+                    icon={<PlusCircledIcon width={18} height={18} />}
+                    size={"2"}
+                    variant={"solid"}
+                    customStyles={{
+                      backgroundColor: "#1C2024",
+                      gap: 8,
+                      borderRadius: 4,
+                    }}
+                    textStyle={{ color: "white" }}
                   />
-                  <Button
-                    shouldRedirect={true}
-                    redirectUrl={`/incubator/${incubatorId}/home/register-startup`}
-                    name={"Add Startup"}
-                    customStyles={buttonStyle}
-                  />
-                  <div onClick={openPanel}>
-                    <FaBell
-                      style={{
-                        fontSize: 32,
-                        height: 36,
-                      }}
-                      onClick={openPanel}
-                    />
-
-                    {showUnReadCount && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          background: "red",
-                          color: "white",
-                          borderRadius: "50%",
-                          padding: "4px",
-                          marginLeft: "-6px",
-                        }}
-                      />
-                    )}
-                  </div>
                 </div>
               </div>
-              <div className={classes.startupsCount}>{`${_.size(
-                startups
-              )} Startups`}</div>
-              <div className={classes.startupTableContainer}>
-                <table className={classes.startupTable}>
-                  <thead>
-                    <tr key={"header"}>
-                      <th>Startup Name</th>
-                      <th>Sector</th>
-                      <th style={{ width: 200 }}>Stage</th>
-                      <th>Status</th>
-                      <th>Date of joining</th>
-                      <th>Reporting Hub</th>
-                      <th>Go to chat</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {_.map(filteredStartups, (startup) => {
-                      const startupLogoName = _.last(
-                        _.split(startup.logo, "/")
-                      );
-                      // Set the href attribute to the document's URL
-                      const startupLogo = !_.isEmpty(startupLogoName)
-                        ? `${API}/uploads/${startupLogoName}`
-                        : "";
-                      return (
-                        <tr key={startup.id}>
-                          <td>
-                            <div className={classes.startupNameLogo}>
-                              <div className={classes.imageContainer}>
-                                <img
-                                  className={classes.startupLogo}
-                                  src={startupLogo}
-                                />
-                              </div>
-                              <div
-                                className={classes.startupName}
-                                onClick={() =>
-                                  handleStartupClick({
-                                    status: startup.status,
-                                    isDraft: startup.is_draft,
-                                    id: startup.id,
-                                  })
-                                }
-                              >
-                                {startup.name}
-                              </div>
+
+              <Table.Root size={"3"} variant={"ghost"}>
+                <Table.Header>
+                  <Table.Row style={rowStyle}>
+                    <Table.ColumnHeaderCell>
+                      Startup Name
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Sector</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Stage</Table.ColumnHeaderCell>
+
+                    <Table.ColumnHeaderCell>
+                      Date of joining
+                    </Table.ColumnHeaderCell>
+                    {/* MIGHT USE IN FUTURE */}
+                    {/* <Table.ColumnHeaderCell>
+                      Reporting Hub
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell>Go to chat</Table.ColumnHeaderCell> */}
+                  </Table.Row>
+                </Table.Header>
+
+                <Table.Body>
+                  {_.map(approvedStartups, (startup) => {
+                    const startupLogoName = _.last(_.split(startup.logo, "/"));
+                    // Set the href attribute to the document's URL
+                    const startupLogo = !_.isEmpty(startupLogoName)
+                      ? `${API}/uploads/${startupLogoName}`
+                      : "";
+                    return (
+                      <Table.Row style={rowStyle}>
+                        <Table.RowHeaderCell>
+                          {" "}
+                          <div className={classes.startupNameLogo}>
+                            <div className={classes.imageContainer}>
+                              <img
+                                className={classes.startupLogo}
+                                src={startupLogo}
+                              />
                             </div>
-                          </td>
-                          <td
-                            onClick={() => setSearchTerm(startup.industry)}
-                            style={{ cursor: "pointer" }}
-                          >
-                            {startup.industry}
-                          </td>
-                          <td
-                            onClick={() =>
-                              setSearchTerm(startup.stateOfStartup)
-                            }
-                            style={{ cursor: "pointer" }}
-                          >
-                            {startup.stateOfStartup}
-                          </td>
-                          <td
-                            onClick={() =>
-                              setSearchTerm(
-                                getStatus({
+                            <div
+                              className={classes.startupName}
+                              onClick={() =>
+                                handleStartupClick({
                                   status: startup.status,
                                   isDraft: startup.is_draft,
+                                  id: startup.id,
                                 })
-                              )
-                            }
-                            style={{ cursor: "pointer" }}
+                              }
+                            >
+                              {startup.name}
+                            </div>
+                          </div>
+                        </Table.RowHeaderCell>
+                        <Table.Cell
+                          onClick={() => setSearchTerm(startup.industry)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          <Badge
+                            size={1}
+                            variant={"soft"}
+                            color={getColorForSector(startup.industry)}
+                            style={{ padding: 6, borderRadius: 4 }}
                           >
-                            {getStatus({
+                            {startup.industry}
+                          </Badge>
+                        </Table.Cell>
+                        <Table.Cell
+                          onClick={() => setSearchTerm(startup.stateOfStartup)}
+                          style={{ cursor: "pointer" }}
+                        >
+                          {startup.stateOfStartup}
+                        </Table.Cell>
+
+                        <Table.Cell>
+                          {moment(startup.created_at).format("Do MMM YYYY")}
+                        </Table.Cell>
+                        {/* MIGHT USE IN FUTURE */}
+                        {/* 
+                        <Table.Cell>
+                          {startup?.color == "green" ? (
+                            <FaCheckCircle style={{ color: "green" }} />
+                          ) : (
+                            <FaTimesCircle
+                              style={{
+                                color: _.get(startup, "color", "red"),
+                              }}
+                            />
+                          )}
+                        </Table.Cell>
+
+                        <Table.Cell
+                          onClick={() => {
+                            setSelectedTab("communicationTab");
+                            goToStartupChat({
+                              id: startup.id,
+                            });
+                            setComp(
+                              <div className={classes.startupNameLogo}>
+                                <div className={classes.imageContainer}>
+                                  <img
+                                    className={classes.startupLogo}
+                                    src={startupLogo}
+                                  />
+                                </div>
+                                <div className={classes.startupName}>
+                                  {startup.name}
+                                </div>
+                              </div>
+                            );
+                          }}
+                        >
+                          <FaComment />
+                          {_.get(allMessages, `${startup.id}.unreadCount`, 0) >
+                            0 && (
+                            <span
+                              style={{
+                                position: "absolute",
+                                background: "red",
+                                color: "white",
+                                borderRadius: "50%",
+                                padding: "4px",
+                                marginLeft: "-6px",
+                              }}
+                            />
+                          )}
+                        </Table.Cell> */}
+
+                        <Table.Cell
+                          onClick={() =>
+                            handleStartupClick({
                               status: startup.status,
                               isDraft: startup.is_draft,
-                            })}
-                          </td>
-                          <td>
-                            {moment(startup.created_at).format("Do MMM YYYY")}
-                          </td>
-                          <td style={{ textAlign: "center" }}>
-                            {startup?.color == "green" ? (
-                              <FaCheckCircle style={{ color: "green" }} />
-                            ) : (
-                              <FaTimesCircle
-                                style={{
-                                  color: _.get(startup, "color", "red"),
-                                }}
-                              />
-                            )}
-                          </td>
-                          <td
-                            style={{ textAlign: "center" }}
-                            onClick={() => {
-                              setSelectedTab("communicationTab");
-                              goToStartupChat({
-                                id: startup.id,
-                              });
-                              setComp(
-                                <div className={classes.startupNameLogo}>
-                                  <div className={classes.imageContainer}>
-                                    <img
-                                      className={classes.startupLogo}
-                                      src={startupLogo}
-                                    />
-                                  </div>
-                                  <div className={classes.startupName}>
-                                    {startup.name}
-                                  </div>
-                                </div>
-                              );
-                            }}
-                          >
-                            <FaComment />
-                            {_.get(
-                              allMessages,
-                              `${startup.id}.unreadCount`,
-                              0
-                            ) > 0 && (
-                              <span
-                                style={{
-                                  position: "absolute",
-                                  background: "red",
-                                  color: "white",
-                                  borderRadius: "50%",
-                                  padding: "4px",
-                                  marginLeft: "-6px",
-                                }}
-                              />
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                              id: startup.id,
+                            })
+                          }
+                          style={{ cursor: "pointer" }}
+                        >
+                          <ChevronRightIcon />
+                        </Table.Cell>
+                      </Table.Row>
+                    );
+                  })}
+                </Table.Body>
+              </Table.Root>
             </div>
-            {isPanelOpen && (
-              <NotificationPanel
-                isOpen={isPanelOpen}
-                onClose={closePanel}
-                email={email}
-                notifications={notifications}
-                fetchNotifications={fetchNotifications}
-                onClickStartup={onClickStartup}
-              />
-            )}
+
             {showRequestModal && (
               <div className={classes.modalBackground}>
                 <div className={classes.modal}>
@@ -637,6 +935,17 @@ const IncubatorHome = (props) => {
           </div>
         );
 
+      case "activityLog":
+        return (
+          <NotificationPanel
+            isOpen={true}
+            onClose={closePanel}
+            email={email}
+            notifications={notifications}
+            fetchNotifications={fetchNotifications}
+            onClickStartup={onClickStartup}
+          />
+        );
       case "communicationTab":
         return (
           <div className={classes.rightColumn}>
@@ -651,9 +960,7 @@ const IncubatorHome = (props) => {
                     onChange={handleSearch}
                   />
                 </div>
-                <div className={classes.startupsCount}>{`${_.size(
-                  startups
-                )} Approved Startups`}</div>
+
                 <div className={classes.startupsList}>
                   {_.map(filteredStartups, (startup) => {
                     const startupLogoName = _.last(_.split(startup.logo, "/"));
@@ -767,42 +1074,76 @@ const IncubatorHome = (props) => {
         <div className={classes.tabMenu}>
           {_.map(tabs, (tab) => {
             return (
-              <div
-                className={`${classes.tab} ${
-                  selectedTab === tab.key ? classes.activeTab : ""
-                }`}
+              <Button
+                size={"2"}
+                variant={"ghost"}
+                name={tab.label}
+                color={"neutral"}
                 onClick={() => handleTabClick(tab.key)}
-                key={tab.key}
-              >
-                {tab.label}
-              </div>
+                state={selectedTab === tab.key ? "active" : "default"}
+                highContrast={true}
+                iconStart={true}
+                icon={tab.icon}
+                customStyles={{
+                  gap: 8,
+                  boxShadow:
+                    selectedTab === tab.key
+                      ? "0px 1px 4px 0px rgba(0, 0, 61, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05), 0px 1px 3px 0px rgba(0, 0, 0, 0.05"
+                      : "none",
+                  width: 230,
+                  justifyContent: "flex-start",
+                  color:
+                    selectedTab === tab.key ? "black" : "rgb(96, 100, 108)",
+                }}
+              />
             );
           })}
-        </div>
-        <div className={classes.logout}>
+
+          <div className={classes.separator}>
+            {" "}
+            <div className={classes.line}></div>{" "}
+          </div>
           <Button
             name={"Change Password"}
             onClick={changePassword}
+            icon={<PersonIcon />}
+            highContrast={true}
+            iconStart={true}
             customStyles={{
-              width: 200,
-              fontSize: 16,
-              color: "black",
-              justifyContent: "center",
-              backgroundColor: "#f0f0f0",
+              gap: 8,
+              boxShadow:
+                selectedTab === "passwordChange"
+                  ? "0px 1px 4px 0px rgba(0, 0, 61, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05), 0px 1px 3px 0px rgba(0, 0, 0, 0.05"
+                  : "none",
+              width: 230,
+              justifyContent: "flex-start",
+              color:
+                selectedTab === "passwordChange"
+                  ? "black"
+                  : "rgb(96, 100, 108)",
             }}
+            size={"2"}
+            variant={"ghost"}
+            color={"neutral"}
           />
           <Button
             name={"Logout"}
             onClick={userLogout}
+            icon={<ClockIcon />}
+            highContrast={true}
+            iconStart={true}
             customStyles={{
-              width: 200,
-              fontSize: 16,
-              color: "black",
-              justifyContent: "center",
-              backgroundColor: "#f0f0f0",
+              gap: 8,
+              width: 230,
+              justifyContent: "flex-start",
+              color: "rgb(96, 100, 108)",
             }}
+            size={"2"}
+            variant={"ghost"}
+            color={"neutral"}
           />
         </div>
+        <div className={classes.logout}></div>
       </div>
       {getRightComponent()}
     </div>

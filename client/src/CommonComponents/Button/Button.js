@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import classes from './Button.module.css';
+import React from "react";
+import { Link } from "react-router-dom";
+import classes from "./Button.module.css";
+import { Button } from "@radix-ui/themes";
+import "@radix-ui/themes/styles.css";
 
-const Button = (props) => {
+const UpdatedButton = (props) => {
   const {
     shouldRedirect = false,
     redirectUrl,
@@ -10,33 +12,58 @@ const Button = (props) => {
     customStyles = {},
     onClick,
     disabled,
+    size = "3",
+    variant = "classic",
+    color = "blue",
+    state,
+    highContrast = false,
+    iconStart,
+    icon,
+    textStyle = {},
   } = props;
 
   if (shouldRedirect) {
     return (
-      <button
-        className={`${classes.button} ${disabled ? classes.disabled : ''}`}
+      <Button
+        className={`${classes.button} ${disabled ? classes.disabled : ""}`}
         style={customStyles}
-        title={disabled ? 'HI' : null}
+        title={disabled ? "HI" : null}
+        // NEW PROPS
+        size={size}
+        variant={variant}
+        color={color}
+        state={state}
+        highContrast={highContrast}
+        iconStart={iconStart}
       >
-        <Link to={`${redirectUrl}`} className={classes.text}>
+        {icon ? icon : null}
+        <Link to={`${redirectUrl}`} className={classes.text} style={textStyle}>
           {name}
         </Link>
-      </button>
+      </Button>
     );
   } else {
     return (
-      <button
-        className={`${classes.button} ${disabled ? classes.disabled : ''}`}
+      <Button
+        className={`${classes.button} ${disabled ? classes.disabled : ""}`}
         style={customStyles}
         onClick={onClick}
         disabled={disabled}
-        title={disabled ? 'HI' : null}
+        title={disabled ? "HI" : null}
+        // NEW PROPS
+        size={size}
+        variant={variant}
+        color={color}
+        state={state}
+        highContrast={highContrast}
+        iconStart={iconStart}
       >
+        {icon ? icon : null}
+
         {name}
-      </button>
+      </Button>
     );
   }
 };
 
-export default Button;
+export default UpdatedButton;
