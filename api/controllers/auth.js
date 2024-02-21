@@ -29,7 +29,7 @@ export const passwordChange = (req, res) => {
     if (err) return res.status(500).json(err);
 
     const checkPassword = bcrypt.compareSync(
-      req.body.password,
+      req.body.currentPassword,
       data[0].password
     );
 

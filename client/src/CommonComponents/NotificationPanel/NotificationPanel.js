@@ -15,6 +15,8 @@ const NotificationPanel = (props) => {
     onClickStartup,
   } = props;
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const addLastTime = async () => {
     try {
       const response = await makeRequest.post(
@@ -62,25 +64,34 @@ const NotificationPanel = (props) => {
     }
   };
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredNotifications = _.filter(notifications, (notification) =>
+    !_.isEmpty(searchTerm)
+      ? _.includes(_.lowerCase(notification.text), _.lowerCase(searchTerm)) ||
+        _.includes(_.lowerCase(notification.name), _.lowerCase(searchTerm))
+      : true
+  );
+
   return (
-    <div
-      className={
-        isOpen ? classes.notificationPanelOpen : classes.notificationPanel
-      }
-    >
+    <div className={classes.notificationPanelOpen}>
       <div className={classes.notificationContent}>
         <div className={classes.notificationContentHeader}>
-          <h2>Activity Hub</h2>
-          <FaTimesCircle
-            style={{
-              color: "black",
-              height: 20,
-              width: 20,
-            }}
-            onClick={onClose}
+          <h2 className={classes.activityHeading}>Activity Log</h2>
+        </div>
+        <div className={classes.searchBarContainer}>
+          {" "}
+          <input
+            type="text"
+            className={classes.searchBar}
+            placeholder="Search"
+            value={searchTerm}
+            onChange={handleSearch}
           />
         </div>
-        {_.map(notifications, (notification) => {
+        {_.map(filteredNotifications, (notification) => {
           const logoName = _.last(_.split(notification.logo, "/"));
           const logo = !_.isEmpty(logoName) ? `${API}/uploads/${logoName}` : "";
 

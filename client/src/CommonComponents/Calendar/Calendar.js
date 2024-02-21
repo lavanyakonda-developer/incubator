@@ -9,6 +9,7 @@ import _ from "lodash";
 import Button from "../Button";
 import { makeRequest } from "../../axios";
 import axios from "axios";
+import { CalendarIcon } from "@radix-ui/react-icons";
 
 const Calendar = (props) => {
   const { userId, role, style } = props;
@@ -394,7 +395,14 @@ const Calendar = (props) => {
           editable={true}
         />
       ) : (
-        <Button name={"Integrate Google Calendar"} onClick={handleGoogle} />
+        <Button
+          name={"Integrate Google Calendar"}
+          onClick={handleGoogle}
+          size={"3"}
+          variant={"solid"}
+          customStyles={{ backgroundColor: "#1C2024", width: 400, gap: 12 }}
+          icon={<CalendarIcon />}
+        />
       )}
       {isEventFormOpen && (
         <div className={classes.modalBackground}>

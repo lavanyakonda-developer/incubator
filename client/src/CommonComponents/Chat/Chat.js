@@ -35,6 +35,7 @@ const Chat = (props) => {
     startup_id,
     fetchChats,
   } = props;
+
   const [currentMessage, setCurrentMessage] = useState("");
 
   const handleSaveMessage = async ({
@@ -133,9 +134,9 @@ const Chat = (props) => {
               fontSize: 16,
               color: "black",
               justifyContent: "left",
-              backgroundColor: "#f0f0f0",
-              padding: "10px 0px 10px 8px",
+              backgroundColor: "#ffffff",
             }}
+            variant={"soft"}
           />
           {comp}
         </div>
@@ -154,7 +155,7 @@ const Chat = (props) => {
                     : classes.otherMessage
                 }
               >
-                <div>
+                <div className={classes.messageContentContainer}>
                   <div className={classes.messageContent}>
                     <p>{messageContent.message}</p>
                   </div>
@@ -176,7 +177,7 @@ const Chat = (props) => {
         <input
           type="text"
           value={currentMessage}
-          placeholder="Hey..."
+          placeholder="Type your message"
           onChange={(event) => {
             setCurrentMessage(event.target.value);
           }}
@@ -184,7 +185,9 @@ const Chat = (props) => {
             event.key === "Enter" && sendMessage();
           }}
         />
-        <button onClick={sendMessage}>&#9658;</button>
+        <button onClick={sendMessage} className={classes.sendFooterText}>
+          Send
+        </button>
       </div>
     </div>
   );

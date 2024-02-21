@@ -86,6 +86,11 @@ const tabs = [
     key: "communicationTab",
     visibleRole: "startup_founder",
   },
+  {
+    label: "Activity Tab",
+    key: "activityTab",
+    visibleRole: "startup_founder",
+  },
 ];
 
 const StartupView = () => {
@@ -332,7 +337,7 @@ const StartupView = () => {
       case "homeDashboard": {
         return (
           <div className={classes.homeDashboard}>
-            <div className={classes.header}>
+            {/* <div className={classes.header}>
               <h2></h2>
               <div onClick={openPanel}>
                 <FaBell
@@ -356,7 +361,7 @@ const StartupView = () => {
                   />
                 )}
               </div>
-            </div>
+            </div> */}
             <Calendar userId={userId} role={role} />
           </div>
         );
@@ -364,6 +369,17 @@ const StartupView = () => {
 
       case "passwordChange":
         return <UpdatePassword userId={userId} role={role} />;
+
+      case "activityTab":
+        return (
+          <NotificationPanel
+            isOpen={true}
+            onClose={closePanel}
+            email={email}
+            notifications={notifications}
+            fetchNotifications={fetchNotifications}
+          />
+        );
 
       default:
         return null;
@@ -436,42 +452,34 @@ const StartupView = () => {
             );
           })}
         </div>
-        <div className={classes.logout}>
-          <Button
-            name={"Change Password"}
-            onClick={changePassword}
-            customStyles={{
-              width: 200,
-              fontSize: 16,
-              color: "black",
-              justifyContent: "center",
-              backgroundColor: "#f0f0f0",
-            }}
-          />
-          <Button
-            name={"Logout"}
-            onClick={userLogout}
-            customStyles={{
-              width: 200,
-              fontSize: 16,
-              color: "black",
-              justifyContent: "center",
-              backgroundColor: "#f0f0f0",
-            }}
-          />
-        </div>
+        {role == "startup_founder" && (
+          <div className={classes.logout}>
+            <Button
+              name={"Change Password"}
+              onClick={changePassword}
+              customStyles={{
+                width: 200,
+                fontSize: 16,
+                color: "black",
+                justifyContent: "center",
+                backgroundColor: "#f0f0f0",
+              }}
+            />
+            <Button
+              name={"Logout"}
+              onClick={userLogout}
+              customStyles={{
+                width: 200,
+                fontSize: 16,
+                color: "black",
+                justifyContent: "center",
+                backgroundColor: "#f0f0f0",
+              }}
+            />
+          </div>
+        )}
       </div>
       <div className={classes.rightContainer}>{getRightComponent()}</div>
-      {isPanelOpen && (
-        <NotificationPanel
-          isOpen={isPanelOpen}
-          onClose={closePanel}
-          email={email}
-          notifications={notifications}
-          fetchNotifications={fetchNotifications}
-          // onClickStartup={onClickStartup}
-        />
-      )}
     </div>
   );
 };

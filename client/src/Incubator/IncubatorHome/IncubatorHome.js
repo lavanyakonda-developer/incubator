@@ -970,7 +970,7 @@ const IncubatorHome = (props) => {
                       : "";
 
                     return (
-                      <div className={classes.startupNameLogo}>
+                      <div className={classes.startupNameLogo2}>
                         <div className={classes.imageContainer}>
                           <img
                             className={classes.startupLogo}
@@ -984,7 +984,7 @@ const IncubatorHome = (props) => {
                               id: startup.id,
                             });
                             setComp(
-                              <div className={classes.startupNameLogo}>
+                              <div className={classes.startupNameLogo3}>
                                 <div className={classes.imageContainer}>
                                   <img
                                     className={classes.startupLogo}
@@ -1100,8 +1100,7 @@ const IncubatorHome = (props) => {
           })}
 
           <div className={classes.separator}>
-            {" "}
-            <div className={classes.line}></div>{" "}
+            <div className={classes.line}></div>
           </div>
           <Button
             name={"Change Password"}

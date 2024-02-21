@@ -89,8 +89,33 @@ ul {
 
 .startupNameLogo {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
+}
+
+/* Used for Communication */
+.startupNameLogo2 {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid #ccc;
+  padding: 12px 12px 12px 0px;
+  width: 320px;
+}
+
+.startupNameLogo3 {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 12px 12px 0px;
+  width: 320px;
+  color: #000;
+  font-family: Merriweather;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+  letter-spacing: -0.08px;
 }
 
 .imageContainer {
@@ -157,7 +182,6 @@ ul {
 .startupsList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
 .unreadCount {
@@ -284,4 +308,8 @@ ul {
   display: flex;
   gap: 8px;
   align-items: center;
+}
+
+.chatContainer {
+  display: flex;
 }
