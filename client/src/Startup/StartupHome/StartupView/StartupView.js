@@ -91,6 +91,18 @@ const tabs = [
     key: "activityTab",
     visibleRole: "startup_founder",
   },
+
+  {
+    label: "Update Password",
+    key: "passwordChange",
+    visibleRole: "startup_founder",
+  },
+
+  {
+    label: "Logout",
+    key: "logout",
+    visibleRole: "startup_founder",
+  },
 ];
 
 const StartupView = () => {
@@ -124,6 +136,11 @@ const StartupView = () => {
   };
 
   const handleTabClick = (tabName) => {
+    if (tabName == "logout") {
+      setSelectedTab(tabName);
+      userLogout();
+    }
+
     const tab = _.find(tabs, { key: tabName });
     if (!_.isEmpty(tab?.subTabs)) {
       if (_.some(tab?.subTabs, { key: selectedTab })) {
@@ -243,10 +260,6 @@ const StartupView = () => {
     await logout();
   };
 
-  const changePassword = () => {
-    setSelectedTab("passwordChange");
-  };
-
   const getRightComponent = () => {
     switch (selectedTab) {
       case "companyDetails":
@@ -337,31 +350,6 @@ const StartupView = () => {
       case "homeDashboard": {
         return (
           <div className={classes.homeDashboard}>
-            {/* <div className={classes.header}>
-              <h2></h2>
-              <div onClick={openPanel}>
-                <FaBell
-                  style={{
-                    fontSize: 32,
-                    height: 36,
-                  }}
-                  onClick={openPanel}
-                />
-
-                {showUnReadCount && (
-                  <span
-                    style={{
-                      position: "absolute",
-                      background: "red",
-                      color: "white",
-                      borderRadius: "50%",
-                      padding: "4px",
-                      marginLeft: "-6px",
-                    }}
-                  />
-                )}
-              </div>
-            </div> */}
             <Calendar userId={userId} role={role} />
           </div>
         );
@@ -452,32 +440,6 @@ const StartupView = () => {
             );
           })}
         </div>
-        {role == "startup_founder" && (
-          <div className={classes.logout}>
-            <Button
-              name={"Change Password"}
-              onClick={changePassword}
-              customStyles={{
-                width: 200,
-                fontSize: 16,
-                color: "black",
-                justifyContent: "center",
-                backgroundColor: "#f0f0f0",
-              }}
-            />
-            <Button
-              name={"Logout"}
-              onClick={userLogout}
-              customStyles={{
-                width: 200,
-                fontSize: 16,
-                color: "black",
-                justifyContent: "center",
-                backgroundColor: "#f0f0f0",
-              }}
-            />
-          </div>
-        )}
       </div>
       <div className={classes.rightContainer}>{getRightComponent()}</div>
     </div>
