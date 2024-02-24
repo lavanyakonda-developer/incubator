@@ -29,6 +29,7 @@ import {
   Cross2Icon,
   TimerIcon,
   ChevronRightIcon,
+  ExclamationTriangleIcon,
 } from "@radix-ui/react-icons";
 import { Table, Badge } from "@radix-ui/themes";
 import "@radix-ui/themes/styles.css";
@@ -374,7 +375,7 @@ const IncubatorHome = (props) => {
         case "PENDING":
           return <TimerIcon color="#FFBA1A" />;
         case "SUBMITTED":
-          return <TimerIcon color="#FFBA1A" />;
+          return <ExclamationTriangleIcon color="#783200CF" />;
         case "APPROVED":
           return <CheckCircledIcon color="#008347D6" />;
         case "REJECTED":
