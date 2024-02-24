@@ -17,6 +17,10 @@ const isValidEmail = (email) => {
 
 const dippRegex = /^DIPP\d{1,10}$/;
 
+const disabledStyle = {
+  background: "var(--Neutral-color-Neutral-Alpha-3, rgba(0, 0, 59, 0.05))",
+};
+
 const BasicDetails = ({
   startupInfo,
   onDraftExit,
@@ -24,6 +28,7 @@ const BasicDetails = ({
   onCancel,
   onNext,
   setStartupInfo,
+  disabled,
 }) => {
   const startupDetails = startupInfo?.basicDetails;
 
@@ -131,6 +136,8 @@ const BasicDetails = ({
               onChange={(e) => handleBasicDetailsChange("name", e.target.value)}
               placeholder="Enter startup name"
               className={classes.inputField}
+              style={disabled ? disabledStyle : {}}
+              disabled={disabled}
             />
           </div>
           <div className={classes.miniContainer}>
@@ -144,6 +151,8 @@ const BasicDetails = ({
                 }
                 placeholder="Enter DPIIT number"
                 className={classes.inputField}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               />
               {!_.isEmpty(startupDetails.dpiitNumber) &&
                 (!dippRegex.test(startupDetails.dpiitNumber) ||
@@ -170,6 +179,8 @@ const BasicDetails = ({
                   handleBasicDetailsChange("industrySegment", e.target.value)
                 }
                 className={classes.industryDropdown}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               >
                 <option value="">Select industry segment</option>
                 {_.map(industryOptions, (option) => (
@@ -199,6 +210,8 @@ const BasicDetails = ({
                 }
                 placeholder="Enter founder's name"
                 className={classes.inputField}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               />
             </div>
             <div className={classes.inputContainerNew}>
@@ -212,6 +225,8 @@ const BasicDetails = ({
                 }
                 placeholder="Enter founder's role"
                 className={classes.inputField}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -226,6 +241,8 @@ const BasicDetails = ({
                 }
                 placeholder="Enter founder's email"
                 className={classes.inputField}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               />
             </div>
             <div className={classes.inputContainerNew}>
@@ -240,6 +257,8 @@ const BasicDetails = ({
                 }
                 placeholder="Enter founder's phone number"
                 className={classes.inputField}
+                style={disabled ? disabledStyle : {}}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -264,6 +283,8 @@ const BasicDetails = ({
                     }
                     placeholder="Enter Co-Founder's phone number"
                     className={classes.inputField}
+                    style={disabled ? disabledStyle : {}}
+                    disabled={disabled}
                   />
                 </div>
                 <div className={classes.inputContainerNew}>
@@ -282,6 +303,8 @@ const BasicDetails = ({
                     }
                     placeholder="Enter Co-Founder's role"
                     className={classes.inputField}
+                    style={disabled ? disabledStyle : {}}
+                    disabled={disabled}
                   />
                 </div>
               </div>
@@ -298,6 +321,8 @@ const BasicDetails = ({
                     }
                     placeholder="Enter Co-Founder's email"
                     className={classes.inputField}
+                    style={disabled ? disabledStyle : {}}
+                    disabled={disabled}
                   />
                 </div>
                 <div className={classes.inputContainerNew}>
@@ -316,6 +341,8 @@ const BasicDetails = ({
                     }
                     placeholder="Enter Co-Founder's phone number"
                     className={classes.inputField}
+                    style={disabled ? disabledStyle : {}}
+                    disabled={disabled}
                   />
                 </div>
               </div>
@@ -325,11 +352,11 @@ const BasicDetails = ({
             <Button
               name={"Add Co-Founder"}
               onClick={handleAddCoFounder}
-              disabled={disableCofounders()}
+              disabled={disableCofounders() || disabled}
               size={"2"}
               variant={"solid"}
               customStyles={
-                disableCofounders()
+                disableCofounders() || disabled
                   ? { width: 300 }
                   : { backgroundColor: "#1C2024", width: 300 }
               }

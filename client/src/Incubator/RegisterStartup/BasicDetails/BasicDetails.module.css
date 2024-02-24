@@ -7,6 +7,7 @@
   padding: 40px 40px 0px;
   gap: 16px;
   flex: 1;
+  overflow: auto;
 }
 
 .basicInfoCard {
@@ -14,7 +15,7 @@
   padding: 24px 24px 100px;
   border-radius: 8px;
   width: 100%;
-  overflow: auto;
+  /* overflow: auto; */
   gap: 40px;
   display: flex;
   flex-direction: column;

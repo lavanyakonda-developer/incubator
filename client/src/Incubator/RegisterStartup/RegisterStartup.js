@@ -6,13 +6,14 @@ import BasicDetails from "./BasicDetails";
 import ReferralCode from "./ReferralCode";
 import DocumentUpload from "./DocumentUpload";
 import DetailedQuestionnaire from "./DetailedQuestionnaire";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import _ from "lodash";
 import { questions } from "./helper";
 import { makeRequest, API } from "../../axios";
 import { Button } from "../../CommonComponents";
 import { isAuthenticated } from "../../auth/helper";
 import { CopyIcon, Cross1Icon } from "@radix-ui/react-icons";
+import Questionnaire from "../../Startup/StartupOnboarding/Questionnaire/Questionnaire";
 
 const tabs = [
   { label: "Basic Info", key: "basicDetails" },
@@ -46,8 +47,19 @@ const generateRandomCode = (length) => {
   return code;
 };
 
-const RegisterStartup = () => {
+const RegisterStartup = (props) => {
+  const {
+    startupId,
+    topContainer,
+    disabled,
+    status,
+    startupInfo: oldStartupInfo,
+  } = props;
+  const { startup_id } = useParams();
+
+  const updatedStartupId = startupId ? startupId : startup_id;
   const { incubator_id: incubatorId } = useParams();
+  const [searchParams] = useSearchParams();
 
   const [showInvitationSentModal, setShowInvitationSentModal] = useState(false);
 
@@ -147,15 +159,11 @@ const RegisterStartup = () => {
 
   const [startupInfo, setStartupInfo] = useState(getStartupInfo());
 
-  console.log(startupInfo);
-
-  const { startup_id } = useParams();
-
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await makeRequest.get(
-          `startup/startup-details?startup_id=${startup_id}`
+          `startup/startup-details?startup_id=${updatedStartupId}`
         );
 
         if (response.status === 200) {
@@ -172,7 +180,7 @@ const RegisterStartup = () => {
       }
     };
 
-    if (startup_id) {
+    if (updatedStartupId) {
       fetchData();
     }
   }, []);
@@ -247,11 +255,6 @@ const RegisterStartup = () => {
     }
 
     setShowInvitationSentModal(true);
-  };
-
-  const closeInvitationSentModal = () => {
-    setShowInvitationSentModal(false);
-    goHome();
   };
 
   // Function to handle "Save as Draft" button click
@@ -331,7 +334,8 @@ const RegisterStartup = () => {
             onCancel={handleCancel}
             onNext={handleNext}
             setStartupInfo={setStartupInfo}
-            disableDraft={disableSave}
+            disabled={disabled}
+            disableDraft={disableSave || disabled}
           />
         );
       // case "referralLink":
@@ -356,30 +360,47 @@ const RegisterStartup = () => {
             onCancel={handleCancel}
             onNext={handleNext}
             onBack={handleBack}
-            disableDraft={disableSave}
+            disabled={disabled}
+            disableDraft={disableSave || disabled}
           />
         );
-      case "questionnaire":
-        return (
-          <DetailedQuestionnaire
-            questionnaireData={startupInfo.questionnaire}
-            onDraftExit={handleDraftExit}
-            onBack={handleBack}
-            onCancel={handleCancel}
-            onNext={handleNext}
-            onSave={handleSave}
-            setStartupInfo={setStartupInfo}
-            startupInfo={startupInfo}
-            disableSave={disableSave}
-            disableDraft={disableSave}
-          />
-        );
+      case "questionnaire": {
+        if (status == "SUBMITTED" || status == "REJECTED") {
+          return (
+            <Questionnaire
+              startupInfo={oldStartupInfo}
+              setStartupInfo={setStartupInfo}
+              onBack={handleBack}
+              onSave={handleSave}
+              disableSave={disableSave || disabled}
+              disabled={disabled}
+            />
+          );
+        } else {
+          return (
+            <DetailedQuestionnaire
+              questionnaireData={startupInfo.questionnaire}
+              onDraftExit={handleDraftExit}
+              onBack={handleBack}
+              onCancel={handleCancel}
+              onNext={handleNext}
+              onSave={handleSave}
+              setStartupInfo={setStartupInfo}
+              startupInfo={startupInfo}
+              disableSave={disableSave || disabled}
+              disabled={disabled}
+              disableDraft={disableSave || disabled}
+            />
+          );
+        }
+      }
     }
   };
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(startupInfo.basicDetails.referralCode);
     goHome();
+    setShowInvitationSentModal(false);
   };
 
   return (
@@ -426,7 +447,12 @@ const RegisterStartup = () => {
         </div>
       </div>
 
-      <div className={classes.rightContainer}>{renderTabContent()}</div>
+      <div className={classes.rightContainer}>
+        <>
+          {topContainer && topContainer}
+          {renderTabContent()}
+        </>
+      </div>
       {showInvitationSentModal && (
         <div className={classes.modalBackground}>
           <div className={classes.modal}>

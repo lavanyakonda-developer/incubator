@@ -536,6 +536,9 @@ const Calendar = (props) => {
                 <Button
                   name={"Cancel"}
                   onClick={() => setEventFormOpen(false)}
+                  size={"3"}
+                  variant={"solid"}
+                  customStyles={{ backgroundColor: "#1C2024" }}
                 />
                 <Button
                   name={"Create Event"}
@@ -548,6 +551,20 @@ const Calendar = (props) => {
                       !isValidEmailList(newEvent?.guests) ||
                       endDateError
                   )}
+                  size={"3"}
+                  variant={"solid"}
+                  customStyles={
+                    _.some(
+                      newEvent,
+                      (value) =>
+                        !value ||
+                        _.isEmpty(value) ||
+                        !isValidEmailList(newEvent?.guests) ||
+                        endDateError
+                    )
+                      ? { cursor: "not-allowed" }
+                      : { backgroundColor: "#1C2024" }
+                  }
                 />
               </div>
             </div>
@@ -707,10 +724,15 @@ const Calendar = (props) => {
                   name={"Delete Event"}
                   onClick={handleEventDelete}
                   disabled={!_.isEqual(hostEmail, selectedEvent?.hostEmail)}
+                  size={"3"}
+                  variant={"outline"}
                 />
                 <Button
                   name={"Cancel"}
                   onClick={() => setSelectedEvent(null)}
+                  size={"3"}
+                  variant={"outline"}
+                  customStyles={{ backgroundColor: "#1C2024" }}
                 />
                 <Button
                   name={"Update Event"}
@@ -720,6 +742,16 @@ const Calendar = (props) => {
                       _.isEqual(hostEmail, selectedEvent?.hostEmail) ||
                       selectedEvent?.guestsCanInviteOthers
                     ) || endDateError
+                  }
+                  size={"3"}
+                  variant={"solid"}
+                  customStyles={
+                    !(
+                      _.isEqual(hostEmail, selectedEvent?.hostEmail) ||
+                      selectedEvent?.guestsCanInviteOthers
+                    ) || endDateError
+                      ? { cursor: "not-allowed" }
+                      : { backgroundColor: "#1C2024" }
                   }
                 />
               </div>

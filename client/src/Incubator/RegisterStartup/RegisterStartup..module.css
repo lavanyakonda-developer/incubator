@@ -27,8 +27,10 @@
 
 .rightContainer {
   display: flex;
+  flex-direction: column;
   flex: 3 1;
   width: 100%;
+  padding-top: 32px;
   /* justify-content: center; */
   /* padding: var(--Space-9, 48px) var(--Space-8, 48px) var(--Space-5, 24px)
     var(--Space-8, 48px); */

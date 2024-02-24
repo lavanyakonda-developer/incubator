@@ -389,10 +389,17 @@ const IncubatorHome = (props) => {
       return;
     } else {
       switch (status) {
+        // {
+        //   navigate(
+        //     `/incubator/${incubatorId}/home/register-startup/${id}?status=${status}&disabled=true`
+        //   );
+        //   return;
+        // }
+
         case "PENDING":
+        case "REJECTED":
         case "SUBMITTED":
-        case "APPROVED":
-        case "REJECTED": {
+        case "APPROVED": {
           if (tab) {
             navigate(
               `/incubator/${incubatorId}/home/startup-home/${id}?tab=${tab}`
@@ -400,6 +407,7 @@ const IncubatorHome = (props) => {
           } else {
             navigate(`/incubator/${incubatorId}/home/startup-home/${id}`);
           }
+          return;
         }
 
         default:
@@ -913,6 +921,7 @@ const IncubatorHome = (props) => {
                           style={{
                             fontSize: 14,
                             paddingLeft: 4,
+                            width: "80%",
                           }}
                         />
                       </span>

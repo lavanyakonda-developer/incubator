@@ -80,7 +80,7 @@ const StartupOnboarding = () => {
 
           if (
             !_.includes(
-              ["PENDING", "REJECTED"],
+              ["PENDING"],
               _.get(data, "basicDetails.status", "PENDING")
             )
           ) {
@@ -173,6 +173,7 @@ const StartupOnboarding = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
       navigate("/");
+      window.location.reload();
     }
   };
 

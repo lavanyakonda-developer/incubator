@@ -3,6 +3,10 @@ import classes from "./DetailedQuestionnaire.module.css"; // Import your CSS fil
 import { Button } from "../../../CommonComponents";
 import _ from "lodash";
 
+const disabledStyle = {
+  background: "var(--Neutral-color-Neutral-Alpha-3, rgba(0, 0, 59, 0.05))",
+};
+
 const DetailedQuestionnaire = ({
   startupInfo,
   onDraftExit,
@@ -12,6 +16,7 @@ const DetailedQuestionnaire = ({
   questionnaireData,
   disableSave,
   disableDraft,
+  disabled,
 }) => {
   const [customQuestions, setCustomQuestions] = useState(
     _.find(questionnaireData, (item) => item.uid == "customQuestions")
@@ -105,6 +110,8 @@ const DetailedQuestionnaire = ({
                 })?.question || ""
               }
               className={classes.textArea}
+              style={disabled ? { ...disabledStyle } : {}}
+              disabled={disabled}
             />
           )}
         </div>

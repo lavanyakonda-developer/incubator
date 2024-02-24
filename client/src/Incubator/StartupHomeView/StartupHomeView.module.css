@@ -2,6 +2,9 @@
   display: flex;
   width: 100vw;
   height: 100vh;
+  flex-direction: column;
+  /* width: 100%; */
+  /* padding-top: 8px; */
 }
 
 .waitingContainer {
@@ -41,11 +44,11 @@
 .reviewBox {
   padding: 24px 0px;
   display: flex;
-  flex-direction: column;
+  /* flex-direction: column; */
   gap: 16px;
   justify-content: center;
   align-items: center;
-  background-color: #f2f2f2;
+  background-color: #fff9ed;
   top: 0;
 }
 
@@ -229,4 +232,28 @@
   display: flex;
   gap: 16px;
   justify-content: flex-end;
+}
+
+.messageContainer {
+  display: flex;
+  padding: 14px var(--Space-5, 24px);
+  justify-content: space-between;
+  align-items: center;
+  align-self: center;
+  border-radius: var(--Radius-3-max, 6px);
+  background: var(--Accent-color-Accent-3, #f0f4ff);
+  color: var(--Accent-color-Accent-10, #3a5ccc);
+  width: 90%;
+
+  /* Typography/2/Medium */
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
+}
+
+.messageContainerButtons {
+  display: flex;
+  gap: 16px;
 }

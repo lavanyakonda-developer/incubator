@@ -9,14 +9,20 @@ import { makeRequest } from "../../../axios";
 const placeholderPdfImage =
   "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
+const disabledStyle = {
+  background: "var(--Neutral-color-Neutral-Alpha-3, rgba(0, 0, 59, 0.05))",
+};
+
 const Questionnaire = ({
   startupInfo,
   onSave,
   onBack,
   setStartupInfo,
   disableSave,
+  disabled,
 }) => {
   const { questionnaire } = startupInfo;
+
   const [showSizeExceededModal, setShowSizeExceededModal] = useState(false);
 
   const closeSizeExceededModal = () => {
@@ -134,6 +140,8 @@ const Questionnaire = ({
                 uid: question.uid,
               })?.answer || ""
             }
+            style={disabled ? disabledStyle : {}}
+            disabled={disabled}
           />
         );
       }
@@ -155,26 +163,29 @@ const Questionnaire = ({
                     <FaTrash
                       className={classes.icon}
                       onClick={() => handleDeleteDocument(question.uid, index)}
+                      disabled={disabled}
                     />
                   </div>
                 ))}
               </div>
             )}
 
-            <div className={classes.chooseButtonContainer}>
-              <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Choose File</span>
-                <input
-                  type="file"
-                  accept="image/*" // Accepts all image formats
-                  onChange={(e) =>
-                    handleFileUpload(question.uid, e.target.files)
-                  }
-                  multiple={true}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
+            {!disabled && (
+              <div className={classes.chooseButtonContainer}>
+                <label className={classes.uploadLabel}>
+                  <span className={classes.chooseFileText}>Choose File</span>
+                  <input
+                    type="file"
+                    accept="image/*" // Accepts all image formats
+                    onChange={(e) =>
+                      handleFileUpload(question.uid, e.target.files)
+                    }
+                    multiple={true}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
         );
       }
@@ -198,26 +209,29 @@ const Questionnaire = ({
                     <FaTrash
                       className={classes.icon}
                       onClick={() => handleDeleteDocument(question.uid, index)}
+                      disabled={disabled}
                     />
                   </div>
                 ))}
               </div>
             )}
 
-            <div className={classes.chooseButtonContainer}>
-              <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Choose File</span>
-                <input
-                  type="file"
-                  accept=".doc, .pdf" // Accepts only .doc and .pdf files
-                  onChange={(e) =>
-                    handleFileUpload(question.uid, e.target.files)
-                  }
-                  multiple={question.answer_type === "files"}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
+            {!disabled && (
+              <div className={classes.chooseButtonContainer}>
+                <label className={classes.uploadLabel}>
+                  <span className={classes.chooseFileText}>Choose File</span>
+                  <input
+                    type="file"
+                    accept=".doc, .pdf" // Accepts only .doc and .pdf files
+                    onChange={(e) =>
+                      handleFileUpload(question.uid, e.target.files)
+                    }
+                    multiple={question.answer_type === "files"}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
         );
 
@@ -239,44 +253,60 @@ const Questionnaire = ({
                     <FaTrash
                       className={classes.icon}
                       onClick={() => handleDeleteDocument(question.uid, index)}
+                      disabled={disabled}
                     />
                   </div>
                 ))}
               </div>
             )}
 
-            <div className={classes.chooseButtonContainer}>
-              <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Choose File</span>
-                <input
-                  type="file"
-                  accept="video/*" // Accepts all video formats
-                  onChange={(e) =>
-                    handleFileUpload(question.uid, e.target.files)
-                  }
-                  multiple={false}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
+            {!disabled && (
+              <div className={classes.chooseButtonContainer}>
+                <label className={classes.uploadLabel}>
+                  <span className={classes.chooseFileText}>Choose File</span>
+                  <input
+                    type="file"
+                    accept="video/*" // Accepts all video formats
+                    onChange={(e) =>
+                      handleFileUpload(question.uid, e.target.files)
+                    }
+                    multiple={false}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
         );
 
       case "dropdown":
         return (
           <select
-            style={{
-              margin: "8px 0px",
-              width: "30%",
-              height: 30,
-              borderRadius: 6,
-              border:
-                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
-            }}
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
+            style={
+              disabled
+                ? {
+                    margin: "8px 0px",
+                    width: "30%",
+                    height: 30,
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                    ...disabledStyle,
+                  }
+                : {
+                    margin: "8px 0px",
+                    width: "30%",
+                    height: 30,
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                  }
+            }
+            disabled={disabled}
           >
             {_.map(metaData, (option) => (
               <option key={option.key} value={option.key}>
@@ -294,13 +324,25 @@ const Questionnaire = ({
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
-            style={{
-              height: 30,
-              width: "30%",
-              borderRadius: 6,
-              border:
-                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
-            }}
+            style={
+              disabled
+                ? {
+                    height: 30,
+                    width: "30%",
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                    ...disabledStyle,
+                  }
+                : {
+                    height: 30,
+                    width: "30%",
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                  }
+            }
+            disabled={disabled}
           />
         );
 
@@ -312,13 +354,25 @@ const Questionnaire = ({
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
-            style={{
-              height: 30,
-              width: "30%",
-              borderRadius: 6,
-              border:
-                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
-            }}
+            disabled={disabled}
+            style={
+              disabled
+                ? {
+                    height: 30,
+                    width: "30%",
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                    ...disabledStyle,
+                  }
+                : {
+                    height: 30,
+                    width: "30%",
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                  }
+            }
           />
         );
 
@@ -340,26 +394,29 @@ const Questionnaire = ({
                     <FaTrash
                       className={classes.icon}
                       onClick={() => handleDeleteDocument(question.uid, index)}
+                      disabled={disabled}
                     />
                   </div>
                 ))}
               </div>
             )}
 
-            <div className={classes.chooseButtonContainer}>
-              <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Choose File</span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) =>
-                    handleLogoUpload(question.uid, e.target.files)
-                  }
-                  multiple={false}
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
+            {!disabled && (
+              <div className={classes.chooseButtonContainer}>
+                <label className={classes.uploadLabel}>
+                  <span className={classes.chooseFileText}>Choose File</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) =>
+                      handleLogoUpload(question.uid, e.target.files)
+                    }
+                    multiple={false}
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
         );
     }

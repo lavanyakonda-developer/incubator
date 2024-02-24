@@ -12,6 +12,10 @@ const placeholderDocImage =
 const placeholderPdfImage =
   "https://d9-wret.s3.us-west-2.amazonaws.com/assets/palladium/production/s3fs-public/thumbnails/image/file.jpg";
 
+const disabledStyle = {
+  background: "var(--Neutral-color-Neutral-Alpha-3, rgba(0, 0, 59, 0.05))",
+};
+
 const DocumentUpload = ({
   uploadedDocuments,
   onDraftExit,
@@ -22,6 +26,7 @@ const DocumentUpload = ({
   startupInfo,
   setStartupInfo,
   disableDraft,
+  disabled,
 }) => {
   const setUploadedDocuments = (newDocuments) => {
     setStartupInfo({
@@ -213,8 +218,13 @@ const DocumentUpload = ({
                   onChange={(e) =>
                     handleRequestedDocumentChange(index, e.target.value)
                   }
-                  style={{ maxWidth: "96%" }}
+                  style={
+                    disabled
+                      ? { ...disabledStyle, maxWidth: "96%" }
+                      : { maxWidth: "96%" }
+                  }
                   className={classes.inputField}
+                  disabled={disabled}
                 />
               </li>
             ))}
@@ -226,18 +236,22 @@ const DocumentUpload = ({
             <div className={classes.documentsContainerTitle}>
               Upload documents
             </div>
-            <div className={classes.chooseButtonContainer}>
-              <label className={classes.uploadLabel}>
-                <span className={classes.chooseFileText}>Upload documents</span>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept=".pdf,.doc,.docx"
-                  style={{ display: "none" }}
-                />
-              </label>
-            </div>
+            {!disabled && (
+              <div className={classes.chooseButtonContainer}>
+                <label className={classes.uploadLabel}>
+                  <span className={classes.chooseFileText}>
+                    Upload documents
+                  </span>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx"
+                    style={{ display: "none" }}
+                  />
+                </label>
+              </div>
+            )}
           </div>
           <div className={classes.previewDocumentsContainer}>
             {_.map(uploadedDocuments, (document, index) => (
