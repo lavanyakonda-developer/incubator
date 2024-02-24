@@ -414,6 +414,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="title">Event Title:</label>
                     <input
+                      className={classes.inputField}
                       type="text"
                       id="title"
                       placeholder="Enter event title"
@@ -429,6 +430,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="start">Start Time:</label>
                     <input
+                      className={classes.inputField}
                       type="datetime-local"
                       id="start"
                       value={newEvent.start}
@@ -445,6 +447,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="end">End Time:</label>
                     <input
+                      className={classes.inputField}
                       type="datetime-local"
                       id="end"
                       value={newEvent.end}
@@ -500,6 +503,7 @@ const Calendar = (props) => {
                       Guests (comma-separated emails):
                     </label>
                     <input
+                      className={classes.inputField}
                       type="text"
                       id="guests"
                       placeholder="Enter guest emails"
@@ -561,6 +565,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="title">Event Title:</label>
                     <input
+                      className={classes.inputField}
                       type="text"
                       id="title"
                       placeholder="Event title"
@@ -579,6 +584,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="start">Start Time:</label>
                     <input
+                      className={classes.inputField}
                       type="datetime-local"
                       id="start"
                       value={selectedEvent?.start}
@@ -598,6 +604,7 @@ const Calendar = (props) => {
                   <div className={classes.modalColumn}>
                     <label htmlFor="end">End Time:</label>
                     <input
+                      className={classes.inputField}
                       type="datetime-local"
                       id="end"
                       value={selectedEvent?.end}
@@ -658,6 +665,7 @@ const Calendar = (props) => {
                       Guests (comma-separated emails):
                     </label>
                     <input
+                      className={classes.inputField}
                       type="text"
                       id="guests"
                       placeholder="Enter guest emails"

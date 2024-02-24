@@ -904,6 +904,7 @@ const IncubatorHome = (props) => {
                     <div className={classes.modalTopContent}>
                       <span style={{ width: "60%" }}>
                         <input
+                          className={classes.inputField}
                           type="text"
                           value={customRequestReminder}
                           onChange={(event) => {

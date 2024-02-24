@@ -1,6 +1,6 @@
-import React from 'react';
-import { Button } from './CommonComponents';
-import classes from './App.module.css';
+import React from "react";
+import { Button } from "./CommonComponents";
+import classes from "./App.module.css";
 
 const HomePage = () => {
   return (
@@ -10,13 +10,31 @@ const HomePage = () => {
         <div className={classes.buttonContainer}>
           <Button
             shouldRedirect={true}
-            redirectUrl={'/incubator-login'}
-            name={'Incubator Login'}
+            redirectUrl={"/incubator-login"}
+            name={"Incubator Login"}
+            size={"3"}
+            variant={"solid"}
+            customStyles={{
+              backgroundColor: "#1C2024",
+              width: 300,
+            }}
+            textStyle={{
+              color: "white",
+            }}
           />
           <Button
             shouldRedirect={true}
-            redirectUrl={'/startup-login'}
-            name={'Startup Login'}
+            redirectUrl={"/startup-login"}
+            name={"Startup Login"}
+            size={"3"}
+            variant={"solid"}
+            customStyles={{
+              backgroundColor: "#1C2024",
+              width: 300,
+            }}
+            textStyle={{
+              color: "white",
+            }}
           />
         </div>
       </div>

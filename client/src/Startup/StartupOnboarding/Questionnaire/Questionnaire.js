@@ -124,7 +124,8 @@ const Questionnaire = ({
       case "text": {
         return (
           <textarea
-            style={{ width: "90%" }}
+            // style={{ width: "90%" }}
+            className={classes.textArea}
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
@@ -264,7 +265,14 @@ const Questionnaire = ({
       case "dropdown":
         return (
           <select
-            style={{ margin: "8px 0px", width: "20%", height: 30 }}
+            style={{
+              margin: "8px 0px",
+              width: "30%",
+              height: 30,
+              borderRadius: 6,
+              border:
+                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+            }}
             onChange={(e) =>
               handleCustomAnswerChange(question.uid, e.target.value)
             }
@@ -286,7 +294,13 @@ const Questionnaire = ({
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
-            style={{ height: 30, width: 120 }}
+            style={{
+              height: 30,
+              width: "30%",
+              borderRadius: 6,
+              border:
+                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+            }}
           />
         );
 
@@ -298,7 +312,13 @@ const Questionnaire = ({
               handleCustomAnswerChange(question.uid, e.target.value)
             }
             value={_.find(questionnaire, { uid: question.uid })?.answer || ""}
-            style={{ height: 20, width: 120 }}
+            style={{
+              height: 30,
+              width: "30%",
+              borderRadius: 6,
+              border:
+                "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+            }}
           />
         );
 
@@ -391,6 +411,12 @@ const Questionnaire = ({
   return (
     <div className={classes.questionnaireContainer}>
       <div className={classes.detailedQuestionnaire}>
+        <div className={classes.heading}>
+          <div className={classes.title}>Questionnaire</div>
+          <div className={classes.subTitle}>
+            A detailed questionnaire is sent out to you by the Incubator
+          </div>
+        </div>
         <div className={classes.questionnaireSections}>
           {_.map(questions, (section, index) => {
             return (
@@ -398,16 +424,15 @@ const Questionnaire = ({
                 {_.some(
                   section?.questions,
                   (item) => !_.isEmpty(item?.question)
-                ) && <h3>{section.section}</h3>}
-                {renderQuestions(section)}
+                ) && (
+                  <div className={classes.sectionTitle}>{section.section}</div>
+                )}
+                <div key={index} className={classes.sectionQuestions}>
+                  {renderQuestions(section)}{" "}
+                </div>
               </div>
             );
           })}
-        </div>
-        <div className={classes.buttonContainer}>
-          <Button name={"Back"} onClick={onBack} />
-
-          <Button name={"Save"} onClick={onSave} disabled={disableSave} />
         </div>
       </div>
       {showSizeExceededModal && (
@@ -443,6 +468,25 @@ const Questionnaire = ({
           </div>
         </div>
       )}
+      <div className={classes.buttonContainer}>
+        <Button
+          name={"Back"}
+          onClick={onBack}
+          variant={"outline"}
+          highContrast={true}
+          color={"gray"}
+        />
+
+        <Button
+          name={"Submit Information"}
+          onClick={onSave}
+          variant={"solid"}
+          disabled={disableSave}
+          customStyles={
+            disableSave ? { cursor: "pointer" } : { backgroundColor: "#1C2024" }
+          }
+        />
+      </div>
     </div>
   );
 };

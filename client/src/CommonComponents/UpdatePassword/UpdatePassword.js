@@ -82,6 +82,7 @@ const UpdatePassword = (props) => {
               Current Password
             </Label.Root>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Current Password"
               value={currentPassword}
@@ -99,6 +100,7 @@ const UpdatePassword = (props) => {
               Password
             </Label.Root>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Password"
               value={password}
@@ -116,6 +118,7 @@ const UpdatePassword = (props) => {
               Confirm Password
             </Label.Root>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}

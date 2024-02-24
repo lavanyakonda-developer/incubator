@@ -120,3 +120,15 @@
 .tableContainer {
   overflow-x: auto;
 }
+
+.inputField {
+  display: flex;
+  padding: 0px var(--Space-2, 8px);
+  align-items: center;
+  /* flex: 1 0 0; */
+  align-self: stretch;
+  height: 40px;
+  border-radius: var(--Radius-3-max, 6px);
+  border: 1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13));
+  background: var(--Tokens-Colors-surface, rgba(255, 255, 255, 0.9));
+}

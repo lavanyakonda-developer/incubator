@@ -175,6 +175,7 @@ const Chat = (props) => {
       </div>
       <div className={classes.chatFooter}>
         <input
+          className={classes.inputField}
           type="text"
           value={currentMessage}
           placeholder="Type your message"

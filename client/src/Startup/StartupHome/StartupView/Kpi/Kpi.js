@@ -584,6 +584,7 @@ const Kpi = ({ user }) => {
                         value?.value
                       ) : (
                         <input
+                          className={classes.inputField}
                           type="number"
                           value={value.value}
                           onChange={(e) =>

@@ -72,11 +72,12 @@ const StartupFounderRegister = () => {
   return (
     <div className={classes.container}>
       <div className={classes.loginBox}>
-        <h2>Startup founder registration</h2>
+        <span className={classes.title}>Startup founder registration</span>
         <p className={classes.message}>{message}</p>
         <form className={classes.form}>
           <div className={classes.formGroup}>
             <input
+              className={classes.inputField}
               type="text"
               placeholder="Email"
               value={email}
@@ -85,6 +86,7 @@ const StartupFounderRegister = () => {
           </div>
           <div className={classes.formGroup}>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Password"
               value={password}
@@ -93,6 +95,7 @@ const StartupFounderRegister = () => {
           </div>
           <div className={classes.formGroup}>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Confirm Password"
               value={confirmPassword}
@@ -101,13 +104,20 @@ const StartupFounderRegister = () => {
           </div>
           <div className={classes.formGroup}>
             <input
+              className={classes.inputField}
               type="text"
               placeholder="Referral Code"
               value={referralCode}
               onChange={(e) => setReferralCode(e.target.value)}
             />
           </div>
-          <Button name={"Login"} onClick={handleSubmit} />
+          <Button
+            name={"Register"}
+            onClick={handleSubmit}
+            size={"3"}
+            variant={"solid"}
+            customStyles={{ backgroundColor: "#1C2024", width: 300 }}
+          />
         </form>
       </div>
     </div>

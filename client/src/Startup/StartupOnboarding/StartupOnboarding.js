@@ -8,6 +8,7 @@ import Questionnaire from "./Questionnaire";
 import _ from "lodash";
 import { isAuthenticated } from "../../auth/helper";
 import moment from "moment";
+import { Button } from "../../CommonComponents";
 
 import io from "socket.io-client";
 const socket = io.connect(socketAPI);
@@ -242,15 +243,34 @@ const StartupOnboarding = () => {
     <div className={classes.container}>
       <div className={classes.tabMenu}>
         {tabs.map((tab) => (
-          <div
-            key={tab.key}
-            className={`${classes.tab} ${
-              selectedTab === tab.key ? classes.activeTab : ""
-            }`}
+          // <div
+          //   key={tab.key}
+          //   className={`${classes.tab} ${
+          //     selectedTab === tab.key ? classes.activeTab : ""
+          //   }`}
+          //   onClick={() => handleTabClick(tab.key)}
+          // >
+          //   {tab.label}
+          // </div>
+          <Button
+            size={"2"}
+            variant={"ghost"}
+            name={tab.label}
+            color={"neutral"}
             onClick={() => handleTabClick(tab.key)}
-          >
-            {tab.label}
-          </div>
+            state={selectedTab === tab.key ? "active" : "default"}
+            highContrast={true}
+            customStyles={{
+              gap: 8,
+              boxShadow:
+                selectedTab === tab.key
+                  ? "0px 1px 4px 0px rgba(0, 0, 61, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05), 0px 1px 3px 0px rgba(0, 0, 0, 0.05"
+                  : "none",
+              width: 230,
+              justifyContent: "flex-start",
+              color: selectedTab === tab.key ? "black" : "rgb(96, 100, 108)",
+            }}
+          />
         ))}
       </div>
 

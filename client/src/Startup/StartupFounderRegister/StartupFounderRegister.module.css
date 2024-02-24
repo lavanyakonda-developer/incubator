@@ -3,15 +3,13 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f0f0;
+  background-color: #fff;
 }
 
 .loginBox {
-  border: 1px solid #ccc;
   padding: 20px;
   border-radius: 5px;
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   text-align: center;
   max-width: 500px;
   width: 100%;
@@ -24,19 +22,10 @@ h2 {
 }
 
 .formGroup {
+  width: 80%;
   margin: 10px 0;
-  width: 400px;
+  display: flex;
 }
-
-/* input[type='text'],
-input[type='password'] {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 16px;
-  outline: none;
-} */
 
 .message {
   margin-top: 10px;
@@ -48,4 +37,27 @@ input[type='password'] {
   align-items: center;
   display: flex;
   flex-direction: column;
+}
+
+.inputField {
+  display: flex;
+  padding: 0px var(--Space-2, 8px);
+  align-items: center;
+  width: 100%;
+  align-self: stretch;
+  height: 40px;
+  border-radius: var(--Radius-3-max, 6px);
+  border: 1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13));
+  background: var(--Tokens-Colors-surface, rgba(255, 255, 255, 0.9));
+}
+
+.title {
+  color: #000;
+  /* Typography/5/Medium */
+  font-family: Merriweather;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 28px; /* 140% */
+  letter-spacing: -0.08px;
 }

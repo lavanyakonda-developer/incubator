@@ -90,6 +90,7 @@ const Login = (props) => {
               Email
             </Label.Root>
             <input
+              className={classes.inputField}
               type="text"
               placeholder="Email"
               value={email}
@@ -106,6 +107,7 @@ const Login = (props) => {
               Password
             </Label.Root>
             <input
+              className={classes.inputField}
               type="password"
               placeholder="Password"
               value={password}
