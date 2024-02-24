@@ -6,27 +6,32 @@
 
 .tabMenu {
   display: flex;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 5px 5px 0 0;
   user-select: none;
   flex: 0.75;
   flex-direction: column;
+  padding-top: 12px;
 }
 
 .tabContainer {
   display: flex;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
   border-radius: 5px 5px 0 0;
   flex: 0.75;
   padding-top: 40px;
   flex-direction: column;
+  border-right: 1px solid var(--Neutral-color-Neutral-5, #e4e4e9);
+  background: var(--Neutral-color-Neutral-2, #f9f9fb);
 }
 
 .rightContainer {
   display: flex;
   flex: 3 1;
   width: 100%;
-  justify-content: center;
+  /* justify-content: center; */
+  /* padding: var(--Space-9, 48px) var(--Space-8, 48px) var(--Space-5, 24px)
+    var(--Space-8, 48px); */
 }
 
 .tab {

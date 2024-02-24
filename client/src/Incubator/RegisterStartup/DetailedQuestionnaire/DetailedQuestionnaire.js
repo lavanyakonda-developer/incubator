@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import classes from './DetailedQuestionnaire.module.css'; // Import your CSS file
-import { Button } from '../../../CommonComponents';
-import _ from 'lodash';
+import React, { useState } from "react";
+import classes from "./DetailedQuestionnaire.module.css"; // Import your CSS file
+import { Button } from "../../../CommonComponents";
+import _ from "lodash";
 
 const DetailedQuestionnaire = ({
   startupInfo,
   onDraftExit,
-  onCancel,
   onSave,
   onBack,
   setStartupInfo,
@@ -15,7 +14,7 @@ const DetailedQuestionnaire = ({
   disableDraft,
 }) => {
   const [customQuestions, setCustomQuestions] = useState(
-    _.find(questionnaireData, (item) => item.uid == 'customQuestions')
+    _.find(questionnaireData, (item) => item.uid == "customQuestions")
       ?.questions
   );
 
@@ -27,14 +26,14 @@ const DetailedQuestionnaire = ({
     setCustomQuestions(customQuestions);
 
     const updatedQuestions = [
-      ..._.filter(questionnaireData, (item) => item.uid != 'customQuestions'),
+      ..._.filter(questionnaireData, (item) => item.uid != "customQuestions"),
       {
-        section: 'Your Questions ( If any )',
-        uid: 'customQuestions',
+        section: "Your Questions ( If any )",
+        uid: "customQuestions",
         style: {
-          display: 'flex',
+          display: "flex",
           gap: 16,
-          alignItems: 'center',
+          alignItems: "center",
         },
         questions: customQuestions,
       },
@@ -48,14 +47,14 @@ const DetailedQuestionnaire = ({
 
   const saveAndContinue = () => {
     const updatedQuestions = [
-      ..._.filter(questionnaireData, (item) => item.uid != 'customQuestions'),
+      ..._.filter(questionnaireData, (item) => item.uid != "customQuestions"),
       {
-        section: 'Your Questions ( If any )',
-        uid: 'customQuestions',
+        section: "Your Questions ( If any )",
+        uid: "customQuestions",
         style: {
-          display: 'flex',
+          display: "flex",
           gap: 16,
-          alignItems: 'center',
+          alignItems: "center",
         },
         questions: customQuestions,
       },
@@ -77,7 +76,10 @@ const DetailedQuestionnaire = ({
           className={classes.question}
           style={section.style}
         >
-          <div className={classes.questionText} style={question.style}>
+          <div
+            className={question.number ? null : classes.questionText}
+            style={question.style}
+          >
             {question.number ? question.number : question.question}
           </div>
           {question.subQuestions &&
@@ -92,17 +94,17 @@ const DetailedQuestionnaire = ({
                 </div>
               );
             })}
-          {question.uid.startsWith('customQuestion') && (
+          {question.uid.startsWith("customQuestion") && (
             <textarea
-              style={{ margin: '8px 0px', width: '90%' }}
               onChange={(e) =>
                 handleCustomAnswerChange(question.uid, e.target.value)
               }
               value={
                 _.find(customQuestions, {
                   uid: question.uid,
-                })?.question || ''
+                })?.question || ""
               }
+              className={classes.textArea}
             />
           )}
         </div>
@@ -112,37 +114,48 @@ const DetailedQuestionnaire = ({
 
   return (
     <div className={classes.questionnaireContainer}>
+      <div className={classes.heading}>
+        <div className={classes.title}>Questionnaire</div>
+        <div className={classes.subTitle}>
+          A detailed questionnaire is sent out to the startup during their
+          on-boarding process
+        </div>
+      </div>
       <div className={classes.detailedQuestionnaire}>
         <div className={classes.questionnaireSections}>
           {_.map(questionnaireData, (section, index) => (
             <div key={index} className={classes.section}>
-              <h3>{section.section}</h3>
-              {renderQuestions(section)}
+              <div className={classes.sectionTitle}>{section.section}</div>
+              <div key={index} className={classes.sectionQuestions}>
+                {renderQuestions(section)}{" "}
+              </div>
             </div>
           ))}
         </div>
-        <div className={classes.buttonContainer}>
+      </div>
+      <div className={classes.buttonContainer}>
+        <Button
+          name={"Back"}
+          onClick={onBack}
+          variant={"outline"}
+          highContrast={true}
+          color={"gray"}
+        />
+
+        <div className={classes.buttonContainerRight}>
           <Button
-            name={'Draft and Exit'}
+            name={"Save as Draft"}
             onClick={onDraftExit}
+            variant={"outline"}
             disabled={disableDraft}
-            customStyles={{ backgroundColor: '#ccc' }}
+            highContrast={true}
           />
           <Button
-            name={'Back'}
-            onClick={onBack}
-            customStyles={{ backgroundColor: '#ff6d6d' }}
-          />
-          <Button
-            name={'Cancel'}
-            onClick={onCancel}
-            customStyles={{ backgroundColor: '#ff6d6d' }}
-          />
-          {/* TODO : Add tooltip when disabled. */}
-          <Button
-            name={'Save'}
+            name={"Initiate onboarding"}
             onClick={saveAndContinue}
             disabled={disableSave}
+            variant={"solid"}
+            customStyles={{ backgroundColor: "#008F4ACF" }}
           />
         </div>
       </div>

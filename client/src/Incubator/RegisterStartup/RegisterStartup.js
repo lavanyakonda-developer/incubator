@@ -12,12 +12,32 @@ import { questions } from "./helper";
 import { makeRequest } from "../../axios";
 import { Button } from "../../CommonComponents";
 import { isAuthenticated } from "../../auth/helper";
+import { Cross1Icon } from "@radix-ui/react-icons";
+
+function RadioOption({ value, label, selected, onChange }) {
+  return (
+    <label
+      className={`${classes.radioOption} ${selected ? classes.selected : ""}`}
+    >
+      <input
+        type="radio"
+        name="option"
+        value={value}
+        checked={selected}
+        onChange={() => onChange(value)}
+      />
+      {label}
+    </label>
+  );
+}
 
 const tabs = [
   { label: "Basic Info", key: "basicDetails" },
-  { label: "Referral Link", key: "referralLink" },
   { label: "Document Upload", key: "documentUpload" },
-  { label: "Detailed Questionnaire", key: "questionnaire" },
+  {
+    label: "Detailed Questionnaire",
+    key: "questionnaire",
+  },
 ];
 
 const isValidEmail = (email) => {
@@ -242,7 +262,7 @@ const RegisterStartup = () => {
     goHome();
   };
 
-  // Function to handle "Draft and Exit" button click
+  // Function to handle "Save as Draft" button click
   const handleDraftExit = async () => {
     const data = getModifiedData(true);
 
@@ -322,17 +342,17 @@ const RegisterStartup = () => {
             disableDraft={disableSave}
           />
         );
-      case "referralLink":
-        return (
-          <ReferralCode
-            startupInfo={startupInfo}
-            onDraftExit={handleDraftExit}
-            onCancel={handleCancel}
-            onNext={handleNext}
-            onBack={handleBack}
-            disableDraft={disableSave}
-          />
-        );
+      // case "referralLink":
+      //   return (
+      //     <ReferralCode
+      //       startupInfo={startupInfo}
+      //       onDraftExit={handleDraftExit}
+      //       onCancel={handleCancel}
+      //       onNext={handleNext}
+      //       onBack={handleBack}
+      //       disableDraft={disableSave}
+      //     />
+      //   );
       case "documentUpload":
         return (
           <DocumentUpload
@@ -369,30 +389,42 @@ const RegisterStartup = () => {
     <div className={classes.startupRegistrationTabs}>
       <div className={classes.tabContainer}>
         <Button
-          name={"< Back"}
           onClick={() => {
             goHome();
           }}
+          icon={<Cross1Icon />}
+          variant={"soft"}
           customStyles={{
             width: 100,
             fontSize: 16,
             color: "black",
             justifyContent: "left",
-            backgroundColor: "#f0f0f0",
+            // backgroundColor: "#f0f0f0",
             padding: "24px 16px",
           }}
+          color={"black"}
         />
         <div className={classes.tabMenu}>
-          {tabs.map((tab) => (
-            <div
-              key={tab.key}
-              className={`${classes.tab} ${
-                selectedTab === tab.key ? classes.activeTab : ""
-              }`}
+          {_.map(tabs, (tab) => (
+            <Button
+              size={"2"}
+              variant={"ghost"}
+              name={tab.label}
+              color={"neutral"}
               onClick={() => handleTabClick(tab.key)}
-            >
-              {tab.label}
-            </div>
+              state={selectedTab === tab.key ? "active" : "default"}
+              highContrast={true}
+              customStyles={{
+                gap: 8,
+                boxShadow:
+                  selectedTab === tab.key
+                    ? "0px 1px 4px 0px rgba(0, 0, 61, 0.05), 0px 2px 1px -1px rgba(0, 0, 61, 0.05), 0px 1px 3px 0px rgba(0, 0, 0, 0.05"
+                    : "none",
+                width: 230,
+                justifyContent: "flex-start",
+                color: selectedTab === tab.key ? "black" : "rgb(96, 100, 108)",
+              }}
+            />
           ))}
         </div>
       </div>

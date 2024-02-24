@@ -14,7 +14,7 @@ const UpdatedButton = (props) => {
     disabled,
     size = "3",
     variant = "classic",
-    color = "blue",
+    color = "indigo",
     state,
     highContrast = false,
     iconStart,
@@ -22,11 +22,19 @@ const UpdatedButton = (props) => {
     textStyle = {},
   } = props;
 
+  const updatedStyles = disabled
+    ? {
+        ...customStyles,
+        cursor: "not-allowed",
+        borderRadius: 6,
+      }
+    : { ...customStyles, borderRadius: 6 };
+
   if (shouldRedirect) {
     return (
       <Button
         className={`${classes.button} ${disabled ? classes.disabled : ""}`}
-        style={customStyles}
+        style={updatedStyles}
         title={disabled ? "HI" : null}
         // NEW PROPS
         size={size}
@@ -35,6 +43,8 @@ const UpdatedButton = (props) => {
         state={state}
         highContrast={highContrast}
         iconStart={iconStart}
+        onClick={onClick}
+        disabled={disabled}
       >
         {icon ? icon : null}
         <Link to={`${redirectUrl}`} className={classes.text} style={textStyle}>
@@ -46,7 +56,7 @@ const UpdatedButton = (props) => {
     return (
       <Button
         className={`${classes.button} ${disabled ? classes.disabled : ""}`}
-        style={customStyles}
+        style={updatedStyles}
         onClick={onClick}
         disabled={disabled}
         title={disabled ? "HI" : null}

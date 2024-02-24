@@ -24,7 +24,7 @@ h2 {
   text-align: left;
 }
 
-input[type="text"],
+/* input[type="text"],
 input[type="password"] {
   padding: 10px;
   border: 1px solid #ccc;
@@ -32,7 +32,7 @@ input[type="password"] {
   font-size: 16px;
   outline: none;
   width: 378px;
-}
+} */
 
 .message {
   margin-top: 10px;

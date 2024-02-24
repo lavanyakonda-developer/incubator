@@ -3,27 +3,19 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px;
+  padding: 40px 40px 0px;
   gap: 16px;
-  flex: 1 1;
-  max-width: 85%;
+  flex: 1;
 }
 
 .documentUpload {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-top: 48px;
-  width: 100%;
-}
-
-.documentUploadCard {
   width: 100%;
   padding: 32px;
   background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: auto;
 }
 
 .documentUpload h2 {
@@ -104,13 +96,29 @@
 .buttonContainer {
   display: flex;
   gap: 16px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  margin-top: 8px;
+  width: 100%;
+  padding: var(--Space-5, 24px) var(--Space-8, 40px);
+  justify-content: space-between;
+  align-items: flex-start;
+  border-top: 1px solid var(--Neutral-color-Neutral-3, #f2f2f5);
+  background: var(--Default-colors-white, #fff);
+
+  /* Shadows/Light/shadow-3 */
+  box-shadow: 0px 2px 3px -2px rgba(0, 0, 61, 0.05),
+    0px 3px 12px -4px rgba(0, 0, 0, 0.05), 0px 4px 16px -8px rgba(0, 0, 0, 0.08);
+
+  /* bottom: 0;
+  position: absolute; */
+}
+
+.buttonContainerRight {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
 }
 
 .documentCard {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   align-items: center;
   flex: 0 0 calc(30% - 16px);
@@ -125,7 +133,25 @@
 
   &:hover {
     background-color: #e0e0e0;
-  }
+  } */
+
+  display: flex;
+  padding-bottom: 12px;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+  border-bottom: 1px solid var(--Neutral-color-Neutral-4, #ebebef);
+}
+
+.documentCardName {
+  color: #000;
+
+  /* Typography/2/Medium */
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
 }
 
 .cardPreview {
@@ -133,7 +159,7 @@
   height: 64px;
   border: 1px solid #ddd;
   border-radius: 8px;
-  overflow: hidden;
+  /* overflow: hidden; */
 }
 
 .cardPreview img {
@@ -156,9 +182,10 @@
 
 .chooseButtonContainer {
   display: flex;
-  width: 50%;
+  /* width: 50%; */
   justify-content: center;
   align-items: center;
+  height: 24px;
 }
 
 .uploadLabel {
@@ -168,15 +195,22 @@
   gap: 8px;
   cursor: pointer;
   width: fit-content;
-  border: 1px solid #6d48ff;
-  background-color: #6d48ff;
+  border: 1px solid #3a5ccc;
+  background-color: #3a5ccc;
   border-radius: 4px;
-  padding: 10px 16px;
+  padding: 6px;
   color: #ffffff;
+  color: var(--Tokens-Colors-contrast-accent, #fff);
+  /* Typography/2/Medium */
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 20px; /* 142.857% */
 }
 
 .uploadLabel:hover {
-  background-color: #5a3dd8;
+  background-color: #3a5ccc;
 }
 
 .chooseFileText {
@@ -184,39 +218,56 @@
 }
 
 .previewDocumentsContainer {
-  display: flex;
+  /* display: flex;
   flex-wrap: wrap;
   gap: 16px;
   max-width: calc(100% + 16px);
-  overflow-y: auto;
+  overflow-y: auto; */
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  align-self: stretch;
 }
 
 .uploadedDocuments {
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  flex: 1;
-  max-height: 300px;
+  /* overflow: auto; */
+  /* flex: 1;
+  max-height: 300px; */
 }
 
-.uploadContainer {
+/* .uploadContainer {
   display: flex;
   align-items: center;
   gap: 16px;
   justify-content: space-between;
-}
+} */
 
 .requestedDocumentsCard {
-  flex-grow: 1;
+  /* flex-grow: 1;
   background-color: #f5f5f5;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 16px;
-  max-width: 300px;
-}
+  max-width: 300px; */
 
-.requestedDocumentsCard h3 {
-  margin-top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--Space-5, 24px);
+  align-self: stretch;
+}
+.documentsContainerTitle {
+  color: #000;
+  font-family: Merriweather;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 26px; /* 144.444% */
+  letter-spacing: -0.04px;
 }
 
 .requestedDocumentsList {
@@ -225,6 +276,7 @@
   gap: 8px;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .icon {
@@ -233,5 +285,60 @@
 
 .cardActions {
   display: flex;
+  gap: 8px;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  align-self: stretch;
+}
+
+.title {
+  color: #000;
+  font-family: Merriweather;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: normal;
+  letter-spacing: -0.08px;
+}
+
+.subTitle {
+  color: var(--Neutral-color-Neutral-11, #60646c);
+
+  /* Typography/2/Regular */
+  font-family: Inter;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 20px; /* 142.857% */
+}
+
+.inputField {
+  display: flex;
+  padding: 0px var(--Space-2, 8px);
+  align-items: center;
+  /* flex: 1 0 0; */
+  align-self: stretch;
+  height: 40px;
+  border-radius: var(--Radius-3-max, 6px);
+  border: 1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13));
+  background: var(--Tokens-Colors-surface, rgba(255, 255, 255, 0.9));
+  width: 100%;
+}
+
+.documentsContainerHeading {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 0px;
+}
+
+.fileNameAndIconContainer {
+  display: flex;
+  width: 575px;
+  align-items: center;
   gap: 8px;
 }

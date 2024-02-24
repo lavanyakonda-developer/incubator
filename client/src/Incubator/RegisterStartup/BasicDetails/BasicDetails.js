@@ -113,140 +113,201 @@ const BasicDetails = ({
 
   return (
     <div className={classes.basicDetails}>
+      <div className={classes.heading}>
+        <div className={classes.title}>Add new startup</div>
+        <div className={classes.subTitle}>
+          Let’s enter some basic details to initiate the onboarding process of
+          the startup{" "}
+        </div>
+      </div>
       <div className={classes.basicInfoCard}>
-        <div className={classes.inputContainer}>
-          <label>Name of the incubatee startup*</label>
-          <input
-            type="text"
-            value={startupDetails.name}
-            onChange={(e) => handleBasicDetailsChange("name", e.target.value)}
-            placeholder="Enter startup name"
-          />
-        </div>
-        <div className={classes.inputContainer}>
-          <label>DPIIT Number*</label>
-          <input
-            type="text"
-            value={startupDetails.dpiitNumber}
-            onChange={(e) =>
-              handleBasicDetailsChange("dpiitNumber", e.target.value)
-            }
-            placeholder="Enter DPIIT number"
-          />
-          {!_.isEmpty(startupDetails.dpiitNumber) &&
-            (!dippRegex.test(startupDetails.dpiitNumber) ||
-              _.size(startupDetails.dpiitNumber) != 10) && (
-              <p style={{ color: "red" }}> Invalid Number</p>
-            )}
-        </div>
-        <div className={classes.inputContainer}>
-          <label>Industry Segment*</label>
+        <div className={classes.basicInfoContainer}>
+          <div className={classes.basicDetailsHeading}>Basic details</div>
+          <div className={classes.inputContainerNew}>
+            <label className={classes.inputTitle}>Name of the startup*</label>
+            <input
+              type="text"
+              value={startupDetails.name}
+              onChange={(e) => handleBasicDetailsChange("name", e.target.value)}
+              placeholder="Enter startup name"
+              className={classes.inputField}
+            />
+          </div>
+          <div className={classes.miniContainer}>
+            <div className={classes.inputContainerNew}>
+              <label className={classes.inputTitle}>DPIIT Number*</label>
+              <input
+                type="text"
+                value={startupDetails.dpiitNumber}
+                onChange={(e) =>
+                  handleBasicDetailsChange("dpiitNumber", e.target.value)
+                }
+                placeholder="Enter DPIIT number"
+                className={classes.inputField}
+              />
+              {!_.isEmpty(startupDetails.dpiitNumber) &&
+                (!dippRegex.test(startupDetails.dpiitNumber) ||
+                  _.size(startupDetails.dpiitNumber) != 10) && (
+                  <p style={{ color: "red" }}> Invalid Number</p>
+                )}
+            </div>
+            <div className={classes.inputContainerNew}>
+              <label className={classes.inputTitle}>Industry Segment*</label>
 
-          <select
-            value={startupDetails.industrySegment}
-            onChange={(e) =>
-              handleBasicDetailsChange("industrySegment", e.target.value)
-            }
-            style={{ height: 32 }}
-          >
-            <option value="">Select industry segment</option>
-            {_.map(industryOptions, (option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
+              <select
+                value={startupDetails.industrySegment}
+                onChange={(e) =>
+                  handleBasicDetailsChange("industrySegment", e.target.value)
+                }
+                className={classes.industryDropdown}
+              >
+                <option value="">Select industry segment</option>
+                {_.map(industryOptions, (option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
-        <div className={classes.inputContainer}>
-          <label>Name of Founder*</label>
-          <input
-            type="text"
-            value={startupDetails.founderName}
-            onChange={(e) =>
-              handleBasicDetailsChange("founderName", e.target.value)
-            }
-            placeholder="Enter founder's name"
-          />
-        </div>
-        <div className={classes.inputContainer}>
-          <label>Role of Founder*</label>
-          <input
-            type="text"
-            value={startupDetails.founderRole}
-            onChange={(e) =>
-              handleBasicDetailsChange("founderRole", e.target.value)
-            }
-            placeholder="Enter founder's role"
-          />
-        </div>
-        <div className={classes.inputContainer}>
-          <label>Email of Founder*</label>
-          <input
-            type="email"
-            value={startupDetails.founderEmail}
-            onChange={(e) =>
-              handleBasicDetailsChange("founderEmail", e.target.value)
-            }
-            placeholder="Enter founder's email"
-          />
-        </div>
-        <div className={classes.inputContainer}>
-          <label>Mobile Number of Founder*</label>
-          <input
-            type="tel"
-            value={startupDetails.founderMobile}
-            onChange={(e) =>
-              handleBasicDetailsChange("founderMobile", e.target.value)
-            }
-            placeholder="Enter founder's phone number"
-          />
+
+        <div className={classes.basicInfoContainer}>
+          <div className={classes.basicDetailsHeading}>Founder details</div>
+          <div className={classes.founderNumber}>
+            <div className={classes.founderNumberInt}>1</div>
+            <div className={classes.founderNumberLabel}> Founder </div>
+          </div>
+          <div className={classes.miniContainer}>
+            <div className={classes.inputContainerNew}>
+              <label className={classes.inputTitle}>Name of Founder*</label>
+              <input
+                type="text"
+                value={startupDetails.founderName}
+                onChange={(e) =>
+                  handleBasicDetailsChange("founderName", e.target.value)
+                }
+                placeholder="Enter founder's name"
+                className={classes.inputField}
+              />
+            </div>
+            <div className={classes.inputContainerNew}>
+              {" "}
+              <label className={classes.inputTitle}>Role of Founder*</label>
+              <input
+                type="text"
+                value={startupDetails.founderRole}
+                onChange={(e) =>
+                  handleBasicDetailsChange("founderRole", e.target.value)
+                }
+                placeholder="Enter founder's role"
+                className={classes.inputField}
+              />
+            </div>
+          </div>
+          <div className={classes.miniContainer}>
+            <div className={classes.inputContainerNew}>
+              <label className={classes.inputTitle}>Email of Founder*</label>
+              <input
+                type="email"
+                value={startupDetails.founderEmail}
+                onChange={(e) =>
+                  handleBasicDetailsChange("founderEmail", e.target.value)
+                }
+                placeholder="Enter founder's email"
+                className={classes.inputField}
+              />
+            </div>
+            <div className={classes.inputContainerNew}>
+              <label className={classes.inputTitle}>
+                Mobile Number of Founder*
+              </label>
+              <input
+                type="tel"
+                value={startupDetails.founderMobile}
+                onChange={(e) =>
+                  handleBasicDetailsChange("founderMobile", e.target.value)
+                }
+                placeholder="Enter founder's phone number"
+                className={classes.inputField}
+              />
+            </div>
+          </div>
         </div>
         <div className={classes.coFounderContainer}>
           {_.map(coFounders, (coFounder, index) => (
-            <div key={index} className="co-founder">
-              <div className={classes.inputContainer}>
-                <label>Name of Co-Founder</label>
-                <input
-                  type="text"
-                  value={coFounder.name}
-                  onChange={(e) =>
-                    handleCoFounderChange(index, "name", e.target.value)
-                  }
-                  placeholder="Enter Co-Founder's phone number"
-                />
+            <div key={index} className={classes.basicInfoContainer}>
+              <div className={classes.founderNumber}>
+                <div className={classes.founderNumberInt}>{index + 2}</div>
+                <div className={classes.founderNumberLabel}> Founder </div>
               </div>
-              <div className={classes.inputContainer}>
-                <label>Role of Co-Founder</label>
-                <input
-                  type="text"
-                  value={coFounder.designation}
-                  onChange={(e) =>
-                    handleCoFounderChange(index, "designation", e.target.value)
-                  }
-                  placeholder="Enter Co-Founder's role"
-                />
+              <div className={classes.miniContainer}>
+                <div className={classes.inputContainerNew}>
+                  <label className={classes.inputTitle}>
+                    Name of Co-Founder
+                  </label>
+                  <input
+                    type="text"
+                    value={coFounder.name}
+                    onChange={(e) =>
+                      handleCoFounderChange(index, "name", e.target.value)
+                    }
+                    placeholder="Enter Co-Founder's phone number"
+                    className={classes.inputField}
+                  />
+                </div>
+                <div className={classes.inputContainerNew}>
+                  <label className={classes.inputTitle}>
+                    Role of Co-Founder
+                  </label>
+                  <input
+                    type="text"
+                    value={coFounder.designation}
+                    onChange={(e) =>
+                      handleCoFounderChange(
+                        index,
+                        "designation",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter Co-Founder's role"
+                    className={classes.inputField}
+                  />
+                </div>
               </div>
-              <div className={classes.inputContainer}>
-                <label>Email of Co-Founder</label>
-                <input
-                  type="email"
-                  value={coFounder.email}
-                  onChange={(e) =>
-                    handleCoFounderChange(index, "email", e.target.value)
-                  }
-                  placeholder="Enter Co-Founder's email"
-                />
-              </div>
-              <div className={classes.inputContainer}>
-                <label>Mobile Number of Co-Founder</label>
-                <input
-                  type="tel"
-                  value={coFounder.phone_number}
-                  onChange={(e) =>
-                    handleCoFounderChange(index, "phone_number", e.target.value)
-                  }
-                  placeholder="Enter Co-Founder's phone number"
-                />
+              <div className={classes.miniContainer}>
+                <div className={classes.inputContainerNew}>
+                  <label className={classes.inputTitle}>
+                    Email of Co-Founder
+                  </label>
+                  <input
+                    type="email"
+                    value={coFounder.email}
+                    onChange={(e) =>
+                      handleCoFounderChange(index, "email", e.target.value)
+                    }
+                    placeholder="Enter Co-Founder's email"
+                    className={classes.inputField}
+                  />
+                </div>
+                <div className={classes.inputContainerNew}>
+                  <label className={classes.inputTitle}>
+                    Mobile Number of Co-Founder
+                  </label>
+                  <input
+                    type="tel"
+                    value={coFounder.phone_number}
+                    onChange={(e) =>
+                      handleCoFounderChange(
+                        index,
+                        "phone_number",
+                        e.target.value
+                      )
+                    }
+                    placeholder="Enter Co-Founder's phone number"
+                    className={classes.inputField}
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -255,22 +316,36 @@ const BasicDetails = ({
               name={"Add Another Co-Founder"}
               onClick={handleAddCoFounder}
               disabled={disableCofounders()}
+              size={"2"}
+              variant={"solid"}
+              customStyles={{ backgroundColor: "#1C2024", width: 300 }}
             />
           </div>
         </div>
-        <div className={classes.buttonContainer}>
+      </div>
+      <div className={classes.buttonContainer}>
+        <Button
+          name={"Back"}
+          onClick={onCancel}
+          variant={"outline"}
+          highContrast={true}
+          color={"gray"}
+        />
+
+        <div className={classes.buttonContainerRight}>
           <Button
-            name={"Draft and Exit"}
+            name={"Save as Draft"}
             onClick={onDraftExit}
-            customStyles={{ backgroundColor: "#ccc" }}
+            variant={"outline"}
             disabled={disableDraft}
+            highContrast={true}
           />
           <Button
-            name={"Cancel"}
-            onClick={onCancel}
-            customStyles={{ backgroundColor: "#ff6d6d" }}
+            name={"Next"}
+            onClick={onClickNext}
+            variant={"solid"}
+            customStyles={{ backgroundColor: "#1C2024", width: 68 }}
           />
-          <Button name={"Next"} onClick={onClickNext} />
         </div>
       </div>
     </div>

@@ -2,9 +2,9 @@ import React, { useState, useRef } from "react";
 import classes from "./DocumentUpload.module.css"; // Import your CSS file
 import { Button } from "../../../CommonComponents";
 import _ from "lodash";
-import { FaDownload, FaTrash } from "react-icons/fa"; // Import download and delete icons
 import { saveAs } from "file-saver";
 import { makeRequest, API } from "../../../axios";
+import { FileIcon, DownloadIcon, TrashIcon } from "@radix-ui/react-icons";
 
 // TODO : Placeholder image URLs for doc and pdf
 const placeholderDocImage =
@@ -185,38 +185,121 @@ const DocumentUpload = ({
 
   return (
     <div className={classes.container}>
+      <div className={classes.heading}>
+        <div className={classes.title}>Document requirements</div>
+        <div className={classes.subTitle}>
+          Request and upload the necessary documents required from the startup.
+        </div>
+      </div>
       <div
         className={`${classes.documentUpload} ${classes.documentUploadCard}`}
       >
-        <div className={classes.uploadContainer}>
-          <div className={classes.chooseButtonContainer}>
-            <label className={classes.uploadLabel}>
-              <span className={classes.chooseFileText}>Choose File</span>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                accept=".pdf,.doc,.docx"
-                style={{ display: "none" }}
-              />
-            </label>
+        <div className={classes.requestedDocumentsCard}>
+          <div className={classes.heading}>
+            <div className={classes.documentsContainerTitle}>
+              Requested Documents
+            </div>
+            <div className={classes.subTitle}>
+              Request and upload the necessary documents required from the
+              startup.
+            </div>
           </div>
-          <div className={classes.requestedDocumentsCard}>
-            <h3>Requested Documents</h3>
-            <ol className={classes.requestedDocumentsList}>
-              {_.map(requestedDocuments, (document, index) => (
-                <li key={index}>
-                  <input
-                    type="text"
-                    value={document}
-                    onChange={(e) =>
-                      handleRequestedDocumentChange(index, e.target.value)
-                    }
-                    style={{ maxWidth: "90%" }}
+          <ol className={classes.requestedDocumentsList}>
+            {_.map(requestedDocuments, (document, index) => (
+              <li key={index}>
+                <input
+                  type="text"
+                  value={document}
+                  onChange={(e) =>
+                    handleRequestedDocumentChange(index, e.target.value)
+                  }
+                  style={{ maxWidth: "96%" }}
+                  className={classes.inputField}
+                />
+              </li>
+            ))}
+          </ol>
+        </div>
+
+        <div className={classes.uploadedDocuments}>
+          <div className={classes.documentsContainerHeading}>
+            <div className={classes.documentsContainerTitle}>
+              Upload documents
+            </div>
+            <div className={classes.chooseButtonContainer}>
+              <label className={classes.uploadLabel}>
+                <span className={classes.chooseFileText}>Upload documents</span>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,.doc,.docx"
+                  style={{ display: "none" }}
+                />
+              </label>
+            </div>
+          </div>
+          <div className={classes.previewDocumentsContainer}>
+            {_.map(uploadedDocuments, (document, index) => (
+              // <div className={classes.documentCard} key={index}>
+              //   <div className={classes.cardPreview}>
+              //     <img
+              //       src={
+              //         documentInfo.format === "application/pdf"
+              //           ? placeholderPdfImage
+              //           : placeholderDocImage
+              //       }
+              //       alt={`Document ${index + 1}`}
+              //       width="40"
+              //       height="60"
+              //     />
+              //   </div>
+              //   <div className={classes.cardActions}>
+              //     <FaDownload
+              //       className={classes.icon}
+              //       onClick={() => handleDownload(index)}
+              //     />
+              //     <FaTrash
+              //       className={classes.icon}
+              //       onClick={() => handleDelete(index)}
+              //     />
+              //   </div>
+              //   <div className={classes.cardDetails}>
+              //     <div>
+              //       <strong>Name:</strong> {document.name}
+              //     </div>
+              //     <div>
+              //       <strong>Size:</strong> {document.size}
+              //     </div>
+              //     <div>
+              //       <strong>Signature Required:</strong>{" "}
+              //       {document.isSignatureRequired ? "Yes" : "No"}
+              //     </div>
+              //   </div>
+              // </div>
+
+              <div className={classes.documentCard} key={index}>
+                <div className={classes.fileNameAndIconContainer}>
+                  {" "}
+                  <FileIcon width="20" height="20" />
+                  <div className={classes.documentCardName}>
+                    {document.name}
+                  </div>
+                </div>
+
+                <div className={classes.cardActions}>
+                  <DownloadIcon
+                    className={classes.icon}
+                    onClick={() => handleDownload(index)}
                   />
-                </li>
-              ))}
-            </ol>
+                  <TrashIcon
+                    className={classes.icon}
+                    onClick={() => handleDelete(index)}
+                    color="red"
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -318,69 +401,31 @@ const DocumentUpload = ({
             </div>
           </div>
         )}
-        <div className={classes.uploadedDocuments}>
-          <h3>Preview uploaded documents</h3>
-          <div className={classes.previewDocumentsContainer}>
-            {_.map(uploadedDocuments, (document, index) => (
-              <div className={classes.documentCard} key={index}>
-                <div className={classes.cardPreview}>
-                  <img
-                    src={
-                      documentInfo.format === "application/pdf"
-                        ? placeholderPdfImage
-                        : placeholderDocImage
-                    }
-                    alt={`Document ${index + 1}`}
-                    width="40"
-                    height="60"
-                  />
-                </div>
-                <div className={classes.cardActions}>
-                  <FaDownload
-                    className={classes.icon}
-                    onClick={() => handleDownload(index)}
-                  />
-                  <FaTrash
-                    className={classes.icon}
-                    onClick={() => handleDelete(index)}
-                  />
-                </div>
-                <div className={classes.cardDetails}>
-                  <div>
-                    <strong>Name:</strong> {document.name}
-                  </div>
-                  <div>
-                    <strong>Size:</strong> {document.size}
-                  </div>
-                  <div>
-                    <strong>Signature Required:</strong>{" "}
-                    {document.isSignatureRequired ? "Yes" : "No"}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className={classes.buttonContainer}>
-          <div className={classes.buttonContainer}>
-            <Button
-              name={"Draft and Exit"}
-              onClick={onDraftExit}
-              disabled={disableDraft}
-              customStyles={{ backgroundColor: "#ccc" }}
-            />
-            <Button
-              name={"Cancel"}
-              onClick={onCancel}
-              customStyles={{ backgroundColor: "#ff6d6d" }}
-            />
-            <Button
-              name={"Back"}
-              onClick={onBack}
-              customStyles={{ backgroundColor: "#ff6d6d" }}
-            />
-            <Button name={"Next"} onClick={onNext} />
-          </div>
+      </div>
+      <div className={classes.buttonContainer}>
+        <Button
+          name={"Back"}
+          onClick={onBack}
+          variant={"outline"}
+          highContrast={true}
+          color={"gray"}
+        />
+
+        <div className={classes.buttonContainerRight}>
+          <Button
+            name={"Save as Draft"}
+            onClick={onDraftExit}
+            variant={"outline"}
+            disabled={disableDraft}
+            highContrast={true}
+            color={"gray"}
+          />
+          <Button
+            name={"Next"}
+            onClick={onNext}
+            variant={"solid"}
+            customStyles={{ backgroundColor: "#1C2024", width: 68 }}
+          />
         </div>
       </div>
     </div>

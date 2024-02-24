@@ -90,7 +90,7 @@ const ReferralCode = ({
         </div>
         <div className={classes.buttonContainer}>
           <Button
-            name={"Draft and Exit"}
+            name={"Save as Draft"}
             onClick={onDraftExit}
             disabled={disableDraft}
             customStyles={{ backgroundColor: "#ccc" }}

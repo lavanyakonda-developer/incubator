@@ -13,12 +13,7 @@ import { logout } from "../../auth/helper";
 import { useNavigate, useParams } from "react-router-dom";
 import { updateStartupIdsOfIncubator } from "../../auth/helper.js";
 import moment from "moment";
-import {
-  FaCheckCircle,
-  FaTimesCircle,
-  FaComment,
-  FaBell,
-} from "react-icons/fa";
+import { FaTimesCircle } from "react-icons/fa";
 import io from "socket.io-client";
 import { isAuthenticated } from "../../auth/helper";
 import {
