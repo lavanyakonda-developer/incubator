@@ -1056,8 +1056,8 @@ const IncubatorHome = (props) => {
   };
 
   const userLogout = async () => {
-    navigate("/home-page");
     await logout();
+    window.location.reload();
   };
 
   const changePassword = () => {
