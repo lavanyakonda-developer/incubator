@@ -155,7 +155,11 @@ const DetailedQuestionnaire = ({
             onClick={saveAndContinue}
             disabled={disableSave}
             variant={"solid"}
-            customStyles={{ backgroundColor: "#008F4ACF" }}
+            customStyles={
+              disableSave
+                ? { pointer: "not-allowed" }
+                : { backgroundColor: "#008F4ACF" }
+            }
           />
         </div>
       </div>

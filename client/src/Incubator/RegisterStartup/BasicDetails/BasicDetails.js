@@ -148,7 +148,17 @@ const BasicDetails = ({
               {!_.isEmpty(startupDetails.dpiitNumber) &&
                 (!dippRegex.test(startupDetails.dpiitNumber) ||
                   _.size(startupDetails.dpiitNumber) != 10) && (
-                  <p style={{ color: "red" }}> Invalid Number</p>
+                  <p
+                    style={{
+                      color: "red",
+                      margin: "0",
+                      fontSize: "14",
+                      fontFamily: "Inter",
+                    }}
+                  >
+                    {" "}
+                    Invalid Number
+                  </p>
                 )}
             </div>
             <div className={classes.inputContainerNew}>
@@ -313,12 +323,16 @@ const BasicDetails = ({
           ))}
           <div className={classes.addCoFounderContainer}>
             <Button
-              name={"Add Another Co-Founder"}
+              name={"Add Co-Founder"}
               onClick={handleAddCoFounder}
               disabled={disableCofounders()}
               size={"2"}
               variant={"solid"}
-              customStyles={{ backgroundColor: "#1C2024", width: 300 }}
+              customStyles={
+                disableCofounders()
+                  ? { width: 300 }
+                  : { backgroundColor: "#1C2024", width: 300 }
+              }
             />
           </div>
         </div>

@@ -468,7 +468,14 @@ const Calendar = (props) => {
                       }}
                     />
                     {endDateError && (
-                      <p style={{ color: "red", margin: "4px 0px" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          margin: "4px 0px",
+                          fontSize: "14",
+                          fontFamily: "Inter",
+                        }}
+                      >
                         {endDateError}
                       </p>
                     )}
@@ -507,7 +514,14 @@ const Calendar = (props) => {
                   </div>
                   {!_.isEmpty(newEvent.guests) &&
                     !isValidEmailList(newEvent.guests) && (
-                      <p style={{ color: "red", margin: "4px 0px" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          margin: "4px 0px",
+                          fontSize: "14",
+                          fontFamily: "Inter",
+                        }}
+                      >
                         Invalid email format. Please use comma-separated emails.
                       </p>
                     )}
@@ -610,7 +624,14 @@ const Calendar = (props) => {
                       }}
                     />
                     {endDateError && (
-                      <p style={{ color: "red", margin: "4px 0px" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          margin: "4px 0px",
+                          fontSize: "14",
+                          fontFamily: "Inter",
+                        }}
+                      >
                         {endDateError}
                       </p>
                     )}
@@ -659,7 +680,14 @@ const Calendar = (props) => {
                   </div>
                   {!_.isEmpty(selectedEvent.guests) &&
                     !isValidEmailList(selectedEvent.guests) && (
-                      <p style={{ color: "red", margin: "4px 0px" }}>
+                      <p
+                        style={{
+                          color: "red",
+                          margin: "4px 0px",
+                          fontSize: "14",
+                          fontFamily: "Inter",
+                        }}
+                      >
                         Invalid email format. Please use comma-separated emails.
                       </p>
                     )}

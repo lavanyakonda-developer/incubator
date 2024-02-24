@@ -9,27 +9,10 @@ import DetailedQuestionnaire from "./DetailedQuestionnaire";
 import { useNavigate, useParams } from "react-router-dom";
 import _ from "lodash";
 import { questions } from "./helper";
-import { makeRequest } from "../../axios";
+import { makeRequest, API } from "../../axios";
 import { Button } from "../../CommonComponents";
 import { isAuthenticated } from "../../auth/helper";
-import { Cross1Icon } from "@radix-ui/react-icons";
-
-function RadioOption({ value, label, selected, onChange }) {
-  return (
-    <label
-      className={`${classes.radioOption} ${selected ? classes.selected : ""}`}
-    >
-      <input
-        type="radio"
-        name="option"
-        value={value}
-        checked={selected}
-        onChange={() => onChange(value)}
-      />
-      {label}
-    </label>
-  );
-}
+import { CopyIcon, Cross1Icon } from "@radix-ui/react-icons";
 
 const tabs = [
   { label: "Basic Info", key: "basicDetails" },
@@ -65,6 +48,8 @@ const generateRandomCode = (length) => {
 
 const RegisterStartup = () => {
   const { incubator_id: incubatorId } = useParams();
+
+  const [showInvitationSentModal, setShowInvitationSentModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -161,6 +146,8 @@ const RegisterStartup = () => {
   };
 
   const [startupInfo, setStartupInfo] = useState(getStartupInfo());
+
+  console.log(startupInfo);
 
   const { startup_id } = useParams();
 
@@ -259,6 +246,11 @@ const RegisterStartup = () => {
       console.error("Error fetching data:", error);
     }
 
+    setShowInvitationSentModal(true);
+  };
+
+  const closeInvitationSentModal = () => {
+    setShowInvitationSentModal(false);
     goHome();
   };
 
@@ -385,6 +377,11 @@ const RegisterStartup = () => {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(startupInfo.basicDetails.referralCode);
+    goHome();
+  };
+
   return (
     <div className={classes.startupRegistrationTabs}>
       <div className={classes.tabContainer}>
@@ -430,6 +427,85 @@ const RegisterStartup = () => {
       </div>
 
       <div className={classes.rightContainer}>{renderTabContent()}</div>
+      {showInvitationSentModal && (
+        <div className={classes.modalBackground}>
+          <div className={classes.modal}>
+            <div className={classes.modalContent}>
+              <div className={classes.crossButtonDiv}>
+                <Button
+                  onClick={() => {
+                    goHome();
+                  }}
+                  icon={<Cross1Icon />}
+                  variant={"soft"}
+                  customStyles={{
+                    width: 100,
+                    fontSize: 16,
+                    color: "black",
+                    justifyContent: "left",
+                    padding: "24px 16px",
+                  }}
+                  color={"black"}
+                />
+              </div>
+              <div className={classes.imageContainer}>
+                <img
+                  src={`${API}/uploads/image2.png`}
+                  width={240}
+                  height={240}
+                />
+              </div>
+
+              <div className={classes.textContainer}>
+                <div className={classes.heading}>
+                  {`Invitation sent to ${startupInfo?.basicDetails?.name}`}
+                </div>
+                <div className={classes.subHeading}>
+                  {" "}
+                  We’ve sent an invite to the startup founders over email! The
+                  invite includes a referral code that can be used by the
+                  startup to initiate their setup or you could share the code
+                  too.
+                </div>
+              </div>
+
+              <div className={classes.buttons}>
+                <Button
+                  name={startupInfo?.basicDetails?.referralCode}
+                  // onClick={handleCancel}
+                  customStyles={{
+                    backgroundColor: "#ff6d6d",
+                    width: "40%",
+                    height: 40,
+                    padding: 4,
+                    alignItems: "center",
+                    borderRadius: 6,
+                    border:
+                      "1px solid var(--Neutral-color-Neutral-Alpha-6, rgba(1, 1, 46, 0.13))",
+                    background: "rgba(255, 255, 255, 0.90)",
+                    color: "black",
+                  }}
+                />
+                <Button
+                  name={"Copy Invite code"}
+                  size={"3"}
+                  variant={"solid"}
+                  customStyles={{
+                    backgroundColor: "#1C2024",
+                    gap: 8,
+                    borderRadius: 6,
+                    padding: 4,
+                    width: "40%",
+                    cursor: "pointer",
+                  }}
+                  onClick={copyToClipboard}
+                  icon={<CopyIcon width={24} height={24} />}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
