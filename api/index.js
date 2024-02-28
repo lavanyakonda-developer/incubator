@@ -6,13 +6,9 @@ import cookieParser from "cookie-parser";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
-import http from "http";
-import { Server } from "socket.io";
-
 // Get the directory name of the current module file
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
 dotenv.config();
 import authRoutes from "./routes/auth.js";
 import incubatorRoutes from "./routes/incubator.js";
@@ -37,9 +33,6 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.static(__dirname));
 
-//PORT
-const port = process.env.PORT || 8000;
-
 //My Routes
 app.use("/api/auth", authRoutes);
 app.use("/incubator", incubatorRoutes);
@@ -48,41 +41,12 @@ app.use("/chat", chatRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/google", googleRoutes);
 
+//PORT
+const port = process.env.PORT || 8000;
+
 //Starting a server
 app.listen(port, () => {
-  console.log(`app is running at ${port}`);
+  console.log(`API server is running at ${port}`);
 });
 
-//socket
-const server = http.createServer(app);
-
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  socket.on("join_room", (data) => {
-    if (!socket.rooms.has(data)) {
-      socket.join(data);
-    }
-  });
-
-  socket.on("send_message", (data) => {
-    socket.to(data.room).emit("receive_message", data);
-  });
-
-  socket.on("send_notification", (data) => {
-    socket.to(data.room).emit("receive_notification", data);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User Disconnected", socket.id);
-  });
-});
-
-server.listen(3001, () => {
-  console.log("SERVER RUNNING in 3001");
-});
+export default app;
