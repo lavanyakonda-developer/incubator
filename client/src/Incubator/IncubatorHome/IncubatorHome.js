@@ -497,7 +497,11 @@ const IncubatorHome = (props) => {
                 </div>
               </div>
 
-              <Table.Root size={"3"} variant={"ghost"}>
+              <Table.Root
+                size={"3"}
+                variant={"ghost"}
+                style={{ overflow: "auto" }}
+              >
                 <Table.Header>
                   <Table.Row style={rowStyle}>
                     <Table.ColumnHeaderCell style={columnHeaderStyle}>
@@ -708,23 +712,31 @@ const IncubatorHome = (props) => {
                 </div>
               </div>
 
-              <Table.Root size={"3"} variant={"ghost"}>
+              <Table.Root
+                size={"3"}
+                variant={"ghost"}
+                style={{ overflow: "auto" }}
+              >
                 <Table.Header>
                   <Table.Row style={rowStyle}>
-                    <Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
                       Startup Name
                     </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>Sector</Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>Stage</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Sector
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
+                      Stage
+                    </Table.ColumnHeaderCell>
 
-                    <Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell style={columnHeaderStyle}>
                       Date of joining
                     </Table.ColumnHeaderCell>
                     {/* MIGHT USE IN FUTURE */}
-                    {/* <Table.ColumnHeaderCell>
+                    {/* <Table.ColumnHeaderCell  style={columnHeaderStyle}>
                       Reporting Hub
-                    </Table.ColumnHeaderCell>
-                    <Table.ColumnHeaderCell>Go to chat</Table.ColumnHeaderCell> */}
+                    </Table.ColumnHeaderCell  style={columnHeaderStyle}>
+                    <Table.ColumnHeaderCell  style={columnHeaderStyle}>Go to chat</Table.ColumnHeaderCell> */}
                   </Table.Row>
                 </Table.Header>
 

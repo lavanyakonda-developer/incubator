@@ -63,7 +63,8 @@ const Login = (props) => {
         setMessage("Unknown response from server");
       }
     } catch (error) {
-      setMessage(error.response.data);
+      console.log(">>>>>>>", error);
+      setMessage(error.message);
     }
   };
 
