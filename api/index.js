@@ -29,7 +29,7 @@ const corsOptions = {
   origin: [
     "http://localhost:3000",
     "http://35.154.239.8:8000/",
-    "https://incubator-sass.vercel.app/",
+    "https://incubator-sass.vercel.app",
   ],
   credentials: true, // Allow credentials (cookies)
 };
