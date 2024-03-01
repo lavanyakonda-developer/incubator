@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:8000/"],
+  origin: ["http://localhost:3000", "http://35.154.239.8:8000/"],
   credentials: true, // Allow credentials (cookies)
 };
 
