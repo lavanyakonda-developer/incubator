@@ -25,16 +25,19 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const corsOptions = {
-  origin: [
-    "http://localhost:3000",
-    "http://35.154.239.8:8000/",
-    "https://incubator-sass.vercel.app",
-  ],
-  credentials: true, // Allow credentials (cookies)
-};
+// const corsOptions = {
+//   origin: "*",
+//   credentials: true, // Allow credentials (cookies)
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 app.use(express.static(__dirname));
 
 //My Routes
